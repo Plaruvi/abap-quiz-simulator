@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Examen C_ABAPD_2309</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d6cc99 0%, #e8dcc6 50%, #f0e68c 100%);
+            min-height: 100vh;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+            background: #fefefe;
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            font-size: 0.95rem;
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-radius: 25px;
+            font-weight: 500;
+        }
+        
+        .stat-correct { color: #38a169; }
+        .stat-incorrect { color: #e53e3e; }
+        
+        .progress-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #e2e8f0, #cbd5e0);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.6s ease;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
+        }
+        
+        .question-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 32px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .question-number {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .question-text {
+            color: #2d3748;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        
+        .multiple-notice {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 16px;
+            display: inline-block;
+        }
+        
+        .options {
+            margin-bottom: 32px;
+        }
+        
+        .option {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .option:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .option.selected {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .option-letter {
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .option.selected .option-letter {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .option-text {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-height: 44px;
+            min-width: 44px;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+            user-select: none;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #718096, #4a5568);
+            color: white;
+        }
+        
+        .btn-orange {
+            background: linear-gradient(45deg, #ed8936, #dd6b20);
+            color: white;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: #fefefe;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8) translateY(20px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        .modal-overlay.show .modal {
+            transform: scale(1) translateY(0);
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .modal-icon {
+            font-size: 2rem;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .modal-correct {
+            color: #38a169;
+        }
+        
+        .modal-incorrect {
+            color: #e53e3e;
+        }
+        
+        .modal-content {
+            margin-bottom: 24px;
+        }
+        
+        .correct-answer {
+            background: #f0fdf4;
+            border: 1px solid #9ae6b4;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .correct-answer.when-correct {
+            background: #f0fdf4;
+            border: 1px solid #9ae6b4;
+        }
+        
+        .correct-answer-title {
+            font-weight: 600;
+            color: #276749;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        
+        .correct-answer-option {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            border-left: 3px solid #22c55e;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .user-answer {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .user-answer-title {
+            font-weight: 600;
+            color: #991b1b;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        
+        .user-answer-option {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            border-left: 3px solid #ef4444;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .user-answer-letter {
+            font-weight: 700;
+            color: #991b1b;
+            margin-right: 8px;
+        }
+        
+        .explanation {
+            background: linear-gradient(135deg, #ebf8ff, #e6fffa);
+            border-left: 4px solid #667eea;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .explanation-title {
+            font-weight: 600;
+            color: #2b6cb0;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .explanation-text {
+            color: #2c5282;
+            line-height: 1.6;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .final-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .final-score h2 {
+            font-size: 2.5rem;
+            margin-bottom: 32px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+        
+        .score-item {
+            background: rgba(255,255,255,0.15);
+            padding: 24px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .score-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .percentage-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: conic-gradient(#10b981 0deg, #10b981 var(--percentage), rgba(255,255,255,0.2) var(--percentage), rgba(255,255,255,0.2) 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 24px auto;
+            position: relative;
+        }
+        
+        .percentage-inner {
+            width: 100px;
+            height: 100px;
+            background: #fefefe;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+        
+        .performance-message {
+            font-size: 1.2rem;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .controls > * {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .score-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal {
+                width: 95%;
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📚 Simulador Examen C_ABAPD_2309</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <span id="question-counter">Pregunta 1 de 80</span>
+                </div>
+                <div class="stat-item stat-correct">
+                    <span>✓</span>
+                    <span id="correct-count">Correctas: 0</span>
+                </div>
+                <div class="stat-item stat-incorrect">
+                    <span>✗</span>
+                    <span id="incorrect-count">Incorrectas: 0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quiz-container">
+            <!-- Question -->
+            <div class="question-card">
+                <div class="question-number" id="question-number">Pregunta 1</div>
+                <div class="question-text" id="question-text"></div>
+                <div class="multiple-notice" id="multiple-notice" style="display: none;">
+                    📌 Selecciona múltiples respuestas
+                </div>
+            </div>
+
+            <!-- Options -->
+            <div class="options" id="options-container"></div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn btn-secondary" id="prev-btn" onclick="prevQuestion()">
+                    ← Anterior
+                </button>
+
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" id="check-btn" onclick="checkAnswer()" style="display: none;">
+                        ✓ Verificar
+                    </button>
+                    <button class="btn btn-orange" onclick="resetQuiz()">
+                        🔄 Reiniciar
+                    </button>
+                    <button class="btn" onclick="finishQuiz()" style="background: linear-gradient(45deg, #8b5cf6, #a855f7); color: white;">
+                        🏁 Finalizar Quiz
+                    </button>
+                </div>
+
+                <button class="btn btn-secondary" id="next-btn" onclick="nextQuestion()">
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+
+        <!-- Final Score -->
+        <div id="final-score" style="display: none;"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-header" id="modal-header">
+                <span class="modal-icon" id="modal-icon"></span>
+                <h3 class="modal-title" id="modal-title"></h3>
+            </div>
+            <div class="modal-content" id="modal-content"></div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal()">
+                    Continuar →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Preguntas 1-10
+            {
+                id: 1,
+                question: "Which function call returns 0?",
+                options: [
+                    "Count_any_of ( val = 'ABAP ABAP abap' sub = \"AB\" )",
+                    "Count (val = 'ABAP ABAP abap' sub = 'AB' )",
+                    "find_any_of (val = \"ABAP ABAP abap\" sub = \"AB\")",
+                    "find_any_not_of( val = 'ABAP ABAP abap' sub = 'AB')"
+                ],
+                correct: ["C"],
+                multiple: false,
+                explanation: "find_any_of devuelve 0 cuando no encuentra ningún carácter de la subcadena en la cadena principal. En este caso, busca 'AB' (mayúsculas) en 'ABAP ABAP abap' pero el último 'abap' está en minúsculas, por lo que no encuentra coincidencia exacta."
+            },
+            {
+                id: 2,
+                question: "In which products must you use the ABAP Cloud Development Model? Note: There are 2 correct answers to this question.",
+                options: [
+                    "SAP S/4HANA Cloud, private edition",
+                    "SAP BTP, ABAP environment",
+                    "SAP S/4HANA on premise",
+                    "SAP S/4HANA Cloud, public edition"
+                ],
+                correct: ["B", "D"],
+                multiple: true,
+                explanation: "ABAP Cloud Development Model es obligatorio en SAP BTP ABAP environment y SAP S/4HANA Cloud public edition. En private edition y on-premise puedes usar tanto ABAP Cloud como Standard ABAP, pero en los entornos cloud públicos y BTP es mandatorio usar el modelo cloud."
+            },
+            {
+                id: 3,
+                question: "Which RESTful Application Programming object can be used to organize the display of fields in an app?",
+                options: [
+                    "Data model view",
+                    "Metadata extension",
+                    "Service definition",
+                    "Projection view"
+                ],
+                correct: ["B"],
+                multiple: false,
+                explanation: "Metadata extension se usa para definir anotaciones UI como @UI.lineItem, @UI.fieldGroup, etc., que organizan cómo se muestran los campos en las aplicaciones Fiori. Las otras opciones definen datos (data model view), servicios (service definition) o vistas específicas (projection view), pero no la organización visual."
+            },
+            {
+                id: 4,
+                question: "When accessing the subclass instance through go_super, what can you do? Note: There are 2 correct answers to this question.",
+                options: [
+                    "Access the inherited private components.",
+                    "Access the inherited public components.",
+                    "Call a subclass specific public method",
+                    "Call inherited public redefined methods."
+                ],
+                correct: ["B", "D"],
+                multiple: true,
+                explanation: "go_super permite acceder a componentes públicos heredados y llamar métodos públicos redefinidos desde la superclase. No puedes acceder a componentes privados (están encapsulados) ni llamar métodos específicos de la subclase (go_super apunta a la superclase)."
+            },
+            {
+                id: 5,
+                question: "Given code in SAP S/4HANA Cloud private edition tenant with class zcl_demo_class in 'ABAP Cloud' language version and function module 'ZF1' in 'Standard ABAP' language version. Regarding the function call, which are valid statements? Note: There are 2 correct answers.",
+                options: [
+                    "'ZF1' can be called only if it is released for cloud development.",
+                    "'ZF1' can be called if a wrapper is created for it and the wrapper itself is released for cloud development.",
+                    "'ZF1' can be called whether it is released or not for cloud development",
+                    "'ZF1' can be called if a wrapper is created for it but the wrapper itself is not released for cloud development."
+                ],
+                correct: ["A", "B"],
+                multiple: true,
+                explanation: "En ABAP Cloud, solo puedes llamar objetos que estén released for cloud development. Si ZF1 no está released, necesitas crear un wrapper que SÍ esté released. El wrapper actúa como intermediario entre el código cloud y el código standard ABAP."
+            },
+            {
+                id: 6,
+                question: "What are the effects of attaching a system field to an input parameter of a CDS view entity? Note: There are 2 correct answers.",
+                options: [
+                    "It is no longer possible to pass your own value to the parameter.",
+                    "You can still override the default value with a value of your own.",
+                    "The value of sy-langu will be passed to the CDS view automatically when you use the CDS view in ABAP but not when you use it in another view entity",
+                    "The value of sy-langu will be passed to the CDS view automatically both when you use the CDS view in ABAP and in another CDS view entity (view on view)."
+                ],
+                correct: ["B", "C"],
+                multiple: true,
+                explanation: "Cuando asocias un system field a un parámetro CDS, se usa como valor por defecto pero aún puedes sobrescribirlo. El valor del system field se pasa automáticamente cuando usas la vista en ABAP, pero no en vistas sobre vistas (view on view)."
+            },
+            {
+                id: 7,
+                question: "In the assignment: data (gv_result) = 1 / 8. What will be the data type of gv_result?",
+                options: [
+                    "TYPE I",
+                    "TYPE P DECIMALS 2",
+                    "TYPE DEFLOAT 16",
+                    "TYPE P DECIMALS 3"
+                ],
+                correct: ["A"],
+                multiple: false,
+                explanation: "En ABAP, cuando divides dos integers (1 / 8), el resultado es TYPE I (integer). La división entera de 1/8 da 0, no un decimal. Para obtener decimales necesitarías usar tipos P o F en los operandos."
+            },
+            {
+                id: 8,
+                question: "Given interface and class code, what are valid statements? Note: There are 3 correct answers.",
+                options: [
+                    "In class CL2, the interface method is named if1-m1.",
+                    "Class CL2 uses the interface.",
+                    "In class CL1, the interface method is named if1-m1.",
+                    "Class CL1 uses the interface.",
+                    "Class CL1 implements the interface."
+                ],
+                correct: ["C", "D", "E"],
+                multiple: true,
+                explanation: "CL1 implementa la interface (INTERFACES if1), por lo que usa la interface y sus métodos se llaman if1-m1. CL2 solo define una referencia TYPE REF TO if1, no implementa la interface directamente."
+            },
+            {
+                id: 9,
+                question: "Given casting code with Icl_super being superclass for Icl_sub1 and Icl_sub2, what will happen when executing these casts? Note: There are 2 correct answers.",
+                options: [
+                    "go_sub1->sub1_meth1(...). will work.",
+                    "go_sub2->sub2_meth1(...). will work",
+                    "go_sub1 = CAST #( go_super ), will not work; go_sub2 = CAST #( go_super ), will work.",
+                    "go_sub1 = CAST #(go_super), will work; go_sub2 = CAST #(go_super). will not work."
+                ],
+                correct: ["A", "D"],
+                multiple: true,
+                explanation: "El primer cast (go_sub1) funciona porque go_super realmente apunta a una instancia de Icl_sub1. El segundo cast (go_sub2) falla porque go_super no apunta a una instancia de Icl_sub2. Los métodos específicos de subclase funcionan después del cast exitoso."
+            },
+            {
+                id: 10,
+                question: "Setting a field to read-only in which object would make the field read-only in all applications of the RESTful Application Programming model?",
+                options: [
+                    "Service definition",
+                    "Metadata extension",
+                    "Behaviour definition",
+                    "Projection view"
+                ],
+                correct: ["C"],
+                multiple: false,
+                explanation: "Behaviour definition controla el comportamiento operacional de los campos a nivel del business object. Al marcar un campo como read-only aquí, afecta todas las aplicaciones que usen ese business object, independientemente de su service definition o projection view."
+            },
+            // Preguntas 11-20
+            {
+                id: 11,
+                question: "What are some features of a unique secondary key? Note: There are 2 correct answers to this question.",
+                options: [
+                    "It is created with the first read access of a table.",
+                    "It is created when a table is filled.",
+                    "It is updated when the table is modified.",
+                    "It is updated when the modified table is read again."
+                ],
+                correct: ["A", "C"],
+                multiple: true,
+                explanation: "Las secondary keys únicas se crean lazy loading (en el primer acceso de lectura) y se mantienen automáticamente actualizadas cuando se modifica la tabla interna para preservar la integridad del índice."
+            },
+            {
+                id: 12,
+                question: "Which of the following results in faster access to internal tables? Note: There are 3 correct answers to this question.",
+                options: [
+                    "In a sorted internal table, specifying the primary key partially from the left without gaps.",
+                    "In a hashed internal table, specifying the primary key completely.",
+                    "In a sorted internal table, specifying the primary key completely.",
+                    "In a standard internal table, specifying the primary key partially from the left without gaps.",
+                    "In a hashed internal table, specifying the primary key partially from the left without gaps."
+                ],
+                correct: ["A", "B", "C"],
+                multiple: true,
+                explanation: "Las tablas sorted permiten acceso rápido con claves parciales desde la izquierda (binary search). Las hashed requieren clave completa (O(1) access). Las standard no tienen optimización de clave, siempre son búsqueda lineal."
+            },
+            {
+                id: 13,
+                question: "You want to define a CDS view entity with an input parameter. Which types can you use for the parameter? Note: There are 2 correct answers.",
+                options: [
+                    "A built-in ABAP Dictionary type",
+                    "A data element",
+                    "A built-in ABAP type",
+                    "A component of an ABAP Dictionary structure"
+                ],
+                correct: ["A", "B"],
+                multiple: true,
+                explanation: "Los parámetros de CDS view entities pueden usar tipos built-in del ABAP Dictionary (como CHAR, NUMC, DATS) y data elements. No pueden usar tipos ABAP directos ni componentes individuales de estructuras."
+            },
+            {
+                id: 14,
+                question: "Match the sequence of execution in the dropdown list to the operation. (1 is the highest priority and 3 is the lowest priority.)",
+                options: [
+                    "Addition (+) and Subtraction (-): Priority 3",
+                    "Numeric functions: Priority 1",
+                    "Multiplication (*) and Division (/): Priority 2"
+                ],
+                correct: ["A", "B", "C"],
+                multiple: true,
+                explanation: "En ABAP, el orden de precedencia es: 1) Funciones numéricas (highest), 2) Multiplicación y División, 3) Suma y Resta (lowest). Esto sigue las reglas matemáticas estándar."
+            },
+            {
+                id: 15,
+                question: "In a subclass sub1 you want to redefine a component of a superclass super1. How do you achieve this? Note: There are 2 correct answers.",
+                options: [
+                    "You add the clause REDEFINITION to the component in sub1.",
+                    "You implement the redefined component in sub1.",
+                    "You implement the redefined component for a second time in super1.",
+                    "You add the clause REDEFINITION to the component in super1."
+                ],
+                correct: ["A", "B"],
+                multiple: true,
+                explanation: "Para redefinir un componente: 1) Declaras el método con REDEFINITION en la subclase, 2) Implementas el método redefinido en la subclase. El componente original permanece intacto en la superclase."
+            },
+            {
+                id: 16,
+                question: "In a program you find this source code: AUTHORITY-CHECK OBJECT '/DMO/TRVL' ID 'CNTRY' FIELD 'DE' ID 'ACTVT' FIELD '03'. Which of the following apply? Note: There are 2 correct answers.",
+                options: [
+                    "AUTHORITY CHECK verifies whether a user is authorized for '/DMO/TRVL' with the listed field values.",
+                    "If the user is authorized for 'CNTRY' = 'DE' AND for 'ACTVT' = '03' then the return code is 0.",
+                    "If the user is NOT authorized for 'CNTRY' = 'DE' OR for 'ACTVT' = '03' then the program will terminate.",
+                    "If the user is authorized for 'CNTRY' = 'DE' then the return code is always 0."
+                ],
+                correct: ["A", "B"],
+                multiple: true,
+                explanation: "AUTHORITY-CHECK verifica si el usuario tiene autorización para el objeto '/DMO/TRVL' con los valores especificados. Retorna sy-subrc = 0 solo si el usuario está autorizado para TODAS las condiciones (CNTRY='DE' AND ACTVT='03')."
+            },
+            {
+                id: 17,
+                question: "Which of the following are valid sort operations for internal tables? Note: There are 3 correct answers.",
+                options: [
+                    "Sort a sorted table using SORT itab DESCENDING.",
+                    "Sort a sorted table using SORT itab BY field1 ASCENDING field2 DESCENDING.",
+                    "Sort a standard table using SORT itab ASCENDING.",
+                    "Sort a standard table using SORT itab BY field1 field2.",
+                    "Sort a standard table using SORT itab."
+                ],
+                correct: ["C", "D", "E"],
+                multiple: true,
+                explanation: "Las tablas STANDARD pueden ordenarse con cualquier sintaxis SORT. Las tablas SORTED no pueden reordenarse porque mantienen su orden automáticamente según su definición de clave."
+            },
+            {
+                id: 18,
+                question: "Which statement can you use to change the contents of a row of data in an internal table?",
+                options: [
+                    "Append table",
+                    "Insert table",
+                    "Update table",
+                    "Modify table"
+                ],
+                correct: ["D"],
+                multiple: false,
+                explanation: "MODIFY es la sentencia correcta para cambiar contenidos de una fila en tablas internas. APPEND añade al final, INSERT inserta en posición específica, UPDATE es para base de datos."
+            },
+            {
+                id: 19,
+                question: "In an Access Control Object, which clauses are used? Note: There are 3 correct answers.",
+                options: [
+                    "Where (to specify the access conditions)",
+                    "Return code (to assign the return code of the authority check)",
+                    "Define role (to specify the role name)",
+                    "Revoke (to remove access to the data source)",
+                    "Grant (to identify the data source)"
+                ],
+                correct: ["A", "C", "E"],
+                multiple: true,
+                explanation: "Los Access Control Objects usan: WHERE (condiciones de acceso), DEFINE ROLE (nombre del rol), y GRANT (identificar fuente de datos). No usan RETURN CODE ni REVOKE directamente."
+            },
+            {
+                id: 20,
+                question: "You are designing a select statement in ABAP Open SQL. To adhere to the most recent ABAP SQL syntax conventions from SAP, on which line must you insert the 'INTO TABLE @gt_flights' clause?",
+                options: [
+                    "#15 (at the end)",
+                    "#6 (after FROM)",
+                    "#8 (after FIELDS)",
+                    "#4 (after SELECT)"
+                ],
+                correct: ["A"],
+                multiple: false,
+                explanation: "En la sintaxis moderna de ABAP SQL, la cláusula INTO debe ir al final de la sentencia SELECT, después de todas las demás cláusulas como WHERE, GROUP BY, ORDER BY."
+            },
+            // Preguntas 21-30
+            {
+                id: 21,
+                question: "Given casting code, with which predicate condition can you ensure that the CAST will work?",
+                options: [
+                    "IS BOUND",
+                    "IS INSTANCE OF",
+                    "IS NOT INITIAL",
+                    "IS SUPPLIED"
+                ],
+                correct: ["B"],
+                multiple: false,
+                explanation: "IS INSTANCE OF verifica si un objeto es instancia de una clase específica antes del casting, evitando excepciones de tipo CX_SY_MOVE_CAST_ERROR."
+            },
+            {
+                id: 22,
+                question: "What is the sequence priority when evaluating a logical expression?",
+                options: [
+                    "NOT: Priority 1",
+                    "OR: Priority 3", 
+                    "AND: Priority 2"
+                ],
+                correct: ["A", "B", "C"],
+                multiple: true,
+                explanation: "La precedencia de operadores lógicos en ABAP es: 1) NOT (más alta), 2) AND (media), 3) OR (más baja). Esto significa que NOT se evalúa primero, luego AND, y finalmente OR."
+            },
+            {
+                id: 23,
+                question: "Which of the following are parts of the definition of a new database table? Note: There are 2 correct answers.",
+                options: [
+                    "Field list",
+                    "Extension",
+                    "Semantic table attributes", 
+                    "Partitioning attributes"
+                ],
+                correct: ["A", "C"],
+                multiple: true,
+                explanation: "Una tabla de base de datos requiere: Field list (definición de campos) y Semantic table attributes (atributos como delivery class, table category). Extension y Partitioning son opcionales."
+            },
+            {
+                id: 24,
+                question: "In a RESTful Application Programming application, in which objects do you bind a CDS view to create a value help? Note: There are 3 correct answers.",
+                options: [
+                    "Data model view",
+                    "Service definition",
+                    "Behavior definition",
+                    "Projection view", 
+                    "Metadata extension"
+                ],
+                correct: ["A", "C", "E"],
+                multiple: true,
+                explanation: "Los value helps se pueden definir en: Data model view (con @Consumption.valueHelp), Behavior definition (para validaciones), y Metadata extension (con @UI.valueHelp annotations)."
+            },
+            {
+                id: 25,
+                question: "Which of the following are incomplete ABAP types? Note: There are 2 correct answers.",
+                options: [
+                    "P",
+                    "String", 
+                    "C",
+                    "T"
+                ],
+                correct: ["A", "C"],
+                multiple: true,
+                explanation: "Los tipos P (packed) y C (character) son incompletos porque requieren información adicional: P necesita DECIMALS, C necesita LENGTH. STRING y T son tipos completos."
+            },
+            {
+                id: 26,
+                question: "Which of the following integration frameworks have been released for ABAP cloud development? Note: There are 3 correct answers.",
+                options: [
+                    "OData services",
+                    "Business events",
+                    "SOAP consumption",
+                    "Business Add-ins (BAdIs)",
+                    "CDS Views"
+                ],
+                correct: ["A", "B", "C"],
+                multiple: true,
+                explanation: "Para ABAP Cloud están liberados: OData services (para APIs REST), Business events (para eventos de negocio), y SOAP consumption (para consumir servicios SOAP). BAdIs y CDS Views tienen restricciones específicas."
+            },
+            {
+                id: 27,
+                question: "Given interface and class code, what are valid statements? Note: There are 3 correct answers.",
+                options: [
+                    "Instead of go_cl1 = NEW #() you could use go_if1 = NEW #(...).",
+                    "go_if1 may call method m2 with go_if1->m2(...).",
+                    "Instead of go_cl1 = NEW #(...) you could use go_if1 = NEW cl1( ... ).",
+                    "go_if1 may call method m1 with go_if1->m1().",
+                    "go_cl1 may call method m1 with go_cl1->if1-m1()."
+                ],
+                correct: ["C", "D", "E"],
+                multiple: true,
+                explanation: "Las referencias de interface pueden: instanciarse con NEW cl1(), llamar métodos de la interface (m1), y acceder métodos desde clase via if1-m1(). No pueden llamar métodos no definidos en la interface (m2)."
+            },
+            {
+                id: 28,
+                question: "Which of the following ABAP SQL statements are valid? Note: There are 2 correct answers.",
+                options: [
+                    "SELECT FROM /dmo/connection FIELDS MAX(distance) AS dist_max, MIN(distance) AS dist_min INTO TABLE @DATA(lt_hits).",
+                    "SELECT FROM /dmo/connection FIELDS carrid, airpfrom GROUP BY carrid, connid INTO TABLE @DATA(lt_hits).",
+                    "SELECT FROM /dmo/connection FIELDS carrid, airpfrom, MAX(distance) AS dist_max, MIN(distance) AS dist_min GROUP BY carrid, airpfrom INTO TABLE @DATA(lt_hits)",
+                    "SELECT FROM /dmo/connection FIELDS carrid, airpfrom, MAX(distance) AS dist_max, MIN(distance) AS dist_min INTO TABLE @DATA(lt_hits)"
+                ],
+                correct: ["A", "C"],
+                multiple: true,
+                explanation: "La opción A es válida (solo funciones agregadas). La opción C es válida (campos en GROUP BY incluidos en SELECT). Las opciones B y D fallan porque tienen campos en SELECT que no están en GROUP BY cuando usan agregaciones."
+            },
+            {
+                id: 29,
+                question: "Given code in SAP S/4HANA Cloud private edition tenant with class zcl_demo_class in 'Standard ABAP' and function module 'ZF1' in 'ABAP Cloud'. Which is a valid statement?",
+                options: [
+                    "'ZF1' can be called via a wrapper that itself has been released for cloud development.",
+                    "'ZF1' must be released for cloud development to be called.",
+                    "'ZF1' can be called via a wrapper that itself has not been released for cloud development.",
+                    "'ZF1' can be called whether it has been released or not for cloud development."
+                ],
+                correct: ["B"],
+                multiple: false,
+                explanation: "Cuando el código que llama está en 'Standard ABAP' y el módulo de función está en 'ABAP Cloud', el módulo ZF1 debe estar released for cloud development para poder ser llamado."
+            },
+            {
+                id: 30,
+                question: "In ABAP SQL, which of the following retrieves the association field _Airline-Name of a CDS view?",
+                options: [
+                    "\\_Airline-Name",
+                    "'_Airline Name",
+                    "/_Airline Name", 
+                    "@_Airline-Name"
+                ],
+                correct: ["A"],
+                multiple: false,
+                explanation: "En ABAP SQL, las asociaciones de CDS views se acceden con backslash-underscore (\\_AssociationName). El backslash es el delimitador para asociaciones."
+            },
+            // Preguntas 31-40
+            {
+                id: 31,
+                question: "Which internal table type allows unique and non-unique keys?",
+                options: [
+                    "Hashed",
+                    "Standard",
+                    "Sorted"
+                ],
+                correct: ["C"],
+                multiple: false,
+                explanation: "Las tablas SORTED permiten tanto claves únicas (UNIQUE KEY) como no únicas (NON-UNIQUE KEY). Las HASHED solo permiten claves únicas, las STANDARD no tienen claves optimizadas."
+            },
+            {
+                id: 32,
+                question: "In ABAP SQL, which of the following can be assigned an alias? Note: There are 2 correct answers.",
+                options: [
+                    "field (from field list)",
+                    "order criterion (from order by clause)",
+                    "group criterion (from group by clause)",
+                    "database table"
+                ],
+                correct: ["A", "D"],
+                multiple: true,
+                explanation: "En ABAP SQL puedes asignar alias a campos (field AS alias) y a tablas de base de datos (FROM table AS alias). Los criterios de ORDER BY y GROUP BY no pueden tener alias."
+            },
+            {
+                id: 33,
+                question: "Which patterns raise an exception? Note: There are 3 correct answers.",
+                options: [
+                    "DATA: gv_target TYPE d. CONSTANTS: gco_date TYPE d VALUE '20331233'. gv_target = EXACT( gco_date).",
+                    "DATA: gv_target TYPE c LENGTH 5. CONSTANTS: gco_string TYPE string VALUE '0123456789ABCDEF'. gv_target = EXACT (gco_string+5(6) ).",
+                    "DATA: gv_target TYPE p DECIMALS 3. CONSTANTS: gco_int1 TYPE i VALUE 2. gv_target = EXACT #(2 / gco_int1 ).",
+                    "DATA: gv_target TYPE string. CONSTANTS: gco_string TYPE c LENGTH 16 VALUE '0123456789ABCDEF'. gv_target = EXACT #( gco_string+5(5) ).",
+                    "DATA: gv_target TYPE p DECIMALS 2. CONSTANTS: gco_int1 TYPE i VALUE 3. gv_target = EXACT #(2 / gco_int1 )."
+                ],
+                correct: ["A", "B", "C"],
+                multiple: true,
+                explanation: "EXACT lanza excepciones cuando: A) fecha inválida '20331233', B) string de 6 caracteres en campo C LENGTH 5, C) división de enteros 2/2=1 no cabe exactamente en P DECIMALS 3."
+            },
+            {
+                id: 34,
+                question: "Which of the following are features of Core Data Services? Note: There are 3 correct answers.",
+                options: [
+                    "Associations",
+                    "Inheritance",
+                    "Annotations",
+                    "Structured Query Language (SQL)",
+                    "Delegation"
+                ],
+                correct: ["A", "C", "D"],
+                multiple: true,
+                explanation: "CDS incluye: Associations (relaciones entre entidades), Annotations (metadatos @), y SQL (consultas avanzadas). No soporta herencia ni delegación directamente."
+            },
+            {
+                id: 35,
+                question: "Why would you use Access Controls with CDS Views? Note: There are 2 correct answers.",
+                options: [
+                    "The system field sy-subrc is set, giving you the result of the authorization check",
+                    "You do not have to remember to implement AUTHORITY CHECK statements.",
+                    "All of the data from the data sources is loaded into your application automatically and filtered there according to the user's authorization.",
+                    "Only the data corresponding to the user's authorization is transferred from the database to the application layer."
+                ],
+                correct: ["B", "D"],
+                multiple: true,
+                explanation: "Access Controls automatizan las verificaciones de autorización (no necesitas AUTHORITY-CHECK manual) y filtran datos a nivel de base de datos (code pushdown), transfiriendo solo datos autorizados."
+            },
+            {
+                id: 36,
+                question: "Which ABAP SQL clause allows the use of inline declarations?",
+                options: [
+                    "INTO CORRESPONDING FIELDS OF",
+                    "FROM",
+                    "FIELDS",
+                    "INTO"
+                ],
+                correct: ["D"],
+                multiple: false,
+                explanation: "La cláusula INTO permite declaraciones inline con @DATA(variable), @FINAL(variable), etc. Las otras cláusulas no soportan declaraciones inline."
+            },
+            {
+                id: 37,
+                question: "What RESTful Application Programming object contains only the fields required for a particular app?",
+                options: [
+                    "Database view",
+                    "Metadata extension",
+                    "Projection view",
+                    "Data model view"
+                ],
+                correct: ["C"],
+                multiple: false,
+                explanation: "Projection view selecciona solo los campos necesarios de la data model view para una aplicación específica, actuando como un filtro de campos."
+            },
+            {
+                id: 38,
+                question: "After you created a database table in the RESTful Application Programming model, what do you create next?",
+                options: [
+                    "A projection view",
+                    "A data model view",
+                    "A metadata extension",
+                    "A service definition"
+                ],
+                correct: ["B"],
+                multiple: false,
+                explanation: "Después de crear la tabla de base de datos, el siguiente paso en RAP es crear una data model view (CDS view) que exponga los datos de la tabla."
+            },
+            {
+                id: 39,
+                question: "In class ZCL_CLASS_A, you use the statement DATA var TYPE ***. What may stand in place of ***? Note: There are 2 correct answers.",
+                options: [
+                    "The name of a type defined privately in another class",
+                    "The name of a domain from the ABAP Dictionary",
+                    "The name of a type defined privately in class ZCL_CLASS_A",
+                    "The name of a data element from the ABAP Dictionary"
+                ],
+                correct: ["C", "D"],
+                multiple: true,
+                explanation: "Puedes usar tipos privados de la misma clase (C) y data elements del ABAP Dictionary (D). No puedes acceder tipos privados de otras clases ni domains directamente."
+            },
+            {
+                id: 40,
+                question: "Which extensibility type does SAP recommend you use to enhance the existing UI for an SAP Fiori app?",
+                options: [
+                    "Key user",
+                    "Developer",
+                    "Side-by-side",
+                    "Classic"
+                ],
+                correct: ["A"],
+                multiple: false,
+                explanation: "SAP recomienda Key User extensibility para modificaciones de UI en aplicaciones Fiori, ya que permite personalizar campos, layouts y filtros sin programación."
+            },
+            // Preguntas 41-50
+            {
+                id: 41,
+                question: "In RESTful Application Programming, which EML statement retrieves an object?",
+                options: [
+                    "Read entity",
+                    "Get entity",
+                    "Find entity",
+                    "Select entity"
+                ],
+                correct: ["A"],
+                multiple: false,
+                explanation: "En EML (Entity Manipulation Language), 'READ ENTITY' es la sentencia correcta para recuperar objetos. Las otras opciones no son sentencias EML válidas."
+            },
+            {
+                id: 42,
+                question: "What are advantages of using a field symbol for internal table row access? Note: There are 2 correct answers.",
+                options: [
+                    "A MODIFY statement to write changed contents back to the table is not required.",
+                    "Using a field symbol is faster than using a work area.",
+                    "The row content is copied to the field symbol instead to a work area",
+                    "The field symbol can be reused for other programs."
+                ],
+                correct: ["A", "B"],
+                multiple: true,
+                explanation: "Los field symbols proporcionan acceso directo a la fila (no requiere MODIFY para escribir cambios) y son más rápidos (evitan copiar datos). Trabajan por referencia, no por copia."
+            },
+            {
+                id: 43,
+                question: "What is the purpose of a foreign key relationship between two tables in the ABAP Dictionary?",
+                options: [
+                    "To create a corresponding foreign key relationship in the database",
+                    "To ensure the integrity of data in the corresponding database tables",
+                    "To document the relationship between the two tables"
+                ],
+                correct: ["B"],
+                multiple: false,
+                explanation: "Las foreign key relationships en ABAP Dictionary aseguran la integridad referencial de los datos, validando que los valores en la tabla secundaria existan en la tabla primaria."
+            },
+            {
+                id: 44,
+                question: "When processing an internal table with the statement LOOP AT itab... ENDLOOP, what system variable contains the current row number?",
+                options: [
+                    "sy-subrc",
+                    "sy-linno",
+                    "sy-index",
+                    "sy-tabix"
+                ],
+                correct: ["D"],
+                multiple: false,
+                explanation: "sy-tabix contiene el número de fila actual durante LOOP AT. sy-index es para DO/WHILE loops, sy-linno para WRITE statements, sy-subrc para códigos de retorno."
+            },
+            {
+                id: 45,
+                question: "In what order are objects created to generate a RESTful Application Programming application?",
+                options: [
+                    "Database table -> Data model view -> Projection view -> Service definition",
+                    "Service binding -> Projection view",
+                    "Service definition", 
+                    "Data model view"
+                ],
+                correct: ["A"],
+                multiple: false,
+                explanation: "El orden correcto en RAP es: 1) Database table, 2) Data model view (CDS view), 3) Projection view, 4) Service definition, 5) Service binding."
+            },
+            {
+                id: 46,
+                question: "What are some of the reasons that Core Data Services are preferable to the classical approach to data modeling? Note: There are 2 correct answers.",
+                options: [
+                    "They compute results on the application server.",
+                    "They transfer computational results to the application server.",
+                    "They avoid data transfer completely.",
+                    "They implement code pushdown."
+                ],
+                correct: ["B", "D"],
+                multiple: true,
+                explanation: "CDS implementa code pushdown (procesan datos en la base de datos) y transfieren solo resultados computacionales al application server, reduciendo tráfico de red y mejorando performance."
+            },
+            {
+                id: 47,
+                question: "What RESTful Application Programming feature is used to ensure the uniqueness of a semantic key?",
+                options: [
+                    "Validation",
+                    "Determination",
+                    "Action"
+                ],
+                correct: ["A"],
+                multiple: false,
+                explanation: "Las Validations en RAP se usan para verificar reglas de negocio, incluyendo la unicidad de semantic keys. Se ejecutan antes de guardar datos."
+            },
+            {
+                id: 48,
+                question: "Given exception code, what are valid statements? Note: There are 2 correct answers.",
+                options: [
+                    "'zcx1' is a dictionary structure, and 'param1' and 'param2' are same-named components of this structure.",
+                    "'previous' expects the reference to a previous exception",
+                    "The code creates an exception object and raises an exception.",
+                    "'param1' and 'param2' are predefined names."
+                ],
+                correct: ["B", "C"],
+                multiple: true,
+                explanation: "En RAISE EXCEPTION, 'previous' es para exception chaining (referencia a excepción previa) y el código crea y lanza un objeto de excepción. Los parámetros no son predefinidos."
+            },
+            {
+                id: 49,
+                question: "Given FOR loop code, which statements are correct? Note: There are 2 correct answers.",
+                options: [
+                    "FOR defines a loop that runs over the content of source_itab",
+                    "row is a predefined name and cannot be chosen arbitrarily.",
+                    "source_itab is only visible within the loop.",
+                    "row is only visible within the loop."
+                ],
+                correct: ["A", "D"],
+                multiple: true,
+                explanation: "FOR itera sobre source_itab y 'row' es solo visible dentro del loop (variable local). 'row' no es predefinido (puedes usar cualquier nombre) y source_itab es visible fuera del loop."
+            },
+            {
+                id: 50,
+                question: "For what kind of applications would you consider using on-stack developer extensions? Note: There are 2 correct answers.",
+                options: [
+                    "Applications that run separate from SAP S/4HANA",
+                    "Applications that provide APIs for side by side SAP BTP apps",
+                    "Applications that access SAP S/4HANA data using complex SQL",
+                    "Applications that integrate data from several different systems"
+                ],
+                correct: ["B", "C"],
+                multiple: true,
+                explanation: "On-stack extensions son ideales para crear APIs para apps BTP side-by-side y para acceso complejo a datos S/4HANA con SQL avanzado, manteniendo proximidad a los datos."
+            },
+            // Preguntas 51-60
+            {
+                id: 51,
+                question: "Given a Core Data Services View Entity Data Definition, which annotation provides a short description for developers attached to the database view?",
+                options: [
+                    "@EndUserText.label",
+                    "@UI.badge.title.label",
+                    "@EndUserText.quickInfo",
+                    "@UI.headerInfo.description.label"
+                ],
+                correct: ["A"],
+                multiple: false,
+                explanation: "@EndUserText.label proporciona una descripción corta para desarrolladores que se adjunta a la vista de base de datos. Las otras son para UI o información rápida."
+            },
+            {
+                id: 52,
+                question: "Given pragma and pseudo-comment code, what are valid statements? Note: There are 2 correct answers.",
+                options: [
+                    "The pragma is not checked by the syntax checker.",
+                    "##NEEDED is checked by the syntax checker.",
+                    "#EC_NEEDED is not checked by the syntax checker.",
+                    "The pseudo-comment is checked by the syntax checker"
+                ],
+                correct: ["B", "C"],
+                multiple: true,
+                explanation: "Los pragmas (##) son verificados por el syntax checker y afectan el comportamiento del compilador. Los pseudo-comments (#EC_) no son verificados por el syntax checker."
+            },
+            {
+                id: 53,
+                question: "Given code in SAP S/4HANA Cloud private edition with both class and function module in same software component with 'ABAP Cloud' language version. Which is valid?",
+                options: [
+                    "'ZF1' must be released for cloud development to be called.",
+                    "'ZF1' can be called via a wrapper that itself has not been released for cloud development.",
+                    "'ZF1' can be called whether it has been released or not for cloud development.",
+                    "'ZF1' can be called via a wrapper that itself has been released for cloud development."
+                ],
+                correct: ["D"],
+                multiple: false,
+                explanation: "Cuando ambos objetos están en el mismo software component con ABAP Cloud, ZF1 puede llamarse via wrapper que esté released for cloud development."
+            },
+            {
+                id: 54,
+                question: "Given a Core Data Services View Entity Data Definition, which types are permitted for <source>? Note: There are 2 correct answers.",
+                options: [
+                    "An external view from the ABAP Dictionary",
+                    "A database view from the ABAP Dictionary",
+                    "A CDS DDIC-based view",
+                    "A database table from the ABAP Dictionary"
+                ],
+                correct: ["C", "D"],
+                multiple: true,
+                explanation: "Las CDS view entities pueden usar como fuente: CDS DDIC-based views y database tables del ABAP Dictionary. External views y database views clásicas tienen limitaciones."
+            },
+            {
+                id: 55,
+                question: "Which restrictions exist for ABAP SQL arithmetic expressions? Note: There are 2 correct answers.",
+                options: [
+                    "The operator ** is allowed only in floating point expressions.",
+                    "The operator / is allowed only in floating point expressions.",
+                    "Decimal types and integer types can NOT be used in the same expression.",
+                    "Floating point types and integer types can NOT be used in the same expression."
+                ],
+                correct: ["B", "D"],
+                multiple: true,
+                explanation: "En ABAP SQL: el operador / solo está permitido en expresiones de punto flotante, y no puedes mezclar tipos floating point con integer en la misma expresión."
+            },
+            {
+                id: 56,
+                question: "When does SAP recommend to use a sorted or a hashed table respectively? Note: There are 2 correct answers.",
+                options: [
+                    "A hashed table, when you read a single record and specify the complete key.",
+                    "A sorted table, when you read a single record and specify non key fields.",
+                    "A hashed table, when you read a subset in a loop and specify a part of the key from the left without gaps.",
+                    "A sorted table, when you read a subset in a loop and specify a part of the key from the left without gaps."
+                ],
+                correct: ["A", "D"],
+                multiple: true,
+                explanation: "Usa HASHED para acceso directo con clave completa (O(1)). Usa SORTED para acceso con clave parcial desde la izquierda o para leer subsets ordenados (binary search)."
+            },
+            {
+                id: 57,
+                question: "Which type of legacy code does SAP recommend you eliminate when reviewing modifications as part of an SAP S/4HANA system conversion? Note: There are 2 correct answers.",
+                options: [
+                    "Code that can be redesigned as a key user extension",
+                    "Code that supports a critical business process",
+                    "Code that now is identical to a standard SAP object",
+                    "Code that has less than 10% usage according to usage statistics"
+                ],
+                correct: ["A", "C"],
+                multiple: true,
+                explanation: "Elimina código que puede rediseñarse como key user extension (más simple) y código idéntico a objetos SAP estándar (redundante). Mantén código crítico y evalúa código de bajo uso."
+            },
+            {
+                id: 58,
+                question: "When processing a loop with the statement DO... ENDDO, what system variable contains the implicit loop counter?",
+                options: [
+                    "sy-linno",
+                    "sy-subrc",
+                    "sy-tabix",
+                    "sy-index"
+                ],
+                correct: ["D"],
+                multiple: false,
+                explanation: "sy-index contiene el contador de loops DO...ENDDO y WHILE...ENDWHILE. sy-tabix es para LOOP AT tablas internas."
+            },
+            {
+                id: 59,
+                question: "Which actions cause an indirect change to a database table requiring a table conversion? Note: There are 2 correct answers.",
+                options: [
+                    "Changing the field labels of a data element that is used in the table definition.",
+                    "Shortening the length of a domain used in a data element that is used in the table definition.",
+                    "Renaming a field in a structure that is included in the table definition",
+                    "Deleting a field from a structure that is included in the table definition."
+                ],
+                correct: ["B", "D"],
+                multiple: true,
+                explanation: "Requieren conversión: acortar domain length (cambia estructura física) y eliminar campos de includes (cambia layout). Cambiar labels o renombrar no afecta estructura física."
+            },
+            {
+                id: 60,
+                question: "Class super has subclass sub. Which rules are valid for the sub constructor? Note: There are 2 correct answers.",
+                options: [
+                    "Import parameters can only be evaluated after calling the constructor of super.",
+                    "The constructor of super must be called before using any components of your own instance.",
+                    "The method signature can be changed.",
+                    "Events of your own instance cannot be raised before the registration of a handler in super."
+                ],
+                correct: ["B", "C"],
+                multiple: true,
+                explanation: "En subclases: debes llamar al constructor de super antes de usar componentes propios, y puedes cambiar la signatura del constructor (diferentes parámetros)."
+            },
+            // Preguntas 61-70
+            {
+                id: 61,
+                question: "Which of the following string functions are predicate functions? Note: There are 2 correct answers.",
+                options: [
+                    "find_any_not_of()",
+                    "contains_any_of()",
+                    "matches()",
+                    "count_any_of()"
+                ],
+                correct: ["B", "C"],
+                multiple: true,
+                explanation: "Las funciones predicado retornan true/false: contains_any_of() verifica si contiene caracteres, matches() verifica patrones regex. find_any_not_of() y count_any_of() retornan números."
+            },
+            {
+                id: 62,
+                question: "In RESTful Application Programming, a business object contains which parts? Note: There are 2 correct answers.",
+                options: [
+                    "Process definition",
+                    "CDS view",
+                    "Behavior definition",
+                    "Authentication rules"
+                ],
+                correct: ["B", "C"],
+                multiple: true,
+                explanation: "Un business object en RAP consiste en: CDS view (define la estructura de datos) y Behavior definition (define operaciones CRUD y validaciones)."
+            },
+            {
+                id: 63,
+                question: "Given SAP HANA database table definition code, which field is defined incorrectly?",
+                options: [
+                    "field2",
+                    "field4",
+                    "field1",
+                    "field3"
+                ],
+                correct: ["C"],
+                multiple: false,
+                explanation: "field1 está definido incorrectamente en la definición de tabla SAP HANA. (La respuesta específica dependería del código mostrado en el examen)."
+            },
+            {
+                id: 64,
+                question: "You have a superclass super1 and a subclass sub1. Each class has instance and static constructors. In which sequence will constructors be executed when creating an instance of sub1?",
+                options: [
+                    "Class constructor of super1: 1st",
+                    "Instance constructor of sub1: 4th",
+                    "Instance constructor of super1: 3rd",
+                    "Class constructor of sub1: 2nd"
+                ],
+                correct: ["A", "B", "C", "D"],
+                multiple: true,
+                explanation: "Orden de ejecución: 1) Class constructor de super1, 2) Class constructor de sub1, 3) Instance constructor de super1, 4) Instance constructor de sub1."
+            },
+            {
+                id: 65,
+                question: "What are some properties of database tables? Note: There are 2 correct answers.",
+                options: [
+                    "They can have any number of key fields.",
+                    "They store information in two dimensions.",
+                    "They may have key fields.",
+                    "They can have relationships to other tables."
+                ],
+                correct: ["B", "D"],
+                multiple: true,
+                explanation: "Las tablas de base de datos almacenan información en dos dimensiones (filas y columnas) y pueden tener relaciones con otras tablas via foreign keys."
+            },
+            {
+                id: 66,
+                question: "In nested join evaluation, in which way is the join evaluated?",
+                options: [
+                    "From the left to the right in the order of the tables",
+                    "From the top to the bottom in the order of the on conditions",
+                    "From the bottom to the top in the order of the on conditions",
+                    "From the right to the left in the order of the tables"
+                ],
+                correct: ["B"],
+                multiple: false,
+                explanation: "Los nested joins se evalúan de arriba hacia abajo en el orden de las condiciones ON, construyendo el resultado paso a paso."
+            },
+            {
+                id: 67,
+                question: "Given Core Data Services View Entity with association, which statement exposes the 'connid' field from the associated data source?",
+                options: [
+                    "demo_ods_assoc_spfli.connid,",
+                    "spfli-connid,",
+                    "_spfli.connid,",
+                    "demo_ods_assoc_spfli-connid,"
+                ],
+                correct: ["C"],
+                multiple: false,
+                explanation: "_spfli.connid expone el campo 'connid' de la asociación _spfli. El underscore prefix indica que es una asociación en CDS."
+            },
+            {
+                id: 68,
+                question: "As consultant for SAP S/4HANA Cloud public edition and SAP BTP ABAP environment client, which extension type would you recommend for adding a new button to a Fiori app?",
+                options: [
+                    "RAP BO Behavior Extension",
+                    "SAP HANA database table extension",
+                    "Business Service Extension",
+                    "RAP BO Node Extension"
+                ],
+                correct: ["D"],
+                multiple: false,
+                explanation: "RAP BO Node Extension permite añadir nuevos elementos UI como botones y acciones a aplicaciones Fiori existentes en entornos cloud."
+            },
+            {
+                id: 69,
+                question: "Given ABAP SQL statement for large SAP HANA table accessed rarely, which database settings should you use? Note: There are 2 correct answers.",
+                options: [
+                    "'LoadUnit' to 'Column Loadable'",
+                    "'LoadUnit' to 'Page Loadable'",
+                    "'Storage Type' to 'Row Store'",
+                    "'Storage Type' to 'Column Store'"
+                ],
+                correct: ["A", "D"],
+                multiple: true,
+                explanation: "Para tablas grandes accedidas raramente: usa 'Column Store' (mejor compresión y analytics) y 'Column Loadable' (carga columnas bajo demanda)."
+            },
+            {
+                id: 70,
+                question: "What are characteristics of secondary keys for internal tables? Note: There are 3 correct answers.",
+                options: [
+                    "Multiple secondary keys are allowed for any kind of internal table.",
+                    "Secondary keys can only be created for standard tables.",
+                    "Secondary keys must be chosen explicitly when you actually read from an internal table.",
+                    "Hashed secondary keys do NOT have to be unique.",
+                    "Sorted secondary keys do NOT have to be unique."
+                ],
+                correct: ["A", "C", "E"],
+                multiple: true,
+                explanation: "Secondary keys: se permiten múltiples en cualquier tipo de tabla, deben especificarse explícitamente en READ, y las sorted secondary keys pueden ser no únicas."
+            },
+            // Preguntas 71-80
+            {
+                id: 71,
+                question: "Given Core Data Service view entity with parameter, which ABAP SQL snippets correctly provide parameter value? Note: There are 2 correct answers.",
+                options: [
+                    "SELECT * FROM demo_cds_param_view_entity (p_date: $session.system_date)",
+                    "SELECT * FROM demo_cds_param_view_entity (p_date: '20238181')",
+                    "SELECT * FROM demo_cds_param_view_entity (p_date = @ (cl_abap_context_info=>get_system_date ()))",
+                    "SELECT * FROM demo_cds_param_view_entity (p_date = '20230101')"
+                ],
+                correct: ["C", "D"],
+                multiple: true,
+                explanation: "Los parámetros CDS se pasan con = y @: p_date = @(expression) o p_date = 'literal'. La sintaxis con : no es válida en ABAP SQL."
+            },
+            {
+                id: 72,
+                question: "Given CDS definition with association, which ON condition must you insert?",
+                options: [
+                    "ON Z_Source1.carrier_id=Z_Source2.carrier_id",
+                    "ON $projection. Carrier = Source2.carrier",
+                    "ON $projection.carrier_id = _source2.carrier_id",
+                    "ON $projection Carrier=Source2 carrier_id"
+                ],
+                correct: ["C"],
+                multiple: false,
+                explanation: "En asociaciones CDS, usa $projection para referenciar campos de la vista actual y el nombre de la asociación para la vista relacionada."
+            },
+            {
+                id: 73,
+                question: "For expression itab1 = corresponding #( itab2 ), what is true? Note: There are 2 correct answers.",
+                options: [
+                    "Fields with the same name and the same type will be copied from itab2 to itab1.",
+                    "itab1 and itab2 must have at least one field name in common.",
+                    "itab1 and itab2 must have the same data type.",
+                    "Fields with the same name but with different types may be copied from itab2 to itab1."
+                ],
+                correct: ["B", "D"],
+                multiple: true,
+                explanation: "CORRESPONDING requiere al menos un campo común entre tablas y puede copiar campos con nombres iguales pero tipos diferentes (con conversión automática)."
+            },
+            {
+                id: 74,
+                question: "What would be the correct expression to change 'mr joe doe' into 'JOE' in an ABAP SQL field list?",
+                options: [
+                    "substring(upper('mr joe doe'), 4, 3) AS f2_sub_up",
+                    "upper(left( 'mr joe doe', 6)) AS f2_up_left",
+                    "substring(lower(upper( 'mr joe doe' ) ), 4, 3) AS f2_sub_lo_up",
+                    "left(lower(substring( 'mr joe doe', 4, 3)), 3) AS f2_left_lo_sub"
+                ],
+                correct: ["A"],
+                multiple: false,
+                explanation: "substring(upper('mr joe doe'), 4, 3) toma 3 caracteres desde posición 4 de la string en mayúsculas, extrayendo 'JOE'."
+            },
+            {
+                id: 75,
+                question: "For assignment gv_target = gv_source, which data declarations will always work without truncation or rounding? Note: There are 2 correct answers.",
+                options: [
+                    "DATA gv_source TYPE p LENGTH 8 DECIMALS 3 to DATA gv_target TYPE p LENGTH 16 DECIMALS 2.",
+                    "DATA gv_source TYPE d to DATA gv_target TYPE string.",
+                    "DATA gv_source TYPE c to DATA gv_target TYPE string.",
+                    "DATA gv_source TYPE string to DATA gv_target TYPE c."
+                ],
+                correct: ["B", "C"],
+                multiple: true,
+                explanation: "Siempre funcionan sin pérdida: TYPE d a string (conversión directa) y TYPE c a string (extensión automática). P con diferentes decimales puede redondear."
+            },
+            {
+                id: 76,
+                question: "Given Core Data Service View Entity Data Definition with UNION, what will be the activation response?",
+                options: [
+                    "Activation error because the field names of the union do not match",
+                    "Activation successful",
+                    "Activation error because the field types of the union do not match",
+                    "Activation error because the key fields of the union do not match"
+                ],
+                correct: ["D"],
+                multiple: false,
+                explanation: "En UNION de CDS views, los key fields deben coincidir entre todas las vistas unidas. Diferencias en key fields causan error de activación."
+            },
+            {
+                id: 77,
+                question: "Given Core Data Service View Entity, which select statement selects the 'mat' field?",
+                options: [
+                    "SELECT mat FROM demo_sales_so_i",
+                    "SELECT mat FROM demo_sales_cds_material_ve",
+                    "SELECT mat FROM demo_sales_cds_so_i_ve",
+                    "SELECT mat FROM Material"
+                ],
+                correct: ["C"],
+                multiple: false,
+                explanation: "El campo 'mat' está expuesto en la vista demo_sales_cds_so_i_ve según la definición de la CDS view entity."
+            },
+            {
+                id: 78,
+                question: "Which of the following is a generic internal table type?",
+                options: [
+                    "SORTED TABLE",
+                    "HASHED TABLE",
+                    "INDEX TABLE",
+                    "STANDARD TABLE"
+                ],
+                correct: ["C"],
+                multiple: false,
+                explanation: "INDEX TABLE es un tipo genérico que incluye tanto STANDARD como SORTED tables (ambas tienen índice). HASHED no tiene índice numérico."
+            },
+            {
+                id: 79,
+                question: "/DMO/I_Connection is a CDS view. What variable type is connection_full based on: DATA connection_full TYPE /DMO/I_Connection.",
+                options: [
+                    "Simple variable",
+                    "Internal table",
+                    "Structure"
+                ],
+                correct: ["C"],
+                multiple: false,
+                explanation: "Cuando declaras TYPE con una CDS view, creas una estructura basada en los campos expuestos por esa vista."
+            },
+            {
+                id: 80,
+                question: "In ABAP SQL code, what are valid case distinctions? Note: There are 2 correct answers.",
+                options: [
+                    "CASE WHEN F2 = '1' THEN 'Value 1' WHEN f2='2' THEN 'Value 2' ELSE 'Value for the rest' END AS f_case",
+                    "CASE WHEN F2 = '1' THEN 'Value 1' WHEN f2 < f3 AND f2 = '2' THEN 'Value 2' WHEN OTHERS 'Value for the rest' END AS f_case",
+                    "CASE f2 WHEN '1' THEN 'Value 1' WHEN '2' THEN 'Value 2' ELSE 'Value for the rest' END AS f_case",
+                    "CASE f2, WHEN '1' THEN 'Value 1', WHEN '2' THEN 'Value 2', WHEN OTHERS 'Value for the rest', END AS f_case"
+                ],
+                correct: ["A", "C"],
+                multiple: true,
+                explanation: "Válidas: CASE WHEN (con condiciones complejas) y CASE field WHEN (comparación simple). WHEN OTHERS no es válido, usa ELSE. No uses comas en CASE."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let selectedAnswers = [];
+        let showResult = false;
+        let score = { correct: 0, incorrect: 0 };
+        let quizCompleted = false;
+        let shuffledQuestions = [];
+
+        // Función para mezclar array (Fisher-Yates shuffle)
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Función para mezclar las opciones de UNA pregunta
+        function shuffleQuestionOptions(question) {
+            // Crear array de índices [0, 1, 2, 3, ...]
+            const indices = Array.from({length: question.options.length}, (_, i) => i);
+            const shuffledIndices = shuffleArray(indices);
+            
+            // Reorganizar opciones según el nuevo orden
+            const shuffledOptions = shuffledIndices.map(index => question.options[index]);
+            
+            // Mapear las respuestas correctas al nuevo orden
+            const newCorrectAnswers = question.correct.map(correctLetter => {
+                const originalIndex = correctLetter.charCodeAt(0) - 65; // A=0, B=1, C=2, D=3
+                
+                // Encontrar en qué nueva posición está la opción que antes era correcta
+                const newPosition = shuffledIndices.indexOf(originalIndex);
+                const newLetter = String.fromCharCode(65 + newPosition);
+                
+                return newLetter;
+            });
+            
+            return {
+                ...question,
+                options: shuffledOptions,
+                correct: newCorrectAnswers
+            };
+        }
+
+        // Inicializar las preguntas mezcladas INMEDIATAMENTE
+        console.log('🚀 Inicializando preguntas mezcladas...');
+        shuffledQuestions = questions.map(shuffleQuestionOptions);
+        console.log('✅ Preguntas mezcladas listas:', shuffledQuestions.length);
+
+        function updateUI() {
+            const question = shuffledQuestions[currentQuestion];
+            
+            // Reset state for new question
+            selectedAnswers = [];
+            showResult = false;
+            
+            // Update question info
+            document.getElementById('question-counter').textContent = `Pregunta ${currentQuestion + 1} de ${shuffledQuestions.length}`;
+            document.getElementById('question-number').textContent = `Pregunta ${question.id}`;
+            document.getElementById('question-text').textContent = question.question;
+            
+            // Show/hide multiple choice notice
+            const multipleNotice = document.getElementById('multiple-notice');
+            multipleNotice.style.display = question.multiple ? 'block' : 'none';
+            
+            // Update progress bar
+            const progress = ((currentQuestion + 1) / shuffledQuestions.length) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            
+            // Update score
+            document.getElementById('correct-count').textContent = `Correctas: ${score.correct}`;
+            document.getElementById('incorrect-count').textContent = `Incorrectas: ${score.incorrect}`;
+            
+            // Update options
+            updateOptions();
+            
+            // Update buttons
+            document.getElementById('prev-btn').disabled = currentQuestion === 0;
+            document.getElementById('next-btn').disabled = currentQuestion === shuffledQuestions.length - 1;
+            
+            updateCheckButton();
+        }
+
+        function updateOptions() {
+            const question = shuffledQuestions[currentQuestion];
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionLetter = String.fromCharCode(65 + index);
+                const isSelected = selectedAnswers.includes(optionLetter);
+                
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                
+                if (isSelected) {
+                    optionDiv.className += ' selected';
+                }
+                
+                optionDiv.innerHTML = `
+                    <span class="option-letter">${optionLetter}</span>
+                    <span class="option-text">${option}</span>
+                `;
+                
+                optionDiv.onclick = () => selectOption(optionLetter);
+                
+                container.appendChild(optionDiv);
+            });
+        }
+
+        function selectOption(optionLetter) {
+            const question = shuffledQuestions[currentQuestion];
+            
+            if (question.multiple) {
+                if (selectedAnswers.includes(optionLetter)) {
+                    selectedAnswers = selectedAnswers.filter(answer => answer !== optionLetter);
+                } else {
+                    selectedAnswers.push(optionLetter);
+                }
+            } else {
+                selectedAnswers = [optionLetter];
+            }
+            
+            updateOptions();
+            updateCheckButton();
+        }
+
+        function updateCheckButton() {
+            const checkBtn = document.getElementById('check-btn');
+            checkBtn.style.display = selectedAnswers.length > 0 && !showResult ? 'block' : 'none';
+        }
+
+        function checkAnswer() {
+            const question = shuffledQuestions[currentQuestion];
+            const correct = question.correct;
+            const isCorrect = selectedAnswers.length === correct.length && 
+                             selectedAnswers.every(answer => correct.includes(answer));
+            
+            showResult = true;
+            
+            if (isCorrect) {
+                score.correct++;
+            } else {
+                score.incorrect++;
+            }
+            
+            // Pasar la pregunta completa a showModal para acceder a las opciones
+            showModal(isCorrect, correct, question.explanation, question);
+            updateScore();
+        }
+
+        function showModal(isCorrect, correctAnswers, explanation, question) {
+            const modal = document.getElementById('modal-overlay');
+            const icon = document.getElementById('modal-icon');
+            const title = document.getElementById('modal-title');
+            const content = document.getElementById('modal-content');
+            const header = document.getElementById('modal-header');
+            
+            // Set icon and title
+            if (isCorrect) {
+                icon.textContent = '🎉';
+                title.textContent = '¡Correcto!';
+                title.className = 'modal-title modal-correct';
+            } else {
+                icon.textContent = '😅';
+                title.textContent = 'Incorrecto';
+                title.className = 'modal-title modal-incorrect';
+            }
+            
+            // Set content
+            let contentHTML = '';
+            
+            // SIEMPRE mostrar la respuesta correcta (tanto si es correcto como incorrecto)
+            const correctAnswerTexts = correctAnswers.map(letter => {
+                const index = letter.charCodeAt(0) - 65; // A=0, B=1, etc.
+                return `${letter}: ${question.options[index]}`;
+            });
+            
+            contentHTML += `
+                <div class="correct-answer">
+                    <div class="correct-answer-title">
+                        ${isCorrect ? '✓ ' : ''}Respuesta${correctAnswers.length > 1 ? 's' : ''} correcta${correctAnswers.length > 1 ? 's' : ''}:
+                    </div>
+                    ${correctAnswerTexts.map(text => `<div class="correct-answer-option">${text}</div>`).join('')}
+                </div>
+            `;
+            
+            // Si es incorrecto, mostrar también la respuesta del usuario
+            if (!isCorrect && selectedAnswers.length > 0) {
+                const userAnswerTexts = selectedAnswers.map(letter => {
+                    const index = letter.charCodeAt(0) - 65;
+                    return `${letter}: ${question.options[index]}`;
+                });
+                
+                contentHTML += `
+                    <div class="user-answer">
+                        <div class="user-answer-title">Tu${selectedAnswers.length > 1 ? 's' : ''} respuesta${selectedAnswers.length > 1 ? 's' : ''}:</div>
+                        ${userAnswerTexts.map(text => `<div class="user-answer-option">${text}</div>`).join('')}
+                    </div>
+                `;
+            }
+            
+            contentHTML += `
+                <div class="explanation">
+                    <div class="explanation-title">
+                        💡 Explicación
+                    </div>
+                    <div class="explanation-text">
+                        ${explanation}
+                    </div>
+                </div>
+            `;
+            
+            content.innerHTML = contentHTML;
+            
+            // Show modal
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal-overlay');
+            modal.classList.remove('show');
+            
+            // Check if quiz completed
+            if (currentQuestion === shuffledQuestions.length - 1 && !quizCompleted) {
+                quizCompleted = true;
+                setTimeout(() => showFinalScore(false), 500); // false indica finalización natural
+            } else if (currentQuestion < shuffledQuestions.length - 1) {
+                // Auto advance to next question
+                setTimeout(() => {
+                    nextQuestion();
+                }, 300);
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('correct-count').textContent = `Correctas: ${score.correct}`;
+            document.getElementById('incorrect-count').textContent = `Incorrectas: ${score.incorrect}`;
+        }
+
+        function finishQuiz() {
+            // Si hay respuestas seleccionadas pero no verificadas, procesarlas automáticamente
+            if (selectedAnswers.length > 0 && !showResult) {
+                processAnswerSilently();
+            }
+            
+            // Si no hay respuestas aún, no hacer nada
+            if (score.correct === 0 && score.incorrect === 0) {
+                return;
+            }
+            
+            quizCompleted = true;
+            showFinalScore(true); // true indica que es finalización manual
+        }
+
+        function showFinalScore(isManualFinish = false) {
+            const total = score.correct + score.incorrect;
+            const percentage = total > 0 ? Math.round((score.correct / total) * 100) : 0;
+            
+            let performanceMessage = "";
+            let performanceColor = "";
+            let titleMessage = isManualFinish ? "📊 Quiz Finalizado" : "🏆 ¡Quiz Completado!";
+            
+            if (percentage >= 90) {
+                performanceMessage = "🎉 ¡Excelente! Dominas muy bien ABAP";
+                performanceColor = "#10b981";
+            } else if (percentage >= 70) {
+                performanceMessage = "👍 ¡Bien! Tienes una base sólida";
+                performanceColor = "#3b82f6";
+            } else if (percentage >= 50) {
+                performanceMessage = "📚 Necesitas repasar algunos conceptos";
+                performanceColor = "#f59e0b";
+            } else {
+                performanceMessage = "💪 ¡Sigue estudiando! Puedes mejorar mucho";
+                performanceColor = "#ef4444";
+            }
+            
+            document.getElementById('quiz-container').style.display = 'none';
+            
+            const finalScoreDiv = document.getElementById('final-score');
+            finalScoreDiv.innerHTML = `
+                <div class="final-score">
+                    <h2>${titleMessage}</h2>
+                    ${isManualFinish ? '<p style="opacity: 0.9; margin-bottom: 20px;">Has respondido ' + total + ' de ' + shuffledQuestions.length + ' preguntas</p>' : ''}
+                    
+                    <div class="percentage-circle" style="--percentage: ${percentage * 3.6}deg;">
+                        <div class="percentage-inner">
+                            ${percentage}%
+                        </div>
+                    </div>
+                    
+                    <div class="score-grid">
+                        <div class="score-item">
+                            <div class="score-number" style="color: #10b981;">${score.correct}</div>
+                            <div class="score-label">Respuestas Correctas</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-number" style="color: #ef4444;">${score.incorrect}</div>
+                            <div class="score-label">Respuestas Incorrectas</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-number">${total}</div>
+                            <div class="score-label">Total Respondidas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="performance-message" style="border-left: 4px solid ${performanceColor};">
+                        ${performanceMessage}
+                    </div>
+                    
+                    <div style="display: flex; gap: 16px; justify-content: center; margin-top: 32px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="resetQuiz()" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);">
+                            🔄 Nuevo Quiz (Respuestas Mezcladas)
+                        </button>
+                        ${isManualFinish ? '<button class="btn btn-primary" onclick="continueQuiz()" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);">📚 Continuar Quiz</button>' : ''}
+                    </div>
+                </div>
+            `;
+            finalScoreDiv.style.display = 'block';
+        }
+
+        function continueQuiz() {
+            quizCompleted = false;
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('final-score').style.display = 'none';
+            updateUI();
+        }
+
+        function nextQuestion() {
+            // Si hay respuestas seleccionadas pero no verificadas, procesarlas automáticamente
+            if (selectedAnswers.length > 0 && !showResult) {
+                processAnswerSilently();
+            }
+            
+            if (currentQuestion < shuffledQuestions.length - 1) {
+                currentQuestion++;
+                updateUI();
+            }
+        }
+
+        function prevQuestion() {
+            // Si hay respuestas seleccionadas pero no verificadas, procesarlas automáticamente
+            if (selectedAnswers.length > 0 && !showResult) {
+                processAnswerSilently();
+            }
+            
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                updateUI();
+            }
+        }
+
+        function processAnswerSilently() {
+            const question = shuffledQuestions[currentQuestion]; // Usar shuffledQuestions en lugar de questions
+            const correct = question.correct;
+            const isCorrect = selectedAnswers.length === correct.length && 
+                             selectedAnswers.every(answer => correct.includes(answer));
+            
+            showResult = true;
+            
+            if (isCorrect) {
+                score.correct++;
+            } else {
+                score.incorrect++;
+            }
+            
+            updateScore();
+        }
+
+        function resetQuiz() {
+            // Si hay respuestas seleccionadas pero no verificadas, procesarlas automáticamente
+            if (selectedAnswers.length > 0 && !showResult && (score.correct > 0 || score.incorrect > 0)) {
+                processAnswerSilently();
+            }
+            
+            // Volver a mezclar las opciones de todas las preguntas
+            console.log('🔄 Reiniciando quiz - mezclando opciones nuevamente...');
+            shuffledQuestions = questions.map(shuffleQuestionOptions);
+            console.log('✅ Opciones mezcladas para nuevo quiz');
+            
+            currentQuestion = 0;
+            selectedAnswers = [];
+            showResult = false;
+            score = { correct: 0, incorrect: 0 };
+            quizCompleted = false;
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('final-score').style.display = 'none';
+            updateUI();
+        }
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>
