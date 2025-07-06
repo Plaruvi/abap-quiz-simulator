@@ -16,52 +16,52 @@
             background: linear-gradient(135deg, #d6cc99 0%, #e8dcc6 50%, #f0e68c 100%);
             min-height: 100vh;
             color: #2d3748;
-            line-height: 1.6;
+            line-height: 1.5;
         }
         
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 24px;
+            padding: 16px;
             min-height: 100vh;
         }
         
         .header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 20px;
             background: #fefefe;
-            padding: 24px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
         
         .header h1 {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             background: linear-gradient(45deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         
         .stats {
             display: flex;
             justify-content: center;
-            gap: 32px;
-            font-size: 0.95rem;
+            gap: 20px;
+            font-size: 0.85rem;
             color: #4a5568;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
         
         .stat-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
+            gap: 6px;
+            padding: 6px 12px;
             background: #f8f9fa;
-            border-radius: 25px;
+            border-radius: 20px;
             font-weight: 500;
         }
         
@@ -70,17 +70,17 @@
         
         .progress-container {
             background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 32px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
         }
         
         .progress-bar {
             width: 100%;
-            height: 8px;
+            height: 6px;
             background: linear-gradient(90deg, #e2e8f0, #cbd5e0);
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
             position: relative;
         }
@@ -88,25 +88,25 @@
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 10px;
+            border-radius: 8px;
             transition: width 0.6s ease;
-            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
         }
         
         .question-card {
             background: rgba(255, 255, 255, 0.95);
-            padding: 32px;
-            border-radius: 20px;
-            margin-bottom: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .question-number {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             color: #667eea;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -114,60 +114,60 @@
         
         .question-text {
             color: #2d3748;
-            font-size: 1.05rem;
-            line-height: 1.7;
-            margin-bottom: 12px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 10px;
         }
         
         .multiple-notice {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
-            padding: 10px 16px;
-            border-radius: 25px;
-            font-size: 0.85rem;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 500;
-            margin-top: 16px;
+            margin-top: 12px;
             display: inline-block;
         }
         
         .options {
-            margin-bottom: 32px;
+            margin-bottom: 20px;
         }
         
         .option {
             background: rgba(255, 255, 255, 0.9);
             border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 12px;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: flex-start;
-            gap: 16px;
+            gap: 12px;
             backdrop-filter: blur(10px);
         }
         
         .option:hover {
             background: rgba(255, 255, 255, 1);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
         
         .option.selected {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
         }
         
         .option-letter {
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             flex-shrink: 0;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.2);
             display: flex;
@@ -181,7 +181,7 @@
         
         .option-text {
             flex: 1;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         
         .controls {
@@ -189,29 +189,29 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 12px;
             background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 16px;
+            padding: 16px;
+            border-radius: 12px;
             backdrop-filter: blur(10px);
         }
         
         .btn {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            min-height: 44px;
-            min-width: 44px;
+            min-height: 40px;
+            min-width: 40px;
             -webkit-tap-highlight-color: rgba(0,0,0,0);
             user-select: none;
         }
@@ -223,8 +223,8 @@
         }
         
         .btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         }
         
         .btn-primary {
@@ -266,13 +266,13 @@
         
         .modal {
             background: #fefefe;
-            border-radius: 20px;
-            padding: 32px;
-            max-width: 700px;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
             width: 90%;
-            max-height: 85vh;
+            max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
             transform: scale(0.8) translateY(20px);
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.8);
@@ -285,18 +285,18 @@
         .modal-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
             border-bottom: 2px solid #e2e8f0;
         }
         
         .modal-icon {
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
         
         .modal-title {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
             margin: 0;
         }
@@ -310,15 +310,15 @@
         }
         
         .modal-content {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         
         .correct-answer {
             background: #f0fdf4;
             border: 1px solid #9ae6b4;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 16px;
         }
         
         .correct-answer.when-correct {
@@ -329,164 +329,183 @@
         .correct-answer-title {
             font-weight: 600;
             color: #276749;
-            margin-bottom: 12px;
-            font-size: 0.95rem;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
         }
         
         .correct-answer-option {
-            margin: 10px 0;
-            padding: 10px;
+            margin: 8px 0;
+            padding: 8px;
             background: rgba(255, 255, 255, 0.7);
-            border-radius: 8px;
+            border-radius: 6px;
             border-left: 3px solid #22c55e;
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
         
         .user-answer {
             background: #fef2f2;
             border: 1px solid #fecaca;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
         }
         
         .user-answer-title {
             font-weight: 600;
             color: #991b1b;
-            margin-bottom: 12px;
-            font-size: 0.95rem;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
         }
         
         .user-answer-option {
-            margin: 10px 0;
-            padding: 10px;
+            margin: 8px 0;
+            padding: 8px;
             background: rgba(255, 255, 255, 0.7);
-            border-radius: 8px;
+            border-radius: 6px;
             border-left: 3px solid #ef4444;
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
         
         .user-answer-letter {
             font-weight: 700;
             color: #991b1b;
-            margin-right: 8px;
+            margin-right: 6px;
         }
         
         .explanation {
             background: linear-gradient(135deg, #ebf8ff, #e6fffa);
             border-left: 4px solid #667eea;
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 16px;
         }
         
         .explanation-title {
             font-weight: 600;
             color: #2b6cb0;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .explanation-text {
             color: #2c5282;
-            line-height: 1.6;
+            line-height: 1.5;
+            font-size: 0.9rem;
         }
         
         .modal-footer {
             display: flex;
             justify-content: flex-end;
-            gap: 12px;
-            padding-top: 20px;
+            gap: 10px;
+            padding-top: 16px;
             border-top: 1px solid #e2e8f0;
         }
         
         .final-score {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border-radius: 20px;
-            padding: 40px;
+            border-radius: 16px;
+            padding: 30px;
             text-align: center;
-            margin-top: 32px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            margin-top: 24px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
         
         .final-score h2 {
-            font-size: 2.5rem;
-            margin-bottom: 32px;
+            font-size: 2rem;
+            margin-bottom: 24px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .score-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
-            margin: 32px 0;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
         }
         
         .score-item {
             background: rgba(255,255,255,0.15);
-            padding: 24px;
-            border-radius: 16px;
+            padding: 16px;
+            border-radius: 12px;
             backdrop-filter: blur(10px);
         }
         
         .score-number {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         
         .score-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             opacity: 0.9;
         }
         
         .percentage-circle {
-            width: 140px;
-            height: 140px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             background: conic-gradient(#10b981 0deg, #10b981 var(--percentage), rgba(255,255,255,0.2) var(--percentage), rgba(255,255,255,0.2) 360deg);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 24px auto;
+            margin: 20px auto;
             position: relative;
         }
         
         .percentage-inner {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             background: #fefefe;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: #1f2937;
             border: 2px solid rgba(255, 255, 255, 0.8);
         }
         
         .performance-message {
-            font-size: 1.2rem;
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 12px;
+            font-size: 1.1rem;
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 10px;
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(10px);
         }
         
+        .save-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1001;
+        }
+        
+        .save-indicator.show {
+            opacity: 1;
+        }
+        
         @media (max-width: 640px) {
             .container {
-                padding: 16px;
+                padding: 12px;
             }
             
             .stats {
                 flex-direction: column;
-                gap: 12px;
+                gap: 8px;
             }
             
             .controls {
@@ -505,12 +524,20 @@
             
             .modal {
                 width: 95%;
-                padding: 24px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
+    <div class="save-indicator" id="save-indicator">
+        💾 Progreso guardado
+    </div>
+
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -557,7 +584,7 @@
                     ← Anterior
                 </button>
 
-                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <button class="btn btn-primary" id="check-btn" onclick="checkAnswer()" style="display: none;">
                         ✓ Verificar
                     </button>
@@ -1658,6 +1685,57 @@
         let quizCompleted = false;
         let shuffledQuestions = [];
 
+        // Funciones de guardado y carga de progreso
+        function saveProgress() {
+            const progressData = {
+                currentQuestion,
+                selectedAnswers,
+                showResult,
+                score,
+                quizCompleted,
+                shuffledQuestions,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('abap_quiz_progress', JSON.stringify(progressData));
+            showSaveIndicator();
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('abap_quiz_progress');
+            if (saved) {
+                try {
+                    const progressData = JSON.parse(saved);
+                    // Verificar que los datos guardados sean recientes (menos de 7 días)
+                    if (progressData.timestamp && (Date.now() - progressData.timestamp) < 7 * 24 * 60 * 60 * 1000) {
+                        currentQuestion = progressData.currentQuestion || 0;
+                        selectedAnswers = progressData.selectedAnswers || [];
+                        showResult = progressData.showResult || false;
+                        score = progressData.score || { correct: 0, incorrect: 0 };
+                        quizCompleted = progressData.quizCompleted || false;
+                        if (progressData.shuffledQuestions && progressData.shuffledQuestions.length === questions.length) {
+                            shuffledQuestions = progressData.shuffledQuestions;
+                        }
+                        return true;
+                    }
+                } catch (e) {
+                    console.log('Error loading progress:', e);
+                }
+            }
+            return false;
+        }
+
+        function clearProgress() {
+            localStorage.removeItem('abap_quiz_progress');
+        }
+
+        function showSaveIndicator() {
+            const indicator = document.getElementById('save-indicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
         // Función para mezclar array (Fisher-Yates shuffle)
         function shuffleArray(array) {
             const newArray = [...array];
@@ -1695,10 +1773,18 @@
             };
         }
 
-        // Inicializar las preguntas mezcladas INMEDIATAMENTE
-        console.log('🚀 Inicializando preguntas mezcladas...');
-        shuffledQuestions = questions.map(shuffleQuestionOptions);
-        console.log('✅ Preguntas mezcladas listas:', shuffledQuestions.length);
+        // Inicializar las preguntas mezcladas
+        function initializeQuiz() {
+            const progressLoaded = loadProgress();
+            
+            if (!progressLoaded || shuffledQuestions.length === 0) {
+                console.log('🚀 Inicializando preguntas mezcladas...');
+                shuffledQuestions = questions.map(shuffleQuestionOptions);
+                console.log('✅ Preguntas mezcladas listas:', shuffledQuestions.length);
+            } else {
+                console.log('📚 Progreso cargado desde localStorage');
+            }
+        }
 
         function updateUI() {
             const question = shuffledQuestions[currentQuestion];
@@ -1732,6 +1818,7 @@
             document.getElementById('next-btn').disabled = currentQuestion === shuffledQuestions.length - 1;
             
             updateCheckButton();
+            saveProgress();
         }
 
         function updateOptions() {
@@ -1776,6 +1863,7 @@
             
             updateOptions();
             updateCheckButton();
+            saveProgress();
         }
 
         function updateCheckButton() {
@@ -1800,6 +1888,7 @@
             // Pasar la pregunta completa a showModal para acceder a las opciones
             showModal(isCorrect, correct, question.explanation, question);
             updateScore();
+            saveProgress();
         }
 
         function showModal(isCorrect, correctAnswers, explanation, question) {
@@ -1904,6 +1993,7 @@
             
             quizCompleted = true;
             showFinalScore(true); // true indica que es finalización manual
+            saveProgress();
         }
 
         function showFinalScore(isManualFinish = false) {
@@ -1961,7 +2051,7 @@
                         ${performanceMessage}
                     </div>
                     
-                    <div style="display: flex; gap: 16px; justify-content: center; margin-top: 32px; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap;">
                         <button class="btn btn-primary" onclick="resetQuiz()" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);">
                             🔄 Nuevo Quiz (Respuestas Mezcladas)
                         </button>
@@ -2004,7 +2094,7 @@
         }
 
         function processAnswerSilently() {
-            const question = shuffledQuestions[currentQuestion]; // Usar shuffledQuestions en lugar de questions
+            const question = shuffledQuestions[currentQuestion];
             const correct = question.correct;
             const isCorrect = selectedAnswers.length === correct.length && 
                              selectedAnswers.every(answer => correct.includes(answer));
@@ -2018,6 +2108,7 @@
             }
             
             updateScore();
+            saveProgress();
         }
 
         function resetQuiz() {
@@ -2038,10 +2129,14 @@
             quizCompleted = false;
             document.getElementById('quiz-container').style.display = 'block';
             document.getElementById('final-score').style.display = 'none';
+            
+            // Limpiar progreso guardado cuando se reinicia
+            clearProgress();
             updateUI();
         }
 
         // Initialize
+        initializeQuiz();
         updateUI();
     </script>
 </body>
