@@ -68,6 +68,18 @@
         .stat-correct { color: #38a169; }
         .stat-incorrect { color: #e53e3e; }
         
+        .review-mode-indicator {
+            background: linear-gradient(45deg, #ed8936, #dd6b20);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(237, 137, 54, 0.3);
+        }
+        
         .progress-container {
             background: rgba(255, 255, 255, 0.9);
             padding: 12px;
@@ -554,6 +566,9 @@
                     <span>✗</span>
                     <span id="incorrect-count">Incorrectas: 0</span>
                 </div>
+            </div>
+            <div id="review-mode-indicator" class="review-mode-indicator" style="display: none;">
+                🔄 Modo Repaso - Solo preguntas incorrectas
             </div>
         </div>
 
@@ -1684,6 +1699,10 @@
         let score = { correct: 0, incorrect: 0 };
         let quizCompleted = false;
         let shuffledQuestions = [];
+        let incorrectQuestions = [];
+        let isReviewMode = false;
+        let reviewQuestions = [];
+        let currentReviewIndex = 0;
 
         // Funciones de guardado y carga de progreso
         function saveProgress() {
@@ -1694,6 +1713,10 @@
                 score,
                 quizCompleted,
                 shuffledQuestions,
+                incorrectQuestions,
+                isReviewMode,
+                reviewQuestions,
+                currentReviewIndex,
                 timestamp: Date.now()
             };
             localStorage.setItem('abap_quiz_progress', JSON.stringify(progressData));
@@ -1712,6 +1735,10 @@
                         showResult = progressData.showResult || false;
                         score = progressData.score || { correct: 0, incorrect: 0 };
                         quizCompleted = progressData.quizCompleted || false;
+                        incorrectQuestions = progressData.incorrectQuestions || [];
+                        isReviewMode = progressData.isReviewMode || false;
+                        reviewQuestions = progressData.reviewQuestions || [];
+                        currentReviewIndex = progressData.currentReviewIndex || 0;
                         if (progressData.shuffledQuestions && progressData.shuffledQuestions.length === questions.length) {
                             shuffledQuestions = progressData.shuffledQuestions;
                         }
@@ -1787,14 +1814,21 @@
         }
 
         function updateUI() {
-            const question = shuffledQuestions[currentQuestion];
+            const question = isReviewMode ? reviewQuestions[currentReviewIndex] : shuffledQuestions[currentQuestion];
             
             // Reset state for new question
             selectedAnswers = [];
             showResult = false;
             
             // Update question info
-            document.getElementById('question-counter').textContent = `Pregunta ${currentQuestion + 1} de ${shuffledQuestions.length}`;
+            if (isReviewMode) {
+                document.getElementById('question-counter').textContent = `Pregunta ${currentReviewIndex + 1} de ${reviewQuestions.length} (Repaso)`;
+                document.getElementById('review-mode-indicator').style.display = 'block';
+            } else {
+                document.getElementById('question-counter').textContent = `Pregunta ${currentQuestion + 1} de ${shuffledQuestions.length}`;
+                document.getElementById('review-mode-indicator').style.display = 'none';
+            }
+            
             document.getElementById('question-number').textContent = `Pregunta ${question.id}`;
             document.getElementById('question-text').textContent = question.question;
             
@@ -1803,7 +1837,9 @@
             multipleNotice.style.display = question.multiple ? 'block' : 'none';
             
             // Update progress bar
-            const progress = ((currentQuestion + 1) / shuffledQuestions.length) * 100;
+            const totalQuestions = isReviewMode ? reviewQuestions.length : shuffledQuestions.length;
+            const currentIndex = isReviewMode ? currentReviewIndex + 1 : currentQuestion + 1;
+            const progress = (currentIndex / totalQuestions) * 100;
             document.getElementById('progress-fill').style.width = `${progress}%`;
             
             // Update score
@@ -1814,15 +1850,20 @@
             updateOptions();
             
             // Update buttons
-            document.getElementById('prev-btn').disabled = currentQuestion === 0;
-            document.getElementById('next-btn').disabled = currentQuestion === shuffledQuestions.length - 1;
+            if (isReviewMode) {
+                document.getElementById('prev-btn').disabled = currentReviewIndex === 0;
+                document.getElementById('next-btn').disabled = currentReviewIndex === reviewQuestions.length - 1;
+            } else {
+                document.getElementById('prev-btn').disabled = currentQuestion === 0;
+                document.getElementById('next-btn').disabled = currentQuestion === shuffledQuestions.length - 1;
+            }
             
             updateCheckButton();
             saveProgress();
         }
 
         function updateOptions() {
-            const question = shuffledQuestions[currentQuestion];
+            const question = isReviewMode ? reviewQuestions[currentReviewIndex] : shuffledQuestions[currentQuestion];
             const container = document.getElementById('options-container');
             container.innerHTML = '';
             
@@ -1849,7 +1890,7 @@
         }
 
         function selectOption(optionLetter) {
-            const question = shuffledQuestions[currentQuestion];
+            const question = isReviewMode ? reviewQuestions[currentReviewIndex] : shuffledQuestions[currentQuestion];
             
             if (question.multiple) {
                 if (selectedAnswers.includes(optionLetter)) {
@@ -1872,7 +1913,7 @@
         }
 
         function checkAnswer() {
-            const question = shuffledQuestions[currentQuestion];
+            const question = isReviewMode ? reviewQuestions[currentReviewIndex] : shuffledQuestions[currentQuestion];
             const correct = question.correct;
             const isCorrect = selectedAnswers.length === correct.length && 
                              selectedAnswers.every(answer => correct.includes(answer));
@@ -1881,8 +1922,16 @@
             
             if (isCorrect) {
                 score.correct++;
+                // Si estamos en modo repaso y respondemos correctamente, removemos la pregunta de incorrectas
+                if (isReviewMode) {
+                    incorrectQuestions = incorrectQuestions.filter(q => q.id !== question.id);
+                }
             } else {
                 score.incorrect++;
+                // Si no estamos en modo repaso y es incorrecta, la añadimos a las incorrectas
+                if (!isReviewMode && !incorrectQuestions.some(q => q.id === question.id)) {
+                    incorrectQuestions.push(question);
+                }
             }
             
             // Pasar la pregunta completa a showModal para acceder a las opciones
@@ -1963,16 +2012,41 @@
             const modal = document.getElementById('modal-overlay');
             modal.classList.remove('show');
             
-            // Check if quiz completed
-            if (currentQuestion === shuffledQuestions.length - 1 && !quizCompleted) {
-                quizCompleted = true;
-                setTimeout(() => showFinalScore(false), 500); // false indica finalización natural
-            } else if (currentQuestion < shuffledQuestions.length - 1) {
-                // Auto advance to next question
+            // Check if we need to move to review mode
+            if (!isReviewMode && currentQuestion === shuffledQuestions.length - 1 && !quizCompleted) {
+                // We've finished all 80 questions
+                if (incorrectQuestions.length > 0) {
+                    // Start review mode with incorrect questions
+                    setTimeout(() => startReviewMode(), 500);
+                } else {
+                    // All questions answered correctly
+                    quizCompleted = true;
+                    setTimeout(() => showFinalScore(false), 500);
+                }
+            } else if (isReviewMode && currentReviewIndex === reviewQuestions.length - 1) {
+                // Finished current review round
+                if (incorrectQuestions.length > 0) {
+                    // Start another review round with remaining incorrect questions
+                    setTimeout(() => startReviewMode(), 500);
+                } else {
+                    // All questions answered correctly
+                    quizCompleted = true;
+                    setTimeout(() => showFinalScore(false), 500);
+                }
+            } else {
+                // Move to next question
                 setTimeout(() => {
                     nextQuestion();
                 }, 300);
             }
+        }
+
+        function startReviewMode() {
+            isReviewMode = true;
+            reviewQuestions = [...incorrectQuestions];
+            currentReviewIndex = 0;
+            incorrectQuestions = []; // Clear for this round
+            updateUI();
         }
 
         function updateScore() {
@@ -2024,7 +2098,8 @@
             finalScoreDiv.innerHTML = `
                 <div class="final-score">
                     <h2>${titleMessage}</h2>
-                    ${isManualFinish ? '<p style="opacity: 0.9; margin-bottom: 20px;">Has respondido ' + total + ' de ' + shuffledQuestions.length + ' preguntas</p>' : ''}
+                    ${isManualFinish ? '<p style="opacity: 0.9; margin-bottom: 20px;">Has respondido ' + total + ' de 80 preguntas</p>' : ''}
+                    ${percentage === 100 && !isManualFinish ? '<p style="opacity: 0.9; margin-bottom: 20px;">🎊 ¡Has respondido correctamente todas las preguntas!</p>' : ''}
                     
                     <div class="percentage-circle" style="--percentage: ${percentage * 3.6}deg;">
                         <div class="percentage-inner">
@@ -2075,9 +2150,16 @@
                 processAnswerSilently();
             }
             
-            if (currentQuestion < shuffledQuestions.length - 1) {
-                currentQuestion++;
-                updateUI();
+            if (isReviewMode) {
+                if (currentReviewIndex < reviewQuestions.length - 1) {
+                    currentReviewIndex++;
+                    updateUI();
+                }
+            } else {
+                if (currentQuestion < shuffledQuestions.length - 1) {
+                    currentQuestion++;
+                    updateUI();
+                }
             }
         }
 
@@ -2087,14 +2169,21 @@
                 processAnswerSilently();
             }
             
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                updateUI();
+            if (isReviewMode) {
+                if (currentReviewIndex > 0) {
+                    currentReviewIndex--;
+                    updateUI();
+                }
+            } else {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    updateUI();
+                }
             }
         }
 
         function processAnswerSilently() {
-            const question = shuffledQuestions[currentQuestion];
+            const question = isReviewMode ? reviewQuestions[currentReviewIndex] : shuffledQuestions[currentQuestion];
             const correct = question.correct;
             const isCorrect = selectedAnswers.length === correct.length && 
                              selectedAnswers.every(answer => correct.includes(answer));
@@ -2103,8 +2192,14 @@
             
             if (isCorrect) {
                 score.correct++;
+                if (isReviewMode) {
+                    incorrectQuestions = incorrectQuestions.filter(q => q.id !== question.id);
+                }
             } else {
                 score.incorrect++;
+                if (!isReviewMode && !incorrectQuestions.some(q => q.id === question.id)) {
+                    incorrectQuestions.push(question);
+                }
             }
             
             updateScore();
@@ -2127,6 +2222,10 @@
             showResult = false;
             score = { correct: 0, incorrect: 0 };
             quizCompleted = false;
+            incorrectQuestions = [];
+            isReviewMode = false;
+            reviewQuestions = [];
+            currentReviewIndex = 0;
             document.getElementById('quiz-container').style.display = 'block';
             document.getElementById('final-score').style.display = 'none';
             
@@ -2138,6 +2237,3 @@
         // Initialize
         initializeQuiz();
         updateUI();
-    </script>
-</body>
-</html>
