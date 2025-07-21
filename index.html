@@ -67,7 +67,6 @@
         
         .stat-correct { color: #38a169; }
         .stat-incorrect { color: #e53e3e; }
-        .stat-pending { color: #ed8936; }
         
         .review-mode-indicator {
             background: linear-gradient(45deg, #ed8936, #dd6b20);
@@ -492,18 +491,25 @@
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(10px);
         }
-
-        .debug-info {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 12px;
-            margin: 16px 0;
-            font-family: monospace;
+        
+        .save-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
             font-size: 0.8rem;
-            color: #495057;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1001;
         }
-
+        
+        .save-indicator.show {
+            opacity: 1;
+        }
+        
         @media (max-width: 640px) {
             .container {
                 padding: 12px;
@@ -540,6 +546,10 @@
     </style>
 </head>
 <body>
+    <div class="save-indicator" id="save-indicator">
+        💾 Progreso guardado
+    </div>
+
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -556,28 +566,10 @@
                     <span>✗</span>
                     <span id="incorrect-count">Incorrectas: 0</span>
                 </div>
-                <div class="stat-item stat-pending">
-                    <span>📝</span>
-                    <span id="pending-count">Pendientes: 80</span>
-                </div>
             </div>
             <div id="review-mode-indicator" class="review-mode-indicator" style="display: none;">
-                🔄 Modo Repaso - Ciclo <span id="cycle-number">1</span>
+                🔄 Modo Repaso - Solo preguntas incorrectas
             </div>
-            
-            <!-- Debug info -->
-            <div class="debug-info" id="debug-info" style="display: none;">
-                <div><strong>Debug Info:</strong></div>
-                <div>Modo Repaso: <span id="debug-review-mode">false</span></div>
-                <div>Ciclo Actual: <span id="debug-cycle">0</span></div>
-                <div>Preguntas en Repaso: <span id="debug-review-questions">0</span></div>
-                <div>IDs Incorrectas: <span id="debug-incorrect-ids">[]</span></div>
-                <div>IDs Pendientes: <span id="debug-pending-ids">[1,2,3,...,80]</span></div>
-            </div>
-            
-            <button class="btn btn-secondary" onclick="toggleDebug()" style="margin-top: 10px; font-size: 0.7rem;">
-                🐛 Toggle Debug
-            </button>
         </div>
 
         <!-- Progress bar -->
@@ -1701,40 +1693,74 @@
             }
         ];
 
-        // Variables globales
         let currentQuestion = 0;
         let selectedAnswers = [];
         let showResult = false;
         let score = { correct: 0, incorrect: 0 };
         let quizCompleted = false;
         let shuffledQuestions = [];
-        
-        // Nuevas variables para el sistema de repaso mejorado
-        let incorrectQuestionIds = new Set(); // IDs de preguntas incorrectas
-        let pendingQuestionIds = new Set(); // IDs de preguntas no respondidas
+        let incorrectQuestions = [];
         let isReviewMode = false;
         let reviewQuestions = [];
         let currentReviewIndex = 0;
-        let reviewCycle = 0;
-        let totalQuestions = questions.length;
 
-        // Variables para debug
-        let debugMode = false;
-
-        function toggleDebug() {
-            debugMode = !debugMode;
-            document.getElementById('debug-info').style.display = debugMode ? 'block' : 'none';
-            if (debugMode) updateDebugInfo();
+        // Funciones de guardado y carga de progreso
+        function saveProgress() {
+            const progressData = {
+                currentQuestion,
+                selectedAnswers,
+                showResult,
+                score,
+                quizCompleted,
+                shuffledQuestions,
+                incorrectQuestions,
+                isReviewMode,
+                reviewQuestions,
+                currentReviewIndex,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('abap_quiz_progress', JSON.stringify(progressData));
+            showSaveIndicator();
         }
 
-        function updateDebugInfo() {
-            if (!debugMode) return;
-            
-            document.getElementById('debug-review-mode').textContent = isReviewMode;
-            document.getElementById('debug-cycle').textContent = reviewCycle;
-            document.getElementById('debug-review-questions').textContent = reviewQuestions.length;
-            document.getElementById('debug-incorrect-ids').textContent = JSON.stringify([...incorrectQuestionIds]);
-            document.getElementById('debug-pending-ids').textContent = `[${[...pendingQuestionIds].slice(0, 10).join(',')}${pendingQuestionIds.size > 10 ? '...' : ''}]`;
+        function loadProgress() {
+            const saved = localStorage.getItem('abap_quiz_progress');
+            if (saved) {
+                try {
+                    const progressData = JSON.parse(saved);
+                    // Verificar que los datos guardados sean recientes (menos de 7 días)
+                    if (progressData.timestamp && (Date.now() - progressData.timestamp) < 7 * 24 * 60 * 60 * 1000) {
+                        currentQuestion = progressData.currentQuestion || 0;
+                        selectedAnswers = progressData.selectedAnswers || [];
+                        showResult = progressData.showResult || false;
+                        score = progressData.score || { correct: 0, incorrect: 0 };
+                        quizCompleted = progressData.quizCompleted || false;
+                        incorrectQuestions = progressData.incorrectQuestions || [];
+                        isReviewMode = progressData.isReviewMode || false;
+                        reviewQuestions = progressData.reviewQuestions || [];
+                        currentReviewIndex = progressData.currentReviewIndex || 0;
+                        if (progressData.shuffledQuestions && progressData.shuffledQuestions.length === questions.length) {
+                            shuffledQuestions = progressData.shuffledQuestions;
+                        }
+                        return true;
+                    }
+                } catch (e) {
+                    console.log('Error loading progress:', e);
+                }
+            }
+            return false;
+        }
+
+        function clearProgress() {
+            localStorage.removeItem('abap_quiz_progress');
+        }
+
+        function showSaveIndicator() {
+            const indicator = document.getElementById('save-indicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
         }
 
         // Función para mezclar array (Fisher-Yates shuffle)
@@ -1749,15 +1775,21 @@
 
         // Función para mezclar las opciones de UNA pregunta
         function shuffleQuestionOptions(question) {
+            // Crear array de índices [0, 1, 2, 3, ...]
             const indices = Array.from({length: question.options.length}, (_, i) => i);
             const shuffledIndices = shuffleArray(indices);
             
+            // Reorganizar opciones según el nuevo orden
             const shuffledOptions = shuffledIndices.map(index => question.options[index]);
             
+            // Mapear las respuestas correctas al nuevo orden
             const newCorrectAnswers = question.correct.map(correctLetter => {
-                const originalIndex = correctLetter.charCodeAt(0) - 65;
+                const originalIndex = correctLetter.charCodeAt(0) - 65; // A=0, B=1, C=2, D=3
+                
+                // Encontrar en qué nueva posición está la opción que antes era correcta
                 const newPosition = shuffledIndices.indexOf(originalIndex);
                 const newLetter = String.fromCharCode(65 + newPosition);
+                
                 return newLetter;
             });
             
@@ -1770,17 +1802,15 @@
 
         // Inicializar las preguntas mezcladas
         function initializeQuiz() {
-            console.log('🚀 Inicializando quiz con', questions.length, 'preguntas...');
-            shuffledQuestions = questions.map(shuffleQuestionOptions);
+            const progressLoaded = loadProgress();
             
-            // Inicializar todas las preguntas como pendientes
-            pendingQuestionIds = new Set(questions.map(q => q.id));
-            incorrectQuestionIds = new Set();
-            
-            console.log('✅ Quiz inicializado');
-            console.log('📝 Preguntas pendientes:', pendingQuestionIds.size);
-            
-            updateDebugInfo();
+            if (!progressLoaded || shuffledQuestions.length === 0) {
+                console.log('🚀 Inicializando preguntas mezcladas...');
+                shuffledQuestions = questions.map(shuffleQuestionOptions);
+                console.log('✅ Preguntas mezcladas listas:', shuffledQuestions.length);
+            } else {
+                console.log('📚 Progreso cargado desde localStorage');
+            }
         }
 
         function updateUI() {
@@ -1792,9 +1822,8 @@
             
             // Update question info
             if (isReviewMode) {
-                document.getElementById('question-counter').textContent = `Pregunta ${currentReviewIndex + 1} de ${reviewQuestions.length} (Repaso - Ciclo ${reviewCycle})`;
+                document.getElementById('question-counter').textContent = `Pregunta ${currentReviewIndex + 1} de ${reviewQuestions.length} (Repaso)`;
                 document.getElementById('review-mode-indicator').style.display = 'block';
-                document.getElementById('cycle-number').textContent = reviewCycle;
             } else {
                 document.getElementById('question-counter').textContent = `Pregunta ${currentQuestion + 1} de ${shuffledQuestions.length}`;
                 document.getElementById('review-mode-indicator').style.display = 'none';
@@ -1808,15 +1837,14 @@
             multipleNotice.style.display = question.multiple ? 'block' : 'none';
             
             // Update progress bar
-            const totalInCurrentMode = isReviewMode ? reviewQuestions.length : shuffledQuestions.length;
+            const totalQuestions = isReviewMode ? reviewQuestions.length : shuffledQuestions.length;
             const currentIndex = isReviewMode ? currentReviewIndex + 1 : currentQuestion + 1;
-            const progress = (currentIndex / totalInCurrentMode) * 100;
+            const progress = (currentIndex / totalQuestions) * 100;
             document.getElementById('progress-fill').style.width = `${progress}%`;
             
-            // Update score and counts
+            // Update score
             document.getElementById('correct-count').textContent = `Correctas: ${score.correct}`;
             document.getElementById('incorrect-count').textContent = `Incorrectas: ${score.incorrect}`;
-            document.getElementById('pending-count').textContent = `Pendientes: ${pendingQuestionIds.size}`;
             
             // Update options
             updateOptions();
@@ -1831,7 +1859,7 @@
             }
             
             updateCheckButton();
-            updateDebugInfo();
+            saveProgress();
         }
 
         function updateOptions() {
@@ -1876,6 +1904,7 @@
             
             updateOptions();
             updateCheckButton();
+            saveProgress();
         }
 
         function updateCheckButton() {
@@ -1891,57 +1920,24 @@
             
             showResult = true;
             
-            // Procesar la respuesta
-            processQuestionAnswer(question.id, isCorrect);
-            
-            // Mostrar modal
-            showModal(isCorrect, correct, question.explanation, question);
-            updateUI(); // Actualizar contadores
-        }
-
-        function processQuestionAnswer(questionId, isCorrect) {
-            console.log('📊 Procesando respuesta para pregunta', questionId, '- Correcta:', isCorrect);
-            
             if (isCorrect) {
-                // Si es correcta, aumentar score y eliminar de pendientes e incorrectas
                 score.correct++;
-                pendingQuestionIds.delete(questionId);
-                incorrectQuestionIds.delete(questionId);
-                
-                console.log('✅ Pregunta', questionId, 'respondida correctamente');
+                // Si estamos en modo repaso y respondemos correctamente, removemos la pregunta de incorrectas
+                if (isReviewMode) {
+                    incorrectQuestions = incorrectQuestions.filter(q => q.id !== question.id);
+                }
             } else {
-                // Si es incorrecta, aumentar score incorrecto, eliminar de pendientes y añadir a incorrectas
                 score.incorrect++;
-                pendingQuestionIds.delete(questionId);
-                incorrectQuestionIds.add(questionId);
-                
-                console.log('❌ Pregunta', questionId, 'respondida incorrectamente');
+                // Si no estamos en modo repaso y es incorrecta, la añadimos a las incorrectas
+                if (!isReviewMode && !incorrectQuestions.some(q => q.id === question.id)) {
+                    incorrectQuestions.push(question);
+                }
             }
             
-            console.log('📈 Estado actual:');
-            console.log('  - Correctas:', score.correct);
-            console.log('  - Incorrectas:', score.incorrect);
-            console.log('  - Pendientes:', pendingQuestionIds.size);
-            console.log('  - Incorrectas IDs:', incorrectQuestionIds.size);
-        }
-
-        function processSkippedQuestion() {
-            // Si el usuario saltó la pregunta sin responder, se queda como pendiente
-            const question = isReviewMode ? reviewQuestions[currentReviewIndex] : shuffledQuestions[currentQuestion];
-            
-            if (selectedAnswers.length === 0) {
-                console.log('⏭️ Pregunta', question.id, 'saltada (sin responder)');
-                // No hacemos nada, se mantiene en pendientes
-            } else if (!showResult) {
-                // Si tiene respuestas seleccionadas pero no verificadas, las procesamos automáticamente
-                const correct = question.correct;
-                const isCorrect = selectedAnswers.length === correct.length && 
-                                 selectedAnswers.every(answer => correct.includes(answer));
-                
-                console.log('🔄 Procesando automáticamente pregunta', question.id);
-                processQuestionAnswer(question.id, isCorrect);
-                showResult = true;
-            }
+            // Pasar la pregunta completa a showModal para acceder a las opciones
+            showModal(isCorrect, correct, question.explanation, question);
+            updateScore();
+            saveProgress();
         }
 
         function showModal(isCorrect, correctAnswers, explanation, question) {
@@ -1949,6 +1945,7 @@
             const icon = document.getElementById('modal-icon');
             const title = document.getElementById('modal-title');
             const content = document.getElementById('modal-content');
+            const header = document.getElementById('modal-header');
             
             // Set icon and title
             if (isCorrect) {
@@ -1964,9 +1961,9 @@
             // Set content
             let contentHTML = '';
             
-            // Mostrar la respuesta correcta
+            // SIEMPRE mostrar la respuesta correcta (tanto si es correcto como incorrecto)
             const correctAnswerTexts = correctAnswers.map(letter => {
-                const index = letter.charCodeAt(0) - 65;
+                const index = letter.charCodeAt(0) - 65; // A=0, B=1, etc.
                 return `${letter}: ${question.options[index]}`;
             });
             
@@ -1996,12 +1993,18 @@
             
             contentHTML += `
                 <div class="explanation">
-                    <div class="explanation-title">💡 Explicación</div>
-                    <div class="explanation-text">${explanation}</div>
+                    <div class="explanation-title">
+                        💡 Explicación
+                    </div>
+                    <div class="explanation-text">
+                        ${explanation}
+                    </div>
                 </div>
             `;
             
             content.innerHTML = contentHTML;
+            
+            // Show modal
             modal.classList.add('show');
         }
 
@@ -2009,128 +2012,67 @@
             const modal = document.getElementById('modal-overlay');
             modal.classList.remove('show');
             
-            // Verificar qué hacer después
-            setTimeout(() => {
-                if (isReviewMode) {
-                    if (currentReviewIndex === reviewQuestions.length - 1) {
-                        // Terminamos este ciclo de repaso
-                        finishReviewCycle();
-                    } else {
-                        // Siguiente pregunta en el repaso
-                        currentReviewIndex++;
-                        updateUI();
-                    }
+            // Check if we need to move to review mode
+            if (!isReviewMode && currentQuestion === shuffledQuestions.length - 1 && !quizCompleted) {
+                // We've finished all 80 questions
+                if (incorrectQuestions.length > 0) {
+                    // Start review mode with incorrect questions
+                    setTimeout(() => startReviewMode(), 500);
                 } else {
-                    if (currentQuestion === shuffledQuestions.length - 1) {
-                        // Terminamos el ciclo inicial de 80 preguntas
-                        finishInitialCycle();
-                    } else {
-                        // Siguiente pregunta en el ciclo inicial
-                        currentQuestion++;
-                        updateUI();
-                    }
+                    // All questions answered correctly
+                    quizCompleted = true;
+                    setTimeout(() => showFinalScore(false), 500);
                 }
-            }, 300);
-        }
-
-        function finishInitialCycle() {
-            console.log('🎯 Terminado ciclo inicial de', totalQuestions, 'preguntas');
-            console.log('📊 Pendientes + Incorrectas que necesitan repaso:', pendingQuestionIds.size + incorrectQuestionIds.size);
-            
-            // Combinar preguntas pendientes e incorrectas para el repaso
-            const questionsNeedingReview = new Set([...pendingQuestionIds, ...incorrectQuestionIds]);
-            
-            if (questionsNeedingReview.size > 0) {
-                console.log('🔄 Iniciando modo repaso con', questionsNeedingReview.size, 'preguntas');
-                startReviewMode(questionsNeedingReview);
+            } else if (isReviewMode && currentReviewIndex === reviewQuestions.length - 1) {
+                // Finished current review round
+                if (incorrectQuestions.length > 0) {
+                    // Start another review round with remaining incorrect questions
+                    setTimeout(() => startReviewMode(), 500);
+                } else {
+                    // All questions answered correctly
+                    quizCompleted = true;
+                    setTimeout(() => showFinalScore(false), 500);
+                }
             } else {
-                console.log('🎉 ¡Todas las preguntas respondidas correctamente!');
-                quizCompleted = true;
-                showFinalScore(false);
+                // Move to next question
+                setTimeout(() => {
+                    nextQuestion();
+                }, 300);
             }
         }
 
-        function finishReviewCycle() {
-            console.log('🔄 Terminado ciclo de repaso', reviewCycle);
-            console.log('📊 Preguntas aún incorrectas/pendientes:', pendingQuestionIds.size + incorrectQuestionIds.size);
-            
-            // Verificar si quedan preguntas por repasar
-            const questionsNeedingReview = new Set([...pendingQuestionIds, ...incorrectQuestionIds]);
-            
-            if (questionsNeedingReview.size > 0) {
-                console.log('🔄 Iniciando nuevo ciclo de repaso con', questionsNeedingReview.size, 'preguntas');
-                startReviewMode(questionsNeedingReview);
-            } else {
-                console.log('🎉 ¡Todas las preguntas respondidas correctamente!');
-                quizCompleted = true;
-                showFinalScore(false);
-            }
-        }
-
-        function startReviewMode(questionIds) {
-            console.log('🎯 Iniciando modo repaso con IDs:', [...questionIds]);
-            
+        function startReviewMode() {
             isReviewMode = true;
-            reviewCycle++;
+            reviewQuestions = [...incorrectQuestions];
             currentReviewIndex = 0;
-            
-            // Crear array de preguntas para el repaso (mezcladas)
-            reviewQuestions = [...questionIds].map(id => {
-                const originalQuestion = questions.find(q => q.id === id);
-                return shuffleQuestionOptions(originalQuestion);
-            });
-            
-            // Mezclar el orden de las preguntas de repaso
-            reviewQuestions = shuffleArray(reviewQuestions);
-            
-            console.log('✅ Modo repaso iniciado - Ciclo', reviewCycle, 'con', reviewQuestions.length, 'preguntas');
-            
+            incorrectQuestions = []; // Clear for this round
             updateUI();
         }
 
-        function nextQuestion() {
-            processSkippedQuestion();
-            
-            if (isReviewMode) {
-                if (currentReviewIndex < reviewQuestions.length - 1) {
-                    currentReviewIndex++;
-                    updateUI();
-                }
-            } else {
-                if (currentQuestion < shuffledQuestions.length - 1) {
-                    currentQuestion++;
-                    updateUI();
-                }
-            }
-        }
-
-        function prevQuestion() {
-            processSkippedQuestion();
-            
-            if (isReviewMode) {
-                if (currentReviewIndex > 0) {
-                    currentReviewIndex--;
-                    updateUI();
-                }
-            } else {
-                if (currentQuestion > 0) {
-                    currentQuestion--;
-                    updateUI();
-                }
-            }
+        function updateScore() {
+            document.getElementById('correct-count').textContent = `Correctas: ${score.correct}`;
+            document.getElementById('incorrect-count').textContent = `Incorrectas: ${score.incorrect}`;
         }
 
         function finishQuiz() {
-            processSkippedQuestion();
+            // Si hay respuestas seleccionadas pero no verificadas, procesarlas automáticamente
+            if (selectedAnswers.length > 0 && !showResult) {
+                processAnswerSilently();
+            }
+            
+            // Si no hay respuestas aún, no hacer nada
+            if (score.correct === 0 && score.incorrect === 0) {
+                return;
+            }
             
             quizCompleted = true;
-            showFinalScore(true);
+            showFinalScore(true); // true indica que es finalización manual
+            saveProgress();
         }
 
         function showFinalScore(isManualFinish = false) {
-            const answeredQuestions = score.correct + score.incorrect;
-            const percentage = answeredQuestions > 0 ? Math.round((score.correct / answeredQuestions) * 100) : 0;
-            const completionPercentage = Math.round((answeredQuestions / totalQuestions) * 100);
+            const total = score.correct + score.incorrect;
+            const percentage = total > 0 ? Math.round((score.correct / total) * 100) : 0;
             
             let performanceMessage = "";
             let performanceColor = "";
@@ -2156,7 +2098,7 @@
             finalScoreDiv.innerHTML = `
                 <div class="final-score">
                     <h2>${titleMessage}</h2>
-                    <p style="opacity: 0.9; margin-bottom: 20px;">Has completado ${completionPercentage}% del quiz (${answeredQuestions}/${totalQuestions} preguntas)</p>
+                    ${isManualFinish ? '<p style="opacity: 0.9; margin-bottom: 20px;">Has respondido ' + total + ' de 80 preguntas</p>' : ''}
                     ${percentage === 100 && !isManualFinish ? '<p style="opacity: 0.9; margin-bottom: 20px;">🎊 ¡Has respondido correctamente todas las preguntas!</p>' : ''}
                     
                     <div class="percentage-circle" style="--percentage: ${percentage * 3.6}deg;">
@@ -2175,8 +2117,8 @@
                             <div class="score-label">Respuestas Incorrectas</div>
                         </div>
                         <div class="score-item">
-                            <div class="score-number" style="color: #ed8936;">${pendingQuestionIds.size}</div>
-                            <div class="score-label">Sin Responder</div>
+                            <div class="score-number">${total}</div>
+                            <div class="score-label">Total Respondidas</div>
                         </div>
                     </div>
                     
@@ -2186,9 +2128,9 @@
                     
                     <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap;">
                         <button class="btn btn-primary" onclick="resetQuiz()" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);">
-                            🔄 Nuevo Quiz
+                            🔄 Nuevo Quiz (Respuestas Mezcladas)
                         </button>
-                        ${isManualFinish && answeredQuestions < totalQuestions ? '<button class="btn btn-primary" onclick="continueQuiz()" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);">📚 Continuar Quiz</button>' : ''}
+                        ${isManualFinish ? '<button class="btn btn-primary" onclick="continueQuiz()" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);">📚 Continuar Quiz</button>' : ''}
                     </div>
                 </div>
             `;
@@ -2202,31 +2144,93 @@
             updateUI();
         }
 
-        function resetQuiz() {
-            console.log('🔄 Reiniciando quiz...');
+        function nextQuestion() {
+            // Si hay respuestas seleccionadas pero no verificadas, procesarlas automáticamente
+            if (selectedAnswers.length > 0 && !showResult) {
+                processAnswerSilently();
+            }
             
-            // Reset todas las variables
+            if (isReviewMode) {
+                if (currentReviewIndex < reviewQuestions.length - 1) {
+                    currentReviewIndex++;
+                    updateUI();
+                }
+            } else {
+                if (currentQuestion < shuffledQuestions.length - 1) {
+                    currentQuestion++;
+                    updateUI();
+                }
+            }
+        }
+
+        function prevQuestion() {
+            // Si hay respuestas seleccionadas pero no verificadas, procesarlas automáticamente
+            if (selectedAnswers.length > 0 && !showResult) {
+                processAnswerSilently();
+            }
+            
+            if (isReviewMode) {
+                if (currentReviewIndex > 0) {
+                    currentReviewIndex--;
+                    updateUI();
+                }
+            } else {
+                if (currentQuestion > 0) {
+                    currentQuestion--;
+                    updateUI();
+                }
+            }
+        }
+
+        function processAnswerSilently() {
+            const question = isReviewMode ? reviewQuestions[currentReviewIndex] : shuffledQuestions[currentQuestion];
+            const correct = question.correct;
+            const isCorrect = selectedAnswers.length === correct.length && 
+                             selectedAnswers.every(answer => correct.includes(answer));
+            
+            showResult = true;
+            
+            if (isCorrect) {
+                score.correct++;
+                if (isReviewMode) {
+                    incorrectQuestions = incorrectQuestions.filter(q => q.id !== question.id);
+                }
+            } else {
+                score.incorrect++;
+                if (!isReviewMode && !incorrectQuestions.some(q => q.id === question.id)) {
+                    incorrectQuestions.push(question);
+                }
+            }
+            
+            updateScore();
+            saveProgress();
+        }
+
+        function resetQuiz() {
+            // Si hay respuestas seleccionadas pero no verificadas, procesarlas automáticamente
+            if (selectedAnswers.length > 0 && !showResult && (score.correct > 0 || score.incorrect > 0)) {
+                processAnswerSilently();
+            }
+            
+            // Volver a mezclar las opciones de todas las preguntas
+            console.log('🔄 Reiniciando quiz - mezclando opciones nuevamente...');
+            shuffledQuestions = questions.map(shuffleQuestionOptions);
+            console.log('✅ Opciones mezcladas para nuevo quiz');
+            
             currentQuestion = 0;
             selectedAnswers = [];
             showResult = false;
             score = { correct: 0, incorrect: 0 };
             quizCompleted = false;
+            incorrectQuestions = [];
             isReviewMode = false;
             reviewQuestions = [];
             currentReviewIndex = 0;
-            reviewCycle = 0;
-            
-            // Re-inicializar sets de preguntas
-            pendingQuestionIds = new Set(questions.map(q => q.id));
-            incorrectQuestionIds = new Set();
-            
-            // Re-mezclar preguntas
-            shuffledQuestions = questions.map(shuffleQuestionOptions);
-            
             document.getElementById('quiz-container').style.display = 'block';
             document.getElementById('final-score').style.display = 'none';
             
-            console.log('✅ Quiz reiniciado');
+            // Limpiar progreso guardado cuando se reinicia
+            clearProgress();
             updateUI();
         }
 
@@ -2234,7 +2238,6 @@
         initializeQuiz();
         updateUI();
     </script>
-</body>
+  </body>
 </html>
-
 
