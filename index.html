@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -36,6 +35,7 @@
             box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
         }
         
         .header h1 {
@@ -45,6 +45,26 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 12px;
+        }
+        
+        .lang-toggle-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 8px 16px;
+            background: linear-gradient(45deg, #4a5568, #2d3748);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .lang-toggle-btn:hover {
+            background: linear-gradient(45deg, #2d3748, #1a202c);
+            transform: translateY(-1px);
         }
         
         .stats {
@@ -557,6 +577,11 @@
             .header h1 {
                 font-size: 1.5rem;
             }
+            
+            .lang-toggle-btn {
+                position: static;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
@@ -565,6 +590,9 @@
         <!-- Header -->
         <div class="header">
             <h1>📚 Simulador Examen C_ABAPD_2309</h1>
+            <button class="lang-toggle-btn" onclick="toggleLanguage()">
+                <span id="lang-toggle-text">🇬🇧 EN</span>
+            </button>
             <div class="stats">
                 <div class="stat-item">
                     <span id="question-counter">Pregunta 1 de 80</span>
@@ -600,21 +628,21 @@
             <div class="header-controls">
                 <div class="nav-controls">
                     <button class="btn btn-secondary btn-compact" id="prev-btn" onclick="prevQuestion()">
-                        ← Anterior
+                        ← <span id="prev-btn-text">Anterior</span>
                     </button>
                     <button class="btn btn-primary btn-compact" id="check-btn" onclick="checkAnswer()" style="display: none;">
-                        ✓ Verificar
+                        ✓ <span id="check-btn-text">Verificar</span>
                     </button>
                     <button class="btn btn-secondary btn-compact" id="next-btn" onclick="nextQuestion()">
-                        Siguiente →
+                        <span id="next-btn-text">Siguiente</span> →
                     </button>
                 </div>
                 <div class="action-controls">
                     <button class="btn btn-orange btn-compact" onclick="resetQuiz()">
-                        🔄 Reiniciar
+                        🔄 <span id="reset-btn-text">Reiniciar</span>
                     </button>
                     <button class="btn btn-compact" onclick="finishQuiz()" style="background: linear-gradient(45deg, #8b5cf6, #a855f7); color: white;">
-                        🏁 Finalizar
+                        🏁 <span id="finish-btn-text">Finalizar</span>
                     </button>
                 </div>
             </div>
@@ -623,7 +651,7 @@
                 🐛 Toggle Debug
             </button>
             <button class="btn btn-secondary" onclick="clearSavedProgress()" style="margin-top: 10px; margin-left: 10px; font-size: 0.7rem;">
-                🗑️ Borrar Progreso Guardado
+                🗑️ <span id="clear-btn-text">Borrar Progreso Guardado</span>
             </button>
         </div>
 
@@ -641,7 +669,7 @@
                 <div class="question-number" id="question-number">Pregunta 1</div>
                 <div class="question-text" id="question-text"></div>
                 <div class="multiple-notice" id="multiple-notice" style="display: none;">
-                    📌 Selecciona múltiples respuestas
+                    📌 <span id="multiple-notice-text">Selecciona múltiples respuestas</span>
                 </div>
             </div>
 
@@ -663,18 +691,104 @@
             <div class="modal-content" id="modal-content"></div>
             <div class="modal-footer">
                 <button class="btn btn-primary" onclick="closeModal()">
-                    Continuar →
+                    <span id="continue-btn-text">Continuar</span> →
                 </button>
             </div>
         </div>
     </div>
 
     <script>
+        // Variable para el idioma actual
+        let currentLanguage = 'en';
+        
+        // Traducciones de UI
+        const uiTranslations = {
+            en: {
+                questionCounter: (current, total, isReview, cycle) => isReview ? 
+                    `Question ${current} of ${total} (Review - Cycle ${cycle})` : 
+                    `Question ${current} of ${total}`,
+                correct: 'Correct',
+                incorrect: 'Incorrect',
+                pending: 'Pending',
+                previous: 'Previous',
+                next: 'Next',
+                check: 'Check',
+                reset: 'Reset',
+                finish: 'Finish',
+                continueBtn: 'Continue',
+                clearProgress: 'Clear Saved Progress',
+                multipleSelect: 'Select multiple answers',
+                reviewMode: 'Review Mode - Cycle',
+                correctTitle: 'Correct!',
+                incorrectTitle: 'Incorrect',
+                correctAnswer: 'Correct answer',
+                correctAnswers: 'Correct answers',
+                yourAnswer: 'Your answer',
+                yourAnswers: 'Your answers',
+                explanation: 'Explanation',
+                quizCompleted: '🏆 Quiz Completed!',
+                quizFinished: '📊 Quiz Finished',
+                completionText: (percentage, answered, total) => `You completed ${percentage}% of the quiz (${answered}/${total} questions)`,
+                perfectScore: '🎊 You answered all questions correctly!',
+                performanceExcellent: '🎉 Excellent! You master ABAP very well',
+                performanceGood: '👍 Good! You have a solid foundation',
+                performanceNeedsWork: '📚 You need to review some concepts',
+                performanceKeepStudying: '💪 Keep studying! You can improve a lot',
+                newQuiz: 'New Quiz',
+                continueQuiz: 'Continue Quiz'
+            },
+            es: {
+                questionCounter: (current, total, isReview, cycle) => isReview ? 
+                    `Pregunta ${current} de ${total} (Repaso - Ciclo ${cycle})` : 
+                    `Pregunta ${current} de ${total}`,
+                correct: 'Correctas',
+                incorrect: 'Incorrectas',
+                pending: 'Pendientes',
+                previous: 'Anterior',
+                next: 'Siguiente',
+                check: 'Verificar',
+                reset: 'Reiniciar',
+                finish: 'Finalizar',
+                continueBtn: 'Continuar',
+                clearProgress: 'Borrar Progreso Guardado',
+                multipleSelect: 'Selecciona múltiples respuestas',
+                reviewMode: 'Modo Repaso - Ciclo',
+                correctTitle: '¡Correcto!',
+                incorrectTitle: 'Incorrecto',
+                correctAnswer: 'Respuesta correcta',
+                correctAnswers: 'Respuestas correctas',
+                yourAnswer: 'Tu respuesta',
+                yourAnswers: 'Tus respuestas',
+                explanation: 'Explicación',
+                quizCompleted: '🏆 ¡Quiz Completado!',
+                quizFinished: '📊 Quiz Finalizado',
+                completionText: (percentage, answered, total) => `Has completado ${percentage}% del quiz (${answered}/${total} preguntas)`,
+                perfectScore: '🎊 ¡Has respondido correctamente todas las preguntas!',
+                performanceExcellent: '🎉 ¡Excelente! Dominas muy bien ABAP',
+                performanceGood: '👍 ¡Bien! Tienes una base sólida',
+                performanceNeedsWork: '📚 Necesitas repasar algunos conceptos',
+                performanceKeepStudying: '💪 ¡Sigue estudiando! Puedes mejorar mucho',
+                newQuiz: 'Nuevo Quiz',
+                continueQuiz: 'Continuar Quiz'
+            }
+        };
+        
+        // Función para obtener traducción
+        function t(key, ...args) {
+            const translations = uiTranslations[currentLanguage];
+            const value = translations[key];
+            if (typeof value === 'function') {
+                return value(...args);
+            }
+            return value || key;
+        }
+        
         const questions = [
-            // Preguntas 1-10
+            // Preguntas 1-10 con traducciones de ejemplo
             {
                 id: 1,
                 question: "Which function call returns 0?",
+                questionEs: "¿Qué llamada de función devuelve 0?",
                 options: [
                     "Count_any_of ( val = 'ABAP ABAP abap' sub = \"AB\" )",
                     "Count (val = 'ABAP ABAP abap' sub = 'AB' )",
@@ -683,76 +797,118 @@
                 ],
                 correct: ["C"],
                 multiple: false,
-                explanation: "find_any_of devuelve 0 cuando no encuentra ningún carácter de la subcadena en la cadena principal. En este caso, busca 'AB' (mayúsculas) en 'ABAP ABAP abap' pero el último 'abap' está en minúsculas, por lo que no encuentra coincidencia exacta."
+                explanation: "find_any_of returns 0 when it doesn't find any character from the substring in the main string. In this case, it searches for 'AB' (uppercase) in 'ABAP ABAP abap' but the last 'abap' is in lowercase, so it doesn't find an exact match.",
+                explanationEs: "find_any_of devuelve 0 cuando no encuentra ningún carácter de la subcadena en la cadena principal. En este caso, busca 'AB' (mayúsculas) en 'ABAP ABAP abap' pero el último 'abap' está en minúsculas, por lo que no encuentra coincidencia exacta."
             },
             {
                 id: 2,
                 question: "In which products must you use the ABAP Cloud Development Model? Note: There are 2 correct answers to this question.",
+                questionEs: "¿En qué productos debe usar el Modelo de Desarrollo ABAP Cloud? Nota: Hay 2 respuestas correctas a esta pregunta.",
                 options: [
                     "SAP S/4HANA Cloud, private edition",
                     "SAP BTP, ABAP environment",
                     "SAP S/4HANA on premise",
                     "SAP S/4HANA Cloud, public edition"
                 ],
+                optionsEs: [
+                    "SAP S/4HANA Cloud, edición privada",
+                    "SAP BTP, entorno ABAP",
+                    "SAP S/4HANA on premise",
+                    "SAP S/4HANA Cloud, edición pública"
+                ],
                 correct: ["B", "D"],
                 multiple: true,
-                explanation: "ABAP Cloud Development Model es obligatorio en SAP BTP ABAP environment y SAP S/4HANA Cloud public edition. En private edition y on-premise puedes usar tanto ABAP Cloud como Standard ABAP, pero en los entornos cloud públicos y BTP es mandatorio usar el modelo cloud."
+                explanation: "ABAP Cloud Development Model is mandatory in SAP BTP ABAP environment and SAP S/4HANA Cloud public edition. In private edition and on-premise you can use both ABAP Cloud and Standard ABAP, but in public cloud environments and BTP it's mandatory to use the cloud model.",
+                explanationEs: "ABAP Cloud Development Model es obligatorio en SAP BTP ABAP environment y SAP S/4HANA Cloud public edition. En private edition y on-premise puedes usar tanto ABAP Cloud como Standard ABAP, pero en los entornos cloud públicos y BTP es mandatorio usar el modelo cloud."
             },
             {
                 id: 3,
                 question: "Which RESTful Application Programming object can be used to organize the display of fields in an app?",
+                questionEs: "¿Qué objeto de Programación de Aplicaciones RESTful se puede usar para organizar la visualización de campos en una aplicación?",
                 options: [
                     "Data model view",
                     "Metadata extension",
                     "Service definition",
                     "Projection view"
                 ],
+                optionsEs: [
+                    "Vista del modelo de datos",
+                    "Extensión de metadatos",
+                    "Definición de servicio",
+                    "Vista de proyección"
+                ],
                 correct: ["B"],
                 multiple: false,
-                explanation: "Metadata extension se usa para definir anotaciones UI como @UI.lineItem, @UI.fieldGroup, etc., que organizan cómo se muestran los campos en las aplicaciones Fiori. Las otras opciones definen datos (data model view), servicios (service definition) o vistas específicas (projection view), pero no la organización visual."
+                explanation: "Metadata extension is used to define UI annotations like @UI.lineItem, @UI.fieldGroup, etc., which organize how fields are displayed in Fiori applications. The other options define data (data model view), services (service definition) or specific views (projection view), but not the visual organization.",
+                explanationEs: "Metadata extension se usa para definir anotaciones UI como @UI.lineItem, @UI.fieldGroup, etc., que organizan cómo se muestran los campos en las aplicaciones Fiori. Las otras opciones definen datos (data model view), servicios (service definition) o vistas específicas (projection view), pero no la organización visual."
             },
             {
                 id: 4,
                 question: "When accessing the subclass instance through go_super, what can you do? Note: There are 2 correct answers to this question.",
+                questionEs: "Al acceder a la instancia de la subclase a través de go_super, ¿qué puedes hacer? Nota: Hay 2 respuestas correctas a esta pregunta.",
                 options: [
                     "Access the inherited private components.",
                     "Access the inherited public components.",
                     "Call a subclass specific public method",
                     "Call inherited public redefined methods."
                 ],
+                optionsEs: [
+                    "Acceder a los componentes privados heredados.",
+                    "Acceder a los componentes públicos heredados.",
+                    "Llamar a un método público específico de la subclase",
+                    "Llamar a métodos públicos redefinidos heredados."
+                ],
                 correct: ["B", "D"],
                 multiple: true,
-                explanation: "go_super permite acceder a componentes públicos heredados y llamar métodos públicos redefinidos desde la superclase. No puedes acceder a componentes privados (están encapsulados) ni llamar métodos específicos de la subclase (go_super apunta a la superclase)."
+                explanation: "go_super allows accessing inherited public components and calling redefined public methods from the superclass. You cannot access private components (they are encapsulated) or call subclass-specific methods (go_super points to the superclass).",
+                explanationEs: "go_super permite acceder a componentes públicos heredados y llamar métodos públicos redefinidos desde la superclase. No puedes acceder a componentes privados (están encapsulados) ni llamar métodos específicos de la subclase (go_super apunta a la superclase)."
             },
             {
                 id: 5,
                 question: "Given code in SAP S/4HANA Cloud private edition tenant with class zcl_demo_class in 'ABAP Cloud' language version and function module 'ZF1' in 'Standard ABAP' language version. Regarding the function call, which are valid statements? Note: There are 2 correct answers.",
+                questionEs: "Dado el código en un tenant de SAP S/4HANA Cloud edición privada con clase zcl_demo_class en versión de lenguaje 'ABAP Cloud' y módulo de función 'ZF1' en versión de lenguaje 'Standard ABAP'. Con respecto a la llamada de función, ¿cuáles son declaraciones válidas? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "'ZF1' can be called only if it is released for cloud development.",
                     "'ZF1' can be called if a wrapper is created for it and the wrapper itself is released for cloud development.",
                     "'ZF1' can be called whether it is released or not for cloud development",
                     "'ZF1' can be called if a wrapper is created for it but the wrapper itself is not released for cloud development."
                 ],
+                optionsEs: [
+                    "'ZF1' puede ser llamado solo si está liberado para desarrollo cloud.",
+                    "'ZF1' puede ser llamado si se crea un wrapper para él y el wrapper mismo está liberado para desarrollo cloud.",
+                    "'ZF1' puede ser llamado esté o no liberado para desarrollo cloud",
+                    "'ZF1' puede ser llamado si se crea un wrapper para él pero el wrapper mismo no está liberado para desarrollo cloud."
+                ],
                 correct: ["A", "B"],
                 multiple: true,
-                explanation: "En ABAP Cloud, solo puedes llamar objetos que estén released for cloud development. Si ZF1 no está released, necesitas crear un wrapper que SÍ esté released. El wrapper actúa como intermediario entre el código cloud y el código standard ABAP."
+                explanation: "In ABAP Cloud, you can only call objects that are released for cloud development. If ZF1 is not released, you need to create a wrapper that IS released. The wrapper acts as an intermediary between cloud code and standard ABAP code.",
+                explanationEs: "En ABAP Cloud, solo puedes llamar objetos que estén released for cloud development. Si ZF1 no está released, necesitas crear un wrapper que SÍ esté released. El wrapper actúa como intermediario entre el código cloud y el código standard ABAP."
             },
             {
                 id: 6,
                 question: "What are the effects of attaching a system field to an input parameter of a CDS view entity? Note: There are 2 correct answers.",
+                questionEs: "¿Cuáles son los efectos de adjuntar un campo del sistema a un parámetro de entrada de una entidad de vista CDS? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "It is no longer possible to pass your own value to the parameter.",
                     "You can still override the default value with a value of your own.",
                     "The value of sy-langu will be passed to the CDS view automatically when you use the CDS view in ABAP but not when you use it in another view entity",
                     "The value of sy-langu will be passed to the CDS view automatically both when you use the CDS view in ABAP and in another CDS view entity (view on view)."
                 ],
+                optionsEs: [
+                    "Ya no es posible pasar tu propio valor al parámetro.",
+                    "Aún puedes sobrescribir el valor por defecto con un valor propio.",
+                    "El valor de sy-langu se pasará a la vista CDS automáticamente cuando uses la vista CDS en ABAP pero no cuando la uses en otra entidad de vista",
+                    "El valor de sy-langu se pasará a la vista CDS automáticamente tanto cuando uses la vista CDS en ABAP como en otra entidad de vista CDS (vista sobre vista)."
+                ],
                 correct: ["B", "C"],
                 multiple: true,
-                explanation: "Cuando asocias un system field a un parámetro CDS, se usa como valor por defecto pero aún puedes sobrescribirlo. El valor del system field se pasa automáticamente cuando usas la vista en ABAP, pero no en vistas sobre vistas (view on view)."
+                explanation: "When you attach a system field to a CDS parameter, it's used as a default value but you can still override it. The system field value is passed automatically when you use the view in ABAP, but not in view-on-view scenarios.",
+                explanationEs: "Cuando asocias un system field a un parámetro CDS, se usa como valor por defecto pero aún puedes sobrescribirlo. El valor del system field se pasa automáticamente cuando usas la vista en ABAP, pero no en vistas sobre vistas (view on view)."
             },
             {
                 id: 7,
                 question: "In the assignment: data (gv_result) = 1 / 8. What will be the data type of gv_result?",
+                questionEs: "En la asignación: data (gv_result) = 1 / 8. ¿Cuál será el tipo de datos de gv_result?",
                 options: [
                     "TYPE I",
                     "TYPE P DECIMALS 2",
@@ -761,11 +917,13 @@
                 ],
                 correct: ["A"],
                 multiple: false,
-                explanation: "En ABAP, cuando divides dos integers (1 / 8), el resultado es TYPE I (integer). La división entera de 1/8 da 0, no un decimal. Para obtener decimales necesitarías usar tipos P o F en los operandos."
+                explanation: "In ABAP, when you divide two integers (1 / 8), the result is TYPE I (integer). The integer division of 1/8 gives 0, not a decimal. To get decimals you would need to use P or F types in the operands.",
+                explanationEs: "En ABAP, cuando divides dos integers (1 / 8), el resultado es TYPE I (integer). La división entera de 1/8 da 0, no un decimal. Para obtener decimales necesitarías usar tipos P o F en los operandos."
             },
             {
                 id: 8,
                 question: "Given interface and class code, what are valid statements? Note: There are 3 correct answers.",
+                questionEs: "Dado el código de interfaz y clase, ¿cuáles son declaraciones válidas? Nota: Hay 3 respuestas correctas.",
                 options: [
                     "In class CL2, the interface method is named if1-m1.",
                     "Class CL2 uses the interface.",
@@ -773,53 +931,86 @@
                     "Class CL1 uses the interface.",
                     "Class CL1 implements the interface."
                 ],
+                optionsEs: [
+                    "En la clase CL2, el método de interfaz se llama if1-m1.",
+                    "La clase CL2 usa la interfaz.",
+                    "En la clase CL1, el método de interfaz se llama if1-m1.",
+                    "La clase CL1 usa la interfaz.",
+                    "La clase CL1 implementa la interfaz."
+                ],
                 correct: ["C", "D", "E"],
                 multiple: true,
-                explanation: "CL1 implementa la interface (INTERFACES if1), por lo que usa la interface y sus métodos se llaman if1-m1. CL2 solo define una referencia TYPE REF TO if1, no implementa la interface directamente."
+                explanation: "CL1 implements the interface (INTERFACES if1), so it uses the interface and its methods are called if1-m1. CL2 only defines a reference TYPE REF TO if1, it doesn't implement the interface directly.",
+                explanationEs: "CL1 implementa la interface (INTERFACES if1), por lo que usa la interface y sus métodos se llaman if1-m1. CL2 solo define una referencia TYPE REF TO if1, no implementa la interface directamente."
             },
             {
                 id: 9,
                 question: "Given casting code with Icl_super being superclass for Icl_sub1 and Icl_sub2, what will happen when executing these casts? Note: There are 2 correct answers.",
+                questionEs: "Dado el código de casting con Icl_super siendo superclase para Icl_sub1 e Icl_sub2, ¿qué sucederá al ejecutar estos casts? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "go_sub1->sub1_meth1(...). will work.",
                     "go_sub2->sub2_meth1(...). will work",
                     "go_sub1 = CAST #( go_super ), will not work; go_sub2 = CAST #( go_super ), will work.",
                     "go_sub1 = CAST #(go_super), will work; go_sub2 = CAST #(go_super). will not work."
                 ],
+                optionsEs: [
+                    "go_sub1->sub1_meth1(...). funcionará.",
+                    "go_sub2->sub2_meth1(...). funcionará",
+                    "go_sub1 = CAST #( go_super ), no funcionará; go_sub2 = CAST #( go_super ), funcionará.",
+                    "go_sub1 = CAST #(go_super), funcionará; go_sub2 = CAST #(go_super). no funcionará."
+                ],
                 correct: ["A", "D"],
                 multiple: true,
-                explanation: "El primer cast (go_sub1) funciona porque go_super realmente apunta a una instancia de Icl_sub1. El segundo cast (go_sub2) falla porque go_super no apunta a una instancia de Icl_sub2. Los métodos específicos de subclase funcionan después del cast exitoso."
+                explanation: "The first cast (go_sub1) works because go_super actually points to an instance of Icl_sub1. The second cast (go_sub2) fails because go_super doesn't point to an instance of Icl_sub2. Subclass-specific methods work after successful casting.",
+                explanationEs: "El primer cast (go_sub1) funciona porque go_super realmente apunta a una instancia de Icl_sub1. El segundo cast (go_sub2) falla porque go_super no apunta a una instancia de Icl_sub2. Los métodos específicos de subclase funcionan después del cast exitoso."
             },
             {
                 id: 10,
                 question: "Setting a field to read-only in which object would make the field read-only in all applications of the RESTful Application Programming model?",
+                questionEs: "¿Configurar un campo como solo lectura en qué objeto haría que el campo sea de solo lectura en todas las aplicaciones del modelo de Programación de Aplicaciones RESTful?",
                 options: [
                     "Service definition",
                     "Metadata extension",
                     "Behaviour definition",
                     "Projection view"
                 ],
+                optionsEs: [
+                    "Definición de servicio",
+                    "Extensión de metadatos",
+                    "Definición de comportamiento",
+                    "Vista de proyección"
+                ],
                 correct: ["C"],
                 multiple: false,
-                explanation: "Behaviour definition controla el comportamiento operacional de los campos a nivel del business object. Al marcar un campo como read-only aquí, afecta todas las aplicaciones que usen ese business object, independientemente de su service definition o projection view."
+                explanation: "Behaviour definition controls the operational behavior of fields at the business object level. Marking a field as read-only here affects all applications that use that business object, regardless of their service definition or projection view.",
+                explanationEs: "Behaviour definition controla el comportamiento operacional de los campos a nivel del business object. Al marcar un campo como read-only aquí, afecta todas las aplicaciones que usen ese business object, independientemente de su service definition o projection view."
             },
             // Preguntas 11-20
             {
                 id: 11,
                 question: "What are some features of a unique secondary key? Note: There are 2 correct answers to this question.",
+                questionEs: "¿Cuáles son algunas características de una clave secundaria única? Nota: Hay 2 respuestas correctas a esta pregunta.",
                 options: [
                     "It is created with the first read access of a table.",
                     "It is created when a table is filled.",
                     "It is updated when the table is modified.",
                     "It is updated when the modified table is read again."
                 ],
+                optionsEs: [
+                    "Se crea con el primer acceso de lectura de una tabla.",
+                    "Se crea cuando se llena una tabla.",
+                    "Se actualiza cuando se modifica la tabla.",
+                    "Se actualiza cuando la tabla modificada se lee nuevamente."
+                ],
                 correct: ["A", "C"],
                 multiple: true,
-                explanation: "Las secondary keys únicas se crean lazy loading (en el primer acceso de lectura) y se mantienen automáticamente actualizadas cuando se modifica la tabla interna para preservar la integridad del índice."
+                explanation: "Unique secondary keys are created with lazy loading (on first read access) and are automatically kept updated when the internal table is modified to preserve index integrity.",
+                explanationEs: "Las secondary keys únicas se crean lazy loading (en el primer acceso de lectura) y se mantienen automáticamente actualizadas cuando se modifica la tabla interna para preservar la integridad del índice."
             },
             {
                 id: 12,
                 question: "Which of the following results in faster access to internal tables? Note: There are 3 correct answers to this question.",
+                questionEs: "¿Cuál de los siguientes resulta en un acceso más rápido a las tablas internas? Nota: Hay 3 respuestas correctas a esta pregunta.",
                 options: [
                     "In a sorted internal table, specifying the primary key partially from the left without gaps.",
                     "In a hashed internal table, specifying the primary key completely.",
@@ -827,64 +1018,104 @@
                     "In a standard internal table, specifying the primary key partially from the left without gaps.",
                     "In a hashed internal table, specifying the primary key partially from the left without gaps."
                 ],
+                optionsEs: [
+                    "En una tabla interna ordenada, especificando la clave primaria parcialmente desde la izquierda sin espacios.",
+                    "En una tabla interna hash, especificando la clave primaria completamente.",
+                    "En una tabla interna ordenada, especificando la clave primaria completamente.",
+                    "En una tabla interna estándar, especificando la clave primaria parcialmente desde la izquierda sin espacios.",
+                    "En una tabla interna hash, especificando la clave primaria parcialmente desde la izquierda sin espacios."
+                ],
                 correct: ["A", "B", "C"],
                 multiple: true,
-                explanation: "Las tablas sorted permiten acceso rápido con claves parciales desde la izquierda (binary search). Las hashed requieren clave completa (O(1) access). Las standard no tienen optimización de clave, siempre son búsqueda lineal."
+                explanation: "Sorted tables allow fast access with partial keys from the left (binary search). Hashed tables require complete key (O(1) access). Standard tables have no key optimization, always linear search.",
+                explanationEs: "Las tablas sorted permiten acceso rápido con claves parciales desde la izquierda (binary search). Las hashed requieren clave completa (O(1) access). Las standard no tienen optimización de clave, siempre son búsqueda lineal."
             },
             {
                 id: 13,
                 question: "You want to define a CDS view entity with an input parameter. Which types can you use for the parameter? Note: There are 2 correct answers.",
+                questionEs: "Quieres definir una entidad de vista CDS con un parámetro de entrada. ¿Qué tipos puedes usar para el parámetro? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "A built-in ABAP Dictionary type",
                     "A data element",
                     "A built-in ABAP type",
                     "A component of an ABAP Dictionary structure"
                 ],
+                optionsEs: [
+                    "Un tipo integrado del Diccionario ABAP",
+                    "Un elemento de datos",
+                    "Un tipo ABAP integrado",
+                    "Un componente de una estructura del Diccionario ABAP"
+                ],
                 correct: ["A", "B"],
                 multiple: true,
-                explanation: "Los parámetros de CDS view entities pueden usar tipos built-in del ABAP Dictionary (como CHAR, NUMC, DATS) y data elements. No pueden usar tipos ABAP directos ni componentes individuales de estructuras."
+                explanation: "CDS view entity parameters can use built-in ABAP Dictionary types (like CHAR, NUMC, DATS) and data elements. They cannot use direct ABAP types or individual structure components.",
+                explanationEs: "Los parámetros de CDS view entities pueden usar tipos built-in del ABAP Dictionary (como CHAR, NUMC, DATS) y data elements. No pueden usar tipos ABAP directos ni componentes individuales de estructuras."
             },
             {
                 id: 14,
                 question: "Match the sequence of execution in the dropdown list to the operation. (1 is the highest priority and 3 is the lowest priority.)",
+                questionEs: "Relaciona la secuencia de ejecución en la lista desplegable con la operación. (1 es la prioridad más alta y 3 es la más baja.)",
                 options: [
                     "Addition (+) and Subtraction (-): Priority 3",
                     "Numeric functions: Priority 1",
                     "Multiplication (*) and Division (/): Priority 2"
                 ],
+                optionsEs: [
+                    "Suma (+) y Resta (-): Prioridad 3",
+                    "Funciones numéricas: Prioridad 1",
+                    "Multiplicación (*) y División (/): Prioridad 2"
+                ],
                 correct: ["A", "B", "C"],
                 multiple: true,
-                explanation: "En ABAP, el orden de precedencia es: 1) Funciones numéricas (highest), 2) Multiplicación y División, 3) Suma y Resta (lowest). Esto sigue las reglas matemáticas estándar."
+                explanation: "In ABAP, the order of precedence is: 1) Numeric functions (highest), 2) Multiplication and Division, 3) Addition and Subtraction (lowest). This follows standard mathematical rules.",
+                explanationEs: "En ABAP, el orden de precedencia es: 1) Funciones numéricas (highest), 2) Multiplicación y División, 3) Suma y Resta (lowest). Esto sigue las reglas matemáticas estándar."
             },
             {
                 id: 15,
                 question: "In a subclass sub1 you want to redefine a component of a superclass super1. How do you achieve this? Note: There are 2 correct answers.",
+                questionEs: "En una subclase sub1 quieres redefinir un componente de una superclase super1. ¿Cómo lo logras? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "You add the clause REDEFINITION to the component in sub1.",
                     "You implement the redefined component in sub1.",
                     "You implement the redefined component for a second time in super1.",
                     "You add the clause REDEFINITION to the component in super1."
                 ],
+                optionsEs: [
+                    "Agregas la cláusula REDEFINITION al componente en sub1.",
+                    "Implementas el componente redefinido en sub1.",
+                    "Implementas el componente redefinido por segunda vez en super1.",
+                    "Agregas la cláusula REDEFINITION al componente en super1."
+                ],
                 correct: ["A", "B"],
                 multiple: true,
-                explanation: "Para redefinir un componente: 1) Declaras el método con REDEFINITION en la subclase, 2) Implementas el método redefinido en la subclase. El componente original permanece intacto en la superclase."
+                explanation: "To redefine a component: 1) Declare the method with REDEFINITION in the subclass, 2) Implement the redefined method in the subclass. The original component remains intact in the superclass.",
+                explanationEs: "Para redefinir un componente: 1) Declaras el método con REDEFINITION en la subclase, 2) Implementas el método redefinido en la subclase. El componente original permanece intacto en la superclase."
             },
             {
                 id: 16,
                 question: "In a program you find this source code: AUTHORITY-CHECK OBJECT '/DMO/TRVL' ID 'CNTRY' FIELD 'DE' ID 'ACTVT' FIELD '03'. Which of the following apply? Note: There are 2 correct answers.",
+                questionEs: "En un programa encuentras este código fuente: AUTHORITY-CHECK OBJECT '/DMO/TRVL' ID 'CNTRY' FIELD 'DE' ID 'ACTVT' FIELD '03'. ¿Cuál de las siguientes aplica? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "AUTHORITY CHECK verifies whether a user is authorized for '/DMO/TRVL' with the listed field values.",
                     "If the user is authorized for 'CNTRY' = 'DE' AND for 'ACTVT' = '03' then the return code is 0.",
                     "If the user is NOT authorized for 'CNTRY' = 'DE' OR for 'ACTVT' = '03' then the program will terminate.",
                     "If the user is authorized for 'CNTRY' = 'DE' then the return code is always 0."
                 ],
+                optionsEs: [
+                    "AUTHORITY CHECK verifica si un usuario está autorizado para '/DMO/TRVL' con los valores de campo listados.",
+                    "Si el usuario está autorizado para 'CNTRY' = 'DE' Y para 'ACTVT' = '03' entonces el código de retorno es 0.",
+                    "Si el usuario NO está autorizado para 'CNTRY' = 'DE' O para 'ACTVT' = '03' entonces el programa terminará.",
+                    "Si el usuario está autorizado para 'CNTRY' = 'DE' entonces el código de retorno es siempre 0."
+                ],
                 correct: ["A", "B"],
                 multiple: true,
-                explanation: "AUTHORITY-CHECK verifica si el usuario tiene autorización para el objeto '/DMO/TRVL' con los valores especificados. Retorna sy-subrc = 0 solo si el usuario está autorizado para TODAS las condiciones (CNTRY='DE' AND ACTVT='03')."
+                explanation: "AUTHORITY-CHECK verifies if the user has authorization for the object '/DMO/TRVL' with the specified values. It returns sy-subrc = 0 only if the user is authorized for ALL conditions (CNTRY='DE' AND ACTVT='03').",
+                explanationEs: "AUTHORITY-CHECK verifica si el usuario tiene autorización para el objeto '/DMO/TRVL' con los valores especificados. Retorna sy-subrc = 0 solo si el usuario está autorizado para TODAS las condiciones (CNTRY='DE' AND ACTVT='03')."
             },
             {
                 id: 17,
                 question: "Which of the following are valid sort operations for internal tables? Note: There are 3 correct answers.",
+                questionEs: "¿Cuáles de las siguientes son operaciones de ordenamiento válidas para tablas internas? Nota: Hay 3 respuestas correctas.",
                 options: [
                     "Sort a sorted table using SORT itab DESCENDING.",
                     "Sort a sorted table using SORT itab BY field1 ASCENDING field2 DESCENDING.",
@@ -892,13 +1123,22 @@
                     "Sort a standard table using SORT itab BY field1 field2.",
                     "Sort a standard table using SORT itab."
                 ],
+                optionsEs: [
+                    "Ordenar una tabla sorted usando SORT itab DESCENDING.",
+                    "Ordenar una tabla sorted usando SORT itab BY field1 ASCENDING field2 DESCENDING.",
+                    "Ordenar una tabla standard usando SORT itab ASCENDING.",
+                    "Ordenar una tabla standard usando SORT itab BY field1 field2.",
+                    "Ordenar una tabla standard usando SORT itab."
+                ],
                 correct: ["C", "D", "E"],
                 multiple: true,
-                explanation: "Las tablas STANDARD pueden ordenarse con cualquier sintaxis SORT. Las tablas SORTED no pueden reordenarse porque mantienen su orden automáticamente según su definición de clave."
+                explanation: "STANDARD tables can be sorted with any SORT syntax. SORTED tables cannot be re-sorted because they automatically maintain their order according to their key definition.",
+                explanationEs: "Las tablas STANDARD pueden ordenarse con cualquier sintaxis SORT. Las tablas SORTED no pueden reordenarse porque mantienen su orden automáticamente según su definición de clave."
             },
             {
                 id: 18,
                 question: "Which statement can you use to change the contents of a row of data in an internal table?",
+                questionEs: "¿Qué sentencia puedes usar para cambiar el contenido de una fila de datos en una tabla interna?",
                 options: [
                     "Append table",
                     "Insert table",
@@ -907,11 +1147,13 @@
                 ],
                 correct: ["D"],
                 multiple: false,
-                explanation: "MODIFY es la sentencia correcta para cambiar contenidos de una fila en tablas internas. APPEND añade al final, INSERT inserta en posición específica, UPDATE es para base de datos."
+                explanation: "MODIFY is the correct statement to change contents of a row in internal tables. APPEND adds at the end, INSERT inserts at specific position, UPDATE is for database.",
+                explanationEs: "MODIFY es la sentencia correcta para cambiar contenidos de una fila en tablas internas. APPEND añade al final, INSERT inserta en posición específica, UPDATE es para base de datos."
             },
             {
                 id: 19,
                 question: "In an Access Control Object, which clauses are used? Note: There are 3 correct answers.",
+                questionEs: "En un Objeto de Control de Acceso, ¿qué cláusulas se usan? Nota: Hay 3 respuestas correctas.",
                 options: [
                     "Where (to specify the access conditions)",
                     "Return code (to assign the return code of the authority check)",
@@ -919,27 +1161,44 @@
                     "Revoke (to remove access to the data source)",
                     "Grant (to identify the data source)"
                 ],
+                optionsEs: [
+                    "Where (para especificar las condiciones de acceso)",
+                    "Return code (para asignar el código de retorno de la verificación de autoridad)",
+                    "Define role (para especificar el nombre del rol)",
+                    "Revoke (para eliminar el acceso a la fuente de datos)",
+                    "Grant (para identificar la fuente de datos)"
+                ],
                 correct: ["A", "C", "E"],
                 multiple: true,
-                explanation: "Los Access Control Objects usan: WHERE (condiciones de acceso), DEFINE ROLE (nombre del rol), y GRANT (identificar fuente de datos). No usan RETURN CODE ni REVOKE directamente."
+                explanation: "Access Control Objects use: WHERE (access conditions), DEFINE ROLE (role name), and GRANT (identify data source). They don't use RETURN CODE or REVOKE directly.",
+                explanationEs: "Los Access Control Objects usan: WHERE (condiciones de acceso), DEFINE ROLE (nombre del rol), y GRANT (identificar fuente de datos). No usan RETURN CODE ni REVOKE directamente."
             },
             {
                 id: 20,
                 question: "You are designing a select statement in ABAP Open SQL. To adhere to the most recent ABAP SQL syntax conventions from SAP, on which line must you insert the 'INTO TABLE @gt_flights' clause?",
+                questionEs: "Estás diseñando una sentencia select en ABAP Open SQL. Para adherirse a las convenciones de sintaxis ABAP SQL más recientes de SAP, ¿en qué línea debes insertar la cláusula 'INTO TABLE @gt_flights'?",
                 options: [
                     "#15 (at the end)",
                     "#6 (after FROM)",
                     "#8 (after FIELDS)",
                     "#4 (after SELECT)"
                 ],
+                optionsEs: [
+                    "#15 (al final)",
+                    "#6 (después de FROM)",
+                    "#8 (después de FIELDS)",
+                    "#4 (después de SELECT)"
+                ],
                 correct: ["A"],
                 multiple: false,
-                explanation: "En la sintaxis moderna de ABAP SQL, la cláusula INTO debe ir al final de la sentencia SELECT, después de todas las demás cláusulas como WHERE, GROUP BY, ORDER BY."
+                explanation: "In modern ABAP SQL syntax, the INTO clause must go at the end of the SELECT statement, after all other clauses like WHERE, GROUP BY, ORDER BY.",
+                explanationEs: "En la sintaxis moderna de ABAP SQL, la cláusula INTO debe ir al final de la sentencia SELECT, después de todas las demás cláusulas como WHERE, GROUP BY, ORDER BY."
             },
             // Preguntas 21-30
             {
                 id: 21,
                 question: "Given casting code, with which predicate condition can you ensure that the CAST will work?",
+                questionEs: "Dado el código de casting, ¿con qué condición predicado puedes asegurar que el CAST funcionará?",
                 options: [
                     "IS BOUND",
                     "IS INSTANCE OF",
@@ -948,36 +1207,53 @@
                 ],
                 correct: ["B"],
                 multiple: false,
-                explanation: "IS INSTANCE OF verifica si un objeto es instancia de una clase específica antes del casting, evitando excepciones de tipo CX_SY_MOVE_CAST_ERROR."
+                explanation: "IS INSTANCE OF verifies if an object is an instance of a specific class before casting, avoiding CX_SY_MOVE_CAST_ERROR type exceptions.",
+                explanationEs: "IS INSTANCE OF verifica si un objeto es instancia de una clase específica antes del casting, evitando excepciones de tipo CX_SY_MOVE_CAST_ERROR."
             },
             {
                 id: 22,
                 question: "What is the sequence priority when evaluating a logical expression?",
+                questionEs: "¿Cuál es la prioridad de secuencia al evaluar una expresión lógica?",
                 options: [
                     "NOT: Priority 1",
                     "OR: Priority 3", 
                     "AND: Priority 2"
                 ],
+                optionsEs: [
+                    "NOT: Prioridad 1",
+                    "OR: Prioridad 3",
+                    "AND: Prioridad 2"
+                ],
                 correct: ["A", "B", "C"],
                 multiple: true,
-                explanation: "La precedencia de operadores lógicos en ABAP es: 1) NOT (más alta), 2) AND (media), 3) OR (más baja). Esto significa que NOT se evalúa primero, luego AND, y finalmente OR."
+                explanation: "The precedence of logical operators in ABAP is: 1) NOT (highest), 2) AND (medium), 3) OR (lowest). This means NOT is evaluated first, then AND, and finally OR.",
+                explanationEs: "La precedencia de operadores lógicos en ABAP es: 1) NOT (más alta), 2) AND (media), 3) OR (más baja). Esto significa que NOT se evalúa primero, luego AND, y finalmente OR."
             },
             {
                 id: 23,
                 question: "Which of the following are parts of the definition of a new database table? Note: There are 2 correct answers.",
+                questionEs: "¿Cuáles de los siguientes son partes de la definición de una nueva tabla de base de datos? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "Field list",
                     "Extension",
                     "Semantic table attributes", 
                     "Partitioning attributes"
                 ],
+                optionsEs: [
+                    "Lista de campos",
+                    "Extensión",
+                    "Atributos semánticos de tabla",
+                    "Atributos de particionamiento"
+                ],
                 correct: ["A", "C"],
                 multiple: true,
-                explanation: "Una tabla de base de datos requiere: Field list (definición de campos) y Semantic table attributes (atributos como delivery class, table category). Extension y Partitioning son opcionales."
+                explanation: "A database table requires: Field list (field definition) and Semantic table attributes (attributes like delivery class, table category). Extension and Partitioning are optional.",
+                explanationEs: "Una tabla de base de datos requiere: Field list (definición de campos) y Semantic table attributes (atributos como delivery class, table category). Extension y Partitioning son opcionales."
             },
             {
                 id: 24,
                 question: "In a RESTful Application Programming application, in which objects do you bind a CDS view to create a value help? Note: There are 3 correct answers.",
+                questionEs: "En una aplicación de Programación de Aplicaciones RESTful, ¿en qué objetos vinculas una vista CDS para crear una ayuda de valores? Nota: Hay 3 respuestas correctas.",
                 options: [
                     "Data model view",
                     "Service definition",
@@ -985,13 +1261,22 @@
                     "Projection view", 
                     "Metadata extension"
                 ],
+                optionsEs: [
+                    "Vista del modelo de datos",
+                    "Definición de servicio",
+                    "Definición de comportamiento",
+                    "Vista de proyección",
+                    "Extensión de metadatos"
+                ],
                 correct: ["A", "C", "E"],
                 multiple: true,
-                explanation: "Los value helps se pueden definir en: Data model view (con @Consumption.valueHelp), Behavior definition (para validaciones), y Metadata extension (con @UI.valueHelp annotations)."
+                explanation: "Value helps can be defined in: Data model view (with @Consumption.valueHelp), Behavior definition (for validations), and Metadata extension (with @UI.valueHelp annotations).",
+                explanationEs: "Los value helps se pueden definir en: Data model view (con @Consumption.valueHelp), Behavior definition (para validaciones), y Metadata extension (con @UI.valueHelp annotations)."
             },
             {
                 id: 25,
                 question: "Which of the following are incomplete ABAP types? Note: There are 2 correct answers.",
+                questionEs: "¿Cuáles de los siguientes son tipos ABAP incompletos? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "P",
                     "String", 
@@ -1000,11 +1285,13 @@
                 ],
                 correct: ["A", "C"],
                 multiple: true,
-                explanation: "Los tipos P (packed) y C (character) son incompletos porque requieren información adicional: P necesita DECIMALS, C necesita LENGTH. STRING y T son tipos completos."
+                explanation: "Types P (packed) and C (character) are incomplete because they require additional information: P needs DECIMALS, C needs LENGTH. STRING and T are complete types.",
+                explanationEs: "Los tipos P (packed) y C (character) son incompletos porque requieren información adicional: P necesita DECIMALS, C necesita LENGTH. STRING y T son tipos completos."
             },
             {
                 id: 26,
                 question: "Which of the following integration frameworks have been released for ABAP cloud development? Note: There are 3 correct answers.",
+                questionEs: "¿Cuáles de los siguientes frameworks de integración han sido liberados para el desarrollo ABAP cloud? Nota: Hay 3 respuestas correctas.",
                 options: [
                     "OData services",
                     "Business events",
@@ -1014,11 +1301,13 @@
                 ],
                 correct: ["A", "B", "C"],
                 multiple: true,
-                explanation: "Para ABAP Cloud están liberados: OData services (para APIs REST), Business events (para eventos de negocio), y SOAP consumption (para consumir servicios SOAP). BAdIs y CDS Views tienen restricciones específicas."
+                explanation: "For ABAP Cloud, these are released: OData services (for REST APIs), Business events (for business events), and SOAP consumption (to consume SOAP services). BAdIs and CDS Views have specific restrictions.",
+                explanationEs: "Para ABAP Cloud están liberados: OData services (para APIs REST), Business events (para eventos de negocio), y SOAP consumption (para consumir servicios SOAP). BAdIs y CDS Views tienen restricciones específicas."
             },
             {
                 id: 27,
                 question: "Given interface and class code, what are valid statements? Note: There are 3 correct answers.",
+                questionEs: "Dado el código de interfaz y clase, ¿cuáles son declaraciones válidas? Nota: Hay 3 respuestas correctas.",
                 options: [
                     "Instead of go_cl1 = NEW #() you could use go_if1 = NEW #(...).",
                     "go_if1 may call method m2 with go_if1->m2(...).",
@@ -1026,13 +1315,22 @@
                     "go_if1 may call method m1 with go_if1->m1().",
                     "go_cl1 may call method m1 with go_cl1->if1-m1()."
                 ],
+                optionsEs: [
+                    "En lugar de go_cl1 = NEW #() podrías usar go_if1 = NEW #(...).",
+                    "go_if1 puede llamar al método m2 con go_if1->m2(...).",
+                    "En lugar de go_cl1 = NEW #(...) podrías usar go_if1 = NEW cl1( ... ).",
+                    "go_if1 puede llamar al método m1 con go_if1->m1().",
+                    "go_cl1 puede llamar al método m1 con go_cl1->if1-m1()."
+                ],
                 correct: ["C", "D", "E"],
                 multiple: true,
-                explanation: "Las referencias de interface pueden: instanciarse con NEW cl1(), llamar métodos de la interface (m1), y acceder métodos desde clase via if1-m1(). No pueden llamar métodos no definidos en la interface (m2)."
+                explanation: "Interface references can: be instantiated with NEW cl1(), call interface methods (m1), and access methods from class via if1-m1(). They cannot call methods not defined in the interface (m2).",
+                explanationEs: "Las referencias de interface pueden: instanciarse con NEW cl1(), llamar métodos de la interface (m1), y acceder métodos desde clase via if1-m1(). No pueden llamar métodos no definidos en la interface (m2)."
             },
             {
                 id: 28,
                 question: "Which of the following ABAP SQL statements are valid? Note: There are 2 correct answers.",
+                questionEs: "¿Cuáles de las siguientes sentencias ABAP SQL son válidas? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "SELECT FROM /dmo/connection FIELDS MAX(distance) AS dist_max, MIN(distance) AS dist_min INTO TABLE @DATA(lt_hits).",
                     "SELECT FROM /dmo/connection FIELDS carrid, airpfrom GROUP BY carrid, connid INTO TABLE @DATA(lt_hits).",
@@ -1041,24 +1339,34 @@
                 ],
                 correct: ["A", "C"],
                 multiple: true,
-                explanation: "La opción A es válida (solo funciones agregadas). La opción C es válida (campos en GROUP BY incluidos en SELECT). Las opciones B y D fallan porque tienen campos en SELECT que no están en GROUP BY cuando usan agregaciones."
+                explanation: "Option A is valid (only aggregate functions). Option C is valid (fields in GROUP BY included in SELECT). Options B and D fail because they have fields in SELECT that are not in GROUP BY when using aggregations.",
+                explanationEs: "La opción A es válida (solo funciones agregadas). La opción C es válida (campos en GROUP BY incluidos en SELECT). Las opciones B y D fallan porque tienen campos en SELECT que no están en GROUP BY cuando usan agregaciones."
             },
             {
                 id: 29,
                 question: "Given code in SAP S/4HANA Cloud private edition tenant with class zcl_demo_class in 'Standard ABAP' and function module 'ZF1' in 'ABAP Cloud'. Which is a valid statement?",
+                questionEs: "Dado el código en un tenant de SAP S/4HANA Cloud edición privada con clase zcl_demo_class en 'Standard ABAP' y módulo de función 'ZF1' en 'ABAP Cloud'. ¿Cuál es una declaración válida?",
                 options: [
                     "'ZF1' can be called via a wrapper that itself has been released for cloud development.",
                     "'ZF1' must be released for cloud development to be called.",
                     "'ZF1' can be called via a wrapper that itself has not been released for cloud development.",
                     "'ZF1' can be called whether it has been released or not for cloud development."
                 ],
+                optionsEs: [
+                    "'ZF1' puede ser llamado a través de un wrapper que haya sido liberado para desarrollo cloud.",
+                    "'ZF1' debe estar liberado para desarrollo cloud para ser llamado.",
+                    "'ZF1' puede ser llamado a través de un wrapper que no haya sido liberado para desarrollo cloud.",
+                    "'ZF1' puede ser llamado esté o no liberado para desarrollo cloud."
+                ],
                 correct: ["B"],
                 multiple: false,
-                explanation: "Cuando el código que llama está en 'Standard ABAP' y el módulo de función está en 'ABAP Cloud', el módulo ZF1 debe estar released for cloud development para poder ser llamado."
+                explanation: "When the calling code is in 'Standard ABAP' and the function module is in 'ABAP Cloud', the module ZF1 must be released for cloud development to be called.",
+                explanationEs: "Cuando el código que llama está en 'Standard ABAP' y el módulo de función está en 'ABAP Cloud', el módulo ZF1 debe estar released for cloud development para poder ser llamado."
             },
             {
                 id: 30,
                 question: "In ABAP SQL, which of the following retrieves the association field _Airline-Name of a CDS view?",
+                questionEs: "En ABAP SQL, ¿cuál de los siguientes recupera el campo de asociación _Airline-Name de una vista CDS?",
                 options: [
                     "\\_Airline-Name",
                     "'_Airline Name",
@@ -1067,12 +1375,14 @@
                 ],
                 correct: ["A"],
                 multiple: false,
-                explanation: "En ABAP SQL, las asociaciones de CDS views se acceden con backslash-underscore (\\_AssociationName). El backslash es el delimitador para asociaciones."
+                explanation: "In ABAP SQL, CDS view associations are accessed with backslash-underscore (\\_AssociationName). The backslash is the delimiter for associations.",
+                explanationEs: "En ABAP SQL, las asociaciones de CDS views se acceden con backslash-underscore (\\_AssociationName). El backslash es el delimitador para asociaciones."
             },
             // Preguntas 31-40
             {
                 id: 31,
                 question: "Which internal table type allows unique and non-unique keys?",
+                questionEs: "¿Qué tipo de tabla interna permite claves únicas y no únicas?",
                 options: [
                     "Hashed",
                     "Standard",
@@ -1080,24 +1390,34 @@
                 ],
                 correct: ["C"],
                 multiple: false,
-                explanation: "Las tablas SORTED permiten tanto claves únicas (UNIQUE KEY) como no únicas (NON-UNIQUE KEY). Las HASHED solo permiten claves únicas, las STANDARD no tienen claves optimizadas."
+                explanation: "SORTED tables allow both unique keys (UNIQUE KEY) and non-unique keys (NON-UNIQUE KEY). HASHED only allows unique keys, STANDARD doesn't have optimized keys.",
+                explanationEs: "Las tablas SORTED permiten tanto claves únicas (UNIQUE KEY) como no únicas (NON-UNIQUE KEY). Las HASHED solo permiten claves únicas, las STANDARD no tienen claves optimizadas."
             },
             {
                 id: 32,
                 question: "In ABAP SQL, which of the following can be assigned an alias? Note: There are 2 correct answers.",
+                questionEs: "En ABAP SQL, ¿a cuál de los siguientes se le puede asignar un alias? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "field (from field list)",
                     "order criterion (from order by clause)",
                     "group criterion (from group by clause)",
                     "database table"
                 ],
+                optionsEs: [
+                    "campo (de la lista de campos)",
+                    "criterio de orden (de la cláusula order by)",
+                    "criterio de grupo (de la cláusula group by)",
+                    "tabla de base de datos"
+                ],
                 correct: ["A", "D"],
                 multiple: true,
-                explanation: "En ABAP SQL puedes asignar alias a campos (field AS alias) y a tablas de base de datos (FROM table AS alias). Los criterios de ORDER BY y GROUP BY no pueden tener alias."
+                explanation: "In ABAP SQL you can assign aliases to fields (field AS alias) and database tables (FROM table AS alias). ORDER BY and GROUP BY criteria cannot have aliases.",
+                explanationEs: "En ABAP SQL puedes asignar alias a campos (field AS alias) y a tablas de base de datos (FROM table AS alias). Los criterios de ORDER BY y GROUP BY no pueden tener alias."
             },
             {
                 id: 33,
                 question: "Which patterns raise an exception? Note: There are 3 correct answers.",
+                questionEs: "¿Qué patrones lanzan una excepción? Nota: Hay 3 respuestas correctas.",
                 options: [
                     "DATA: gv_target TYPE d. CONSTANTS: gco_date TYPE d VALUE '20331233'. gv_target = EXACT( gco_date).",
                     "DATA: gv_target TYPE c LENGTH 5. CONSTANTS: gco_string TYPE string VALUE '0123456789ABCDEF'. gv_target = EXACT (gco_string+5(6) ).",
@@ -1107,11 +1427,13 @@
                 ],
                 correct: ["A", "B", "C"],
                 multiple: true,
-                explanation: "EXACT lanza excepciones cuando: A) fecha inválida '20331233', B) string de 6 caracteres en campo C LENGTH 5, C) división de enteros 2/2=1 no cabe exactamente en P DECIMALS 3."
+                explanation: "EXACT throws exceptions when: A) invalid date '20331233', B) 6-character string in C LENGTH 5 field, C) integer division 2/2=1 doesn't fit exactly in P DECIMALS 3.",
+                explanationEs: "EXACT lanza excepciones cuando: A) fecha inválida '20331233', B) string de 6 caracteres en campo C LENGTH 5, C) división de enteros 2/2=1 no cabe exactamente en P DECIMALS 3."
             },
             {
                 id: 34,
                 question: "Which of the following are features of Core Data Services? Note: There are 3 correct answers.",
+                questionEs: "¿Cuáles de las siguientes son características de Core Data Services? Nota: Hay 3 respuestas correctas.",
                 options: [
                     "Associations",
                     "Inheritance",
@@ -1119,26 +1441,43 @@
                     "Structured Query Language (SQL)",
                     "Delegation"
                 ],
+                optionsEs: [
+                    "Asociaciones",
+                    "Herencia",
+                    "Anotaciones",
+                    "Lenguaje de Consulta Estructurado (SQL)",
+                    "Delegación"
+                ],
                 correct: ["A", "C", "D"],
                 multiple: true,
-                explanation: "CDS incluye: Associations (relaciones entre entidades), Annotations (metadatos @), y SQL (consultas avanzadas). No soporta herencia ni delegación directamente."
+                explanation: "CDS includes: Associations (relationships between entities), Annotations (@ metadata), and SQL (advanced queries). It doesn't support inheritance or delegation directly.",
+                explanationEs: "CDS incluye: Associations (relaciones entre entidades), Annotations (metadatos @), y SQL (consultas avanzadas). No soporta herencia ni delegación directamente."
             },
             {
                 id: 35,
                 question: "Why would you use Access Controls with CDS Views? Note: There are 2 correct answers.",
+                questionEs: "¿Por qué usarías Controles de Acceso con Vistas CDS? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "The system field sy-subrc is set, giving you the result of the authorization check",
                     "You do not have to remember to implement AUTHORITY CHECK statements.",
                     "All of the data from the data sources is loaded into your application automatically and filtered there according to the user's authorization.",
                     "Only the data corresponding to the user's authorization is transferred from the database to the application layer."
                 ],
+                optionsEs: [
+                    "Se establece el campo del sistema sy-subrc, dándote el resultado de la verificación de autorización",
+                    "No tienes que recordar implementar sentencias AUTHORITY CHECK.",
+                    "Todos los datos de las fuentes de datos se cargan en tu aplicación automáticamente y se filtran allí según la autorización del usuario.",
+                    "Solo los datos correspondientes a la autorización del usuario se transfieren desde la base de datos a la capa de aplicación."
+                ],
                 correct: ["B", "D"],
                 multiple: true,
-                explanation: "Access Controls automatizan las verificaciones de autorización (no necesitas AUTHORITY-CHECK manual) y filtran datos a nivel de base de datos (code pushdown), transfiriendo solo datos autorizados."
+                explanation: "Access Controls automate authorization checks (no need for manual AUTHORITY-CHECK) and filter data at database level (code pushdown), transferring only authorized data.",
+                explanationEs: "Access Controls automatizan las verificaciones de autorización (no necesitas AUTHORITY-CHECK manual) y filtran datos a nivel de base de datos (code pushdown), transfiriendo solo datos autorizados."
             },
             {
                 id: 36,
                 question: "Which ABAP SQL clause allows the use of inline declarations?",
+                questionEs: "¿Qué cláusula ABAP SQL permite el uso de declaraciones inline?",
                 options: [
                     "INTO CORRESPONDING FIELDS OF",
                     "FROM",
@@ -1147,50 +1486,76 @@
                 ],
                 correct: ["D"],
                 multiple: false,
-                explanation: "La cláusula INTO permite declaraciones inline con @DATA(variable), @FINAL(variable), etc. Las otras cláusulas no soportan declaraciones inline."
+                explanation: "The INTO clause allows inline declarations with @DATA(variable), @FINAL(variable), etc. The other clauses don't support inline declarations.",
+                explanationEs: "La cláusula INTO permite declaraciones inline con @DATA(variable), @FINAL(variable), etc. Las otras cláusulas no soportan declaraciones inline."
             },
             {
                 id: 37,
                 question: "What RESTful Application Programming object contains only the fields required for a particular app?",
+                questionEs: "¿Qué objeto de Programación de Aplicaciones RESTful contiene solo los campos requeridos para una aplicación particular?",
                 options: [
                     "Database view",
                     "Metadata extension",
                     "Projection view",
                     "Data model view"
                 ],
+                optionsEs: [
+                    "Vista de base de datos",
+                    "Extensión de metadatos",
+                    "Vista de proyección",
+                    "Vista del modelo de datos"
+                ],
                 correct: ["C"],
                 multiple: false,
-                explanation: "Projection view selecciona solo los campos necesarios de la data model view para una aplicación específica, actuando como un filtro de campos."
+                explanation: "Projection view selects only the necessary fields from the data model view for a specific application, acting as a field filter.",
+                explanationEs: "Projection view selecciona solo los campos necesarios de la data model view para una aplicación específica, actuando como un filtro de campos."
             },
             {
                 id: 38,
                 question: "After you created a database table in the RESTful Application Programming model, what do you create next?",
+                questionEs: "Después de crear una tabla de base de datos en el modelo de Programación de Aplicaciones RESTful, ¿qué creas a continuación?",
                 options: [
                     "A projection view",
                     "A data model view",
                     "A metadata extension",
                     "A service definition"
                 ],
+                optionsEs: [
+                    "Una vista de proyección",
+                    "Una vista del modelo de datos",
+                    "Una extensión de metadatos",
+                    "Una definición de servicio"
+                ],
                 correct: ["B"],
                 multiple: false,
-                explanation: "Después de crear la tabla de base de datos, el siguiente paso en RAP es crear una data model view (CDS view) que exponga los datos de la tabla."
+                explanation: "After creating the database table, the next step in RAP is to create a data model view (CDS view) that exposes the table data.",
+                explanationEs: "Después de crear la tabla de base de datos, el siguiente paso en RAP es crear una data model view (CDS view) que exponga los datos de la tabla."
             },
             {
                 id: 39,
                 question: "In class ZCL_CLASS_A, you use the statement DATA var TYPE ***. What may stand in place of ***? Note: There are 2 correct answers.",
+                questionEs: "En la clase ZCL_CLASS_A, usas la sentencia DATA var TYPE ***. ¿Qué puede estar en lugar de ***? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "The name of a type defined privately in another class",
                     "The name of a domain from the ABAP Dictionary",
                     "The name of a type defined privately in class ZCL_CLASS_A",
                     "The name of a data element from the ABAP Dictionary"
                 ],
+                optionsEs: [
+                    "El nombre de un tipo definido privadamente en otra clase",
+                    "El nombre de un dominio del Diccionario ABAP",
+                    "El nombre de un tipo definido privadamente en la clase ZCL_CLASS_A",
+                    "El nombre de un elemento de datos del Diccionario ABAP"
+                ],
                 correct: ["C", "D"],
                 multiple: true,
-                explanation: "Puedes usar tipos privados de la misma clase (C) y data elements del ABAP Dictionary (D). No puedes acceder tipos privados de otras clases ni domains directamente."
+                explanation: "You can use private types from the same class (C) and data elements from the ABAP Dictionary (D). You cannot access private types from other classes or domains directly.",
+                explanationEs: "Puedes usar tipos privados de la misma clase (C) y data elements del ABAP Dictionary (D). No puedes acceder tipos privados de otras clases ni domains directamente."
             },
             {
                 id: 40,
                 question: "Which extensibility type does SAP recommend you use to enhance the existing UI for an SAP Fiori app?",
+                questionEs: "¿Qué tipo de extensibilidad recomienda SAP que uses para mejorar la UI existente de una aplicación SAP Fiori?",
                 options: [
                     "Key user",
                     "Developer",
@@ -1199,12 +1564,14 @@
                 ],
                 correct: ["A"],
                 multiple: false,
-                explanation: "SAP recomienda Key User extensibility para modificaciones de UI en aplicaciones Fiori, ya que permite personalizar campos, layouts y filtros sin programación."
+                explanation: "SAP recommends Key User extensibility for UI modifications in Fiori applications, as it allows customizing fields, layouts and filters without programming.",
+                explanationEs: "SAP recomienda Key User extensibility para modificaciones de UI en aplicaciones Fiori, ya que permite personalizar campos, layouts y filtros sin programación."
             },
             // Preguntas 41-50
             {
                 id: 41,
                 question: "In RESTful Application Programming, which EML statement retrieves an object?",
+                questionEs: "En la Programación de Aplicaciones RESTful, ¿qué sentencia EML recupera un objeto?",
                 options: [
                     "Read entity",
                     "Get entity",
@@ -1213,36 +1580,53 @@
                 ],
                 correct: ["A"],
                 multiple: false,
-                explanation: "En EML (Entity Manipulation Language), 'READ ENTITY' es la sentencia correcta para recuperar objetos. Las otras opciones no son sentencias EML válidas."
+                explanation: "In EML (Entity Manipulation Language), 'READ ENTITY' is the correct statement to retrieve objects. The other options are not valid EML statements.",
+                explanationEs: "En EML (Entity Manipulation Language), 'READ ENTITY' es la sentencia correcta para recuperar objetos. Las otras opciones no son sentencias EML válidas."
             },
             {
                 id: 42,
                 question: "What are advantages of using a field symbol for internal table row access? Note: There are 2 correct answers.",
+                questionEs: "¿Cuáles son las ventajas de usar un field symbol para el acceso a filas de tablas internas? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "A MODIFY statement to write changed contents back to the table is not required.",
                     "Using a field symbol is faster than using a work area.",
                     "The row content is copied to the field symbol instead to a work area",
                     "The field symbol can be reused for other programs."
                 ],
+                optionsEs: [
+                    "No se requiere una sentencia MODIFY para escribir los contenidos cambiados de vuelta a la tabla.",
+                    "Usar un field symbol es más rápido que usar un área de trabajo.",
+                    "El contenido de la fila se copia al field symbol en lugar de a un área de trabajo",
+                    "El field symbol puede ser reutilizado para otros programas."
+                ],
                 correct: ["A", "B"],
                 multiple: true,
-                explanation: "Los field symbols proporcionan acceso directo a la fila (no requiere MODIFY para escribir cambios) y son más rápidos (evitan copiar datos). Trabajan por referencia, no por copia."
+                explanation: "Field symbols provide direct access to the row (no MODIFY needed to write changes) and are faster (avoid data copying). They work by reference, not by copy.",
+                explanationEs: "Los field symbols proporcionan acceso directo a la fila (no requiere MODIFY para escribir cambios) y son más rápidos (evitan copiar datos). Trabajan por referencia, no por copia."
             },
             {
                 id: 43,
                 question: "What is the purpose of a foreign key relationship between two tables in the ABAP Dictionary?",
+                questionEs: "¿Cuál es el propósito de una relación de clave foránea entre dos tablas en el Diccionario ABAP?",
                 options: [
                     "To create a corresponding foreign key relationship in the database",
                     "To ensure the integrity of data in the corresponding database tables",
                     "To document the relationship between the two tables"
                 ],
+                optionsEs: [
+                    "Para crear una relación de clave foránea correspondiente en la base de datos",
+                    "Para asegurar la integridad de los datos en las tablas de base de datos correspondientes",
+                    "Para documentar la relación entre las dos tablas"
+                ],
                 correct: ["B"],
                 multiple: false,
-                explanation: "Las foreign key relationships en ABAP Dictionary aseguran la integridad referencial de los datos, validando que los valores en la tabla secundaria existan en la tabla primaria."
+                explanation: "Foreign key relationships in ABAP Dictionary ensure referential integrity of data, validating that values in the secondary table exist in the primary table.",
+                explanationEs: "Las foreign key relationships en ABAP Dictionary aseguran la integridad referencial de los datos, validando que los valores en la tabla secundaria existan en la tabla primaria."
             },
             {
                 id: 44,
                 question: "When processing an internal table with the statement LOOP AT itab... ENDLOOP, what system variable contains the current row number?",
+                questionEs: "Al procesar una tabla interna con la sentencia LOOP AT itab... ENDLOOP, ¿qué variable del sistema contiene el número de fila actual?",
                 options: [
                     "sy-subrc",
                     "sy-linno",
@@ -1251,84 +1635,132 @@
                 ],
                 correct: ["D"],
                 multiple: false,
-                explanation: "sy-tabix contiene el número de fila actual durante LOOP AT. sy-index es para DO/WHILE loops, sy-linno para WRITE statements, sy-subrc para códigos de retorno."
+                explanation: "sy-tabix contains the current row number during LOOP AT. sy-index is for DO/WHILE loops, sy-linno for WRITE statements, sy-subrc for return codes.",
+                explanationEs: "sy-tabix contiene el número de fila actual durante LOOP AT. sy-index es para DO/WHILE loops, sy-linno para WRITE statements, sy-subrc para códigos de retorno."
             },
             {
                 id: 45,
                 question: "In what order are objects created to generate a RESTful Application Programming application?",
+                questionEs: "¿En qué orden se crean los objetos para generar una aplicación de Programación de Aplicaciones RESTful?",
                 options: [
                     "Database table -> Data model view -> Projection view -> Service definition",
                     "Service binding -> Projection view",
                     "Service definition", 
                     "Data model view"
                 ],
+                optionsEs: [
+                    "Tabla de base de datos -> Vista del modelo de datos -> Vista de proyección -> Definición de servicio",
+                    "Binding de servicio -> Vista de proyección",
+                    "Definición de servicio",
+                    "Vista del modelo de datos"
+                ],
                 correct: ["A"],
                 multiple: false,
-                explanation: "El orden correcto en RAP es: 1) Database table, 2) Data model view (CDS view), 3) Projection view, 4) Service definition, 5) Service binding."
+                explanation: "The correct order in RAP is: 1) Database table, 2) Data model view (CDS view), 3) Projection view, 4) Service definition, 5) Service binding.",
+                explanationEs: "El orden correcto en RAP es: 1) Database table, 2) Data model view (CDS view), 3) Projection view, 4) Service definition, 5) Service binding."
             },
             {
                 id: 46,
                 question: "What are some of the reasons that Core Data Services are preferable to the classical approach to data modeling? Note: There are 2 correct answers.",
+                questionEs: "¿Cuáles son algunas de las razones por las que Core Data Services son preferibles al enfoque clásico de modelado de datos? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "They compute results on the application server.",
                     "They transfer computational results to the application server.",
                     "They avoid data transfer completely.",
                     "They implement code pushdown."
                 ],
+                optionsEs: [
+                    "Calculan resultados en el servidor de aplicaciones.",
+                    "Transfieren resultados computacionales al servidor de aplicaciones.",
+                    "Evitan la transferencia de datos completamente.",
+                    "Implementan code pushdown."
+                ],
                 correct: ["B", "D"],
                 multiple: true,
-                explanation: "CDS implementa code pushdown (procesan datos en la base de datos) y transfieren solo resultados computacionales al application server, reduciendo tráfico de red y mejorando performance."
+                explanation: "CDS implements code pushdown (process data in the database) and transfers only computational results to the application server, reducing network traffic and improving performance.",
+                explanationEs: "CDS implementa code pushdown (procesan datos en la base de datos) y transfieren solo resultados computacionales al application server, reduciendo tráfico de red y mejorando performance."
             },
             {
                 id: 47,
                 question: "What RESTful Application Programming feature is used to ensure the uniqueness of a semantic key?",
+                questionEs: "¿Qué característica de la Programación de Aplicaciones RESTful se usa para asegurar la unicidad de una clave semántica?",
                 options: [
                     "Validation",
                     "Determination",
                     "Action"
                 ],
+                optionsEs: [
+                    "Validación",
+                    "Determinación",
+                    "Acción"
+                ],
                 correct: ["A"],
                 multiple: false,
-                explanation: "Las Validations en RAP se usan para verificar reglas de negocio, incluyendo la unicidad de semantic keys. Se ejecutan antes de guardar datos."
+                explanation: "Validations in RAP are used to verify business rules, including the uniqueness of semantic keys. They are executed before saving data.",
+                explanationEs: "Las Validations en RAP se usan para verificar reglas de negocio, incluyendo la unicidad de semantic keys. Se ejecutan antes de guardar datos."
             },
             {
                 id: 48,
                 question: "Given exception code, what are valid statements? Note: There are 2 correct answers.",
+                questionEs: "Dado el código de excepción, ¿cuáles son declaraciones válidas? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "'zcx1' is a dictionary structure, and 'param1' and 'param2' are same-named components of this structure.",
                     "'previous' expects the reference to a previous exception",
                     "The code creates an exception object and raises an exception.",
                     "'param1' and 'param2' are predefined names."
                 ],
+                optionsEs: [
+                    "'zcx1' es una estructura del diccionario, y 'param1' y 'param2' son componentes con el mismo nombre de esta estructura.",
+                    "'previous' espera la referencia a una excepción previa",
+                    "El código crea un objeto de excepción y lanza una excepción.",
+                    "'param1' y 'param2' son nombres predefinidos."
+                ],
                 correct: ["B", "C"],
                 multiple: true,
-                explanation: "En RAISE EXCEPTION, 'previous' es para exception chaining (referencia a excepción previa) y el código crea y lanza un objeto de excepción. Los parámetros no son predefinidos."
+                explanation: "In RAISE EXCEPTION, 'previous' is for exception chaining (reference to previous exception) and the code creates and throws an exception object. Parameters are not predefined.",
+                explanationEs: "En RAISE EXCEPTION, 'previous' es para exception chaining (referencia a excepción previa) y el código crea y lanza un objeto de excepción. Los parámetros no son predefinidos."
             },
             {
                 id: 49,
                 question: "Given FOR loop code, which statements are correct? Note: There are 2 correct answers.",
+                questionEs: "Dado el código de bucle FOR, ¿cuáles declaraciones son correctas? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "FOR defines a loop that runs over the content of source_itab",
                     "row is a predefined name and cannot be chosen arbitrarily.",
                     "source_itab is only visible within the loop.",
                     "row is only visible within the loop."
                 ],
+                optionsEs: [
+                    "FOR define un bucle que recorre el contenido de source_itab",
+                    "row es un nombre predefinido y no puede ser elegido arbitrariamente.",
+                    "source_itab solo es visible dentro del bucle.",
+                    "row solo es visible dentro del bucle."
+                ],
                 correct: ["A", "D"],
                 multiple: true,
-                explanation: "FOR itera sobre source_itab y 'row' es solo visible dentro del loop (variable local). 'row' no es predefinido (puedes usar cualquier nombre) y source_itab es visible fuera del loop."
+                explanation: "FOR iterates over source_itab and 'row' is only visible within the loop (local variable). 'row' is not predefined (you can use any name) and source_itab is visible outside the loop.",
+                explanationEs: "FOR itera sobre source_itab y 'row' es solo visible dentro del loop (variable local). 'row' no es predefinido (puedes usar cualquier nombre) y source_itab es visible fuera del loop."
             },
             {
                 id: 50,
                 question: "For what kind of applications would you consider using on-stack developer extensions? Note: There are 2 correct answers.",
+                questionEs: "¿Para qué tipo de aplicaciones considerarías usar extensiones de desarrollador on-stack? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "Applications that run separate from SAP S/4HANA",
                     "Applications that provide APIs for side by side SAP BTP apps",
                     "Applications that access SAP S/4HANA data using complex SQL",
                     "Applications that integrate data from several different systems"
                 ],
+                optionsEs: [
+                    "Aplicaciones que se ejecutan separadas de SAP S/4HANA",
+                    "Aplicaciones que proporcionan APIs para aplicaciones SAP BTP side-by-side",
+                    "Aplicaciones que acceden a datos de SAP S/4HANA usando SQL complejo",
+                    "Aplicaciones que integran datos de varios sistemas diferentes"
+                ],
                 correct: ["B", "C"],
                 multiple: true,
-                explanation: "On-stack extensions son ideales para crear APIs para apps BTP side-by-side y para acceso complejo a datos S/4HANA con SQL avanzado, manteniendo proximidad a los datos."
+                explanation: "On-stack extensions are ideal for creating APIs for BTP side-by-side apps and for complex access to S/4HANA data with advanced SQL, maintaining proximity to data.",
+                explanationEs: "On-stack extensions son ideales para crear APIs para apps BTP side-by-side y para acceso complejo a datos S/4HANA con SQL avanzado, manteniendo proximidad a los datos."
             },
             // Preguntas 51-60
             {
@@ -1412,19 +1844,28 @@
             {
                 id: 57,
                 question: "Which type of legacy code does SAP recommend you eliminate when reviewing modifications as part of an SAP S/4HANA system conversion? Note: There are 2 correct answers.",
+                questionEs: "¿Qué tipo de código legacy recomienda SAP eliminar al revisar modificaciones como parte de una conversión del sistema SAP S/4HANA? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "Code that can be redesigned as a key user extension",
                     "Code that supports a critical business process",
                     "Code that now is identical to a standard SAP object",
                     "Code that has less than 10% usage according to usage statistics"
                 ],
+                optionsEs: [
+                    "Código que puede rediseñarse como una extensión de key user",
+                    "Código que soporta un proceso de negocio crítico",
+                    "Código que ahora es idéntico a un objeto SAP estándar",
+                    "Código que tiene menos del 10% de uso según las estadísticas de uso"
+                ],
                 correct: ["A", "C"],
                 multiple: true,
-                explanation: "Elimina código que puede rediseñarse como key user extension (más simple) y código idéntico a objetos SAP estándar (redundante). Mantén código crítico y evalúa código de bajo uso."
+                explanation: "Eliminate code that can be redesigned as key user extension (simpler) and code identical to standard SAP objects (redundant). Keep critical code and evaluate low-usage code.",
+                explanationEs: "Elimina código que puede rediseñarse como key user extension (más simple) y código idéntico a objetos SAP estándar (redundante). Mantén código crítico y evalúa código de bajo uso."
             },
             {
                 id: 58,
                 question: "When processing a loop with the statement DO... ENDDO, what system variable contains the implicit loop counter?",
+                questionEs: "Al procesar un loop con la sentencia DO... ENDDO, ¿qué variable de sistema contiene el contador implícito del loop?",
                 options: [
                     "sy-linno",
                     "sy-subrc",
@@ -1433,7 +1874,8 @@
                 ],
                 correct: ["D"],
                 multiple: false,
-                explanation: "sy-index contiene el contador de loops DO...ENDDO y WHILE...ENDWHILE. sy-tabix es para LOOP AT tablas internas."
+                explanation: "sy-index contains the loop counter for DO...ENDDO and WHILE...ENDWHILE loops. sy-tabix is for LOOP AT internal tables.",
+                explanationEs: "sy-index contiene el contador de loops DO...ENDDO y WHILE...ENDWHILE. sy-tabix es para LOOP AT tablas internas."
             },
             {
                 id: 59,
@@ -1465,6 +1907,7 @@
             {
                 id: 61,
                 question: "Which of the following string functions are predicate functions? Note: There are 2 correct answers.",
+                questionEs: "¿Cuáles de las siguientes funciones de cadena son funciones predicado? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "find_any_not_of()",
                     "contains_any_of()",
@@ -1473,24 +1916,34 @@
                 ],
                 correct: ["B", "C"],
                 multiple: true,
-                explanation: "Las funciones predicado retornan true/false: contains_any_of() verifica si contiene caracteres, matches() verifica patrones regex. find_any_not_of() y count_any_of() retornan números."
+                explanation: "Predicate functions return true/false: contains_any_of() checks if it contains characters, matches() checks regex patterns. find_any_not_of() and count_any_of() return numbers.",
+                explanationEs: "Las funciones predicado retornan true/false: contains_any_of() verifica si contiene caracteres, matches() verifica patrones regex. find_any_not_of() y count_any_of() retornan números."
             },
             {
                 id: 62,
                 question: "In RESTful Application Programming, a business object contains which parts? Note: There are 2 correct answers.",
+                questionEs: "En la Programación de Aplicaciones RESTful, ¿qué partes contiene un objeto de negocio? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "Process definition",
                     "CDS view",
                     "Behavior definition",
                     "Authentication rules"
                 ],
+                optionsEs: [
+                    "Definición de proceso",
+                    "Vista CDS",
+                    "Definición de comportamiento",
+                    "Reglas de autenticación"
+                ],
                 correct: ["B", "C"],
                 multiple: true,
-                explanation: "Un business object en RAP consiste en: CDS view (define la estructura de datos) y Behavior definition (define operaciones CRUD y validaciones)."
+                explanation: "A business object in RAP consists of: CDS view (defines data structure) and Behavior definition (defines CRUD operations and validations).",
+                explanationEs: "Un business object en RAP consiste en: CDS view (define la estructura de datos) y Behavior definition (define operaciones CRUD y validaciones)."
             },
             {
                 id: 63,
                 question: "Given SAP HANA database table definition code, which field is defined incorrectly?",
+                questionEs: "Dado el código de definición de tabla de base de datos SAP HANA, ¿qué campo está definido incorrectamente?",
                 options: [
                     "field2",
                     "field4",
@@ -1499,50 +1952,76 @@
                 ],
                 correct: ["C"],
                 multiple: false,
-                explanation: "field1 está definido incorrectamente en la definición de tabla SAP HANA. (La respuesta específica dependería del código mostrado en el examen)."
+                explanation: "field1 is incorrectly defined in the SAP HANA table definition. (The specific answer would depend on the code shown in the exam).",
+                explanationEs: "field1 está definido incorrectamente en la definición de tabla SAP HANA. (La respuesta específica dependería del código mostrado en el examen)."
             },
             {
                 id: 64,
                 question: "You have a superclass super1 and a subclass sub1. Each class has instance and static constructors. In which sequence will constructors be executed when creating an instance of sub1?",
+                questionEs: "Tienes una superclase super1 y una subclase sub1. Cada clase tiene constructores de instancia y estáticos. ¿En qué secuencia se ejecutarán los constructores al crear una instancia de sub1?",
                 options: [
                     "Class constructor of super1: 1st",
                     "Instance constructor of sub1: 4th",
                     "Instance constructor of super1: 3rd",
                     "Class constructor of sub1: 2nd"
                 ],
+                optionsEs: [
+                    "Constructor de clase de super1: 1º",
+                    "Constructor de instancia de sub1: 4º",
+                    "Constructor de instancia de super1: 3º",
+                    "Constructor de clase de sub1: 2º"
+                ],
                 correct: ["A", "B", "C", "D"],
                 multiple: true,
-                explanation: "Orden de ejecución: 1) Class constructor de super1, 2) Class constructor de sub1, 3) Instance constructor de super1, 4) Instance constructor de sub1."
+                explanation: "Execution order: 1) Class constructor of super1, 2) Class constructor of sub1, 3) Instance constructor of super1, 4) Instance constructor of sub1.",
+                explanationEs: "Orden de ejecución: 1) Class constructor de super1, 2) Class constructor de sub1, 3) Instance constructor de super1, 4) Instance constructor de sub1."
             },
             {
                 id: 65,
                 question: "What are some properties of database tables? Note: There are 2 correct answers.",
+                questionEs: "¿Cuáles son algunas propiedades de las tablas de base de datos? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "They can have any number of key fields.",
                     "They store information in two dimensions.",
                     "They may have key fields.",
                     "They can have relationships to other tables."
                 ],
+                optionsEs: [
+                    "Pueden tener cualquier número de campos clave.",
+                    "Almacenan información en dos dimensiones.",
+                    "Pueden tener campos clave.",
+                    "Pueden tener relaciones con otras tablas."
+                ],
                 correct: ["B", "D"],
                 multiple: true,
-                explanation: "Las tablas de base de datos almacenan información en dos dimensiones (filas y columnas) y pueden tener relaciones con otras tablas via foreign keys."
+                explanation: "Database tables store information in two dimensions (rows and columns) and can have relationships to other tables via foreign keys.",
+                explanationEs: "Las tablas de base de datos almacenan información en dos dimensiones (filas y columnas) y pueden tener relaciones con otras tablas via foreign keys."
             },
             {
                 id: 66,
                 question: "In nested join evaluation, in which way is the join evaluated?",
+                questionEs: "En la evaluación de join anidado, ¿de qué manera se evalúa el join?",
                 options: [
                     "From the left to the right in the order of the tables",
                     "From the top to the bottom in the order of the on conditions",
                     "From the bottom to the top in the order of the on conditions",
                     "From the right to the left in the order of the tables"
                 ],
+                optionsEs: [
+                    "De izquierda a derecha en el orden de las tablas",
+                    "De arriba hacia abajo en el orden de las condiciones on",
+                    "De abajo hacia arriba en el orden de las condiciones on",
+                    "De derecha a izquierda en el orden de las tablas"
+                ],
                 correct: ["B"],
                 multiple: false,
-                explanation: "Los nested joins se evalúan de arriba hacia abajo en el orden de las condiciones ON, construyendo el resultado paso a paso."
+                explanation: "Nested joins are evaluated from top to bottom in the order of the ON conditions, building the result step by step.",
+                explanationEs: "Los nested joins se evalúan de arriba hacia abajo en el orden de las condiciones ON, construyendo el resultado paso a paso."
             },
             {
                 id: 67,
                 question: "Given Core Data Services View Entity with association, which statement exposes the 'connid' field from the associated data source?",
+                questionEs: "Dada una Entidad de Vista de Core Data Services con asociación, ¿qué sentencia expone el campo 'connid' de la fuente de datos asociada?",
                 options: [
                     "demo_ods_assoc_spfli.connid,",
                     "spfli-connid,",
@@ -1551,37 +2030,55 @@
                 ],
                 correct: ["C"],
                 multiple: false,
-                explanation: "_spfli.connid expone el campo 'connid' de la asociación _spfli. El underscore prefix indica que es una asociación en CDS."
+                explanation: "_spfli.connid exposes the 'connid' field from the _spfli association. The underscore prefix indicates it's an association in CDS.",
+                explanationEs: "_spfli.connid expone el campo 'connid' de la asociación _spfli. El underscore prefix indica que es una asociación en CDS."
             },
             {
                 id: 68,
                 question: "As consultant for SAP S/4HANA Cloud public edition and SAP BTP ABAP environment client, which extension type would you recommend for adding a new button to a Fiori app?",
+                questionEs: "Como consultor para un cliente de SAP S/4HANA Cloud edición pública y entorno SAP BTP ABAP, ¿qué tipo de extensión recomendarías para agregar un nuevo botón a una aplicación Fiori?",
                 options: [
                     "RAP BO Behavior Extension",
                     "SAP HANA database table extension",
                     "Business Service Extension",
                     "RAP BO Node Extension"
                 ],
+                optionsEs: [
+                    "Extensión de Comportamiento RAP BO",
+                    "Extensión de tabla de base de datos SAP HANA",
+                    "Extensión de Servicio de Negocio",
+                    "Extensión de Nodo RAP BO"
+                ],
                 correct: ["D"],
                 multiple: false,
-                explanation: "RAP BO Node Extension permite añadir nuevos elementos UI como botones y acciones a aplicaciones Fiori existentes en entornos cloud."
+                explanation: "RAP BO Node Extension allows adding new UI elements like buttons and actions to existing Fiori applications in cloud environments.",
+                explanationEs: "RAP BO Node Extension permite añadir nuevos elementos UI como botones y acciones a aplicaciones Fiori existentes en entornos cloud."
             },
             {
                 id: 69,
                 question: "Given ABAP SQL statement for large SAP HANA table accessed rarely, which database settings should you use? Note: There are 2 correct answers.",
+                questionEs: "Dada una sentencia ABAP SQL para una tabla SAP HANA grande accedida raramente, ¿qué configuraciones de base de datos deberías usar? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "'LoadUnit' to 'Column Loadable'",
                     "'LoadUnit' to 'Page Loadable'",
                     "'Storage Type' to 'Row Store'",
                     "'Storage Type' to 'Column Store'"
                 ],
+                optionsEs: [
+                    "'LoadUnit' a 'Column Loadable'",
+                    "'LoadUnit' a 'Page Loadable'",
+                    "'Storage Type' a 'Row Store'",
+                    "'Storage Type' a 'Column Store'"
+                ],
                 correct: ["A", "D"],
                 multiple: true,
-                explanation: "Para tablas grandes accedidas raramente: usa 'Column Store' (mejor compresión y analytics) y 'Column Loadable' (carga columnas bajo demanda)."
+                explanation: "For large tables accessed rarely: use 'Column Store' (better compression and analytics) and 'Column Loadable' (loads columns on demand).",
+                explanationEs: "Para tablas grandes accedidas raramente: usa 'Column Store' (mejor compresión y analytics) y 'Column Loadable' (carga columnas bajo demanda)."
             },
             {
                 id: 70,
                 question: "What are characteristics of secondary keys for internal tables? Note: There are 3 correct answers.",
+                questionEs: "¿Cuáles son las características de las claves secundarias para tablas internas? Nota: Hay 3 respuestas correctas.",
                 options: [
                     "Multiple secondary keys are allowed for any kind of internal table.",
                     "Secondary keys can only be created for standard tables.",
@@ -1589,14 +2086,23 @@
                     "Hashed secondary keys do NOT have to be unique.",
                     "Sorted secondary keys do NOT have to be unique."
                 ],
+                optionsEs: [
+                    "Se permiten múltiples claves secundarias para cualquier tipo de tabla interna.",
+                    "Las claves secundarias solo pueden crearse para tablas estándar.",
+                    "Las claves secundarias deben elegirse explícitamente cuando realmente lees de una tabla interna.",
+                    "Las claves secundarias hash NO tienen que ser únicas.",
+                    "Las claves secundarias ordenadas NO tienen que ser únicas."
+                ],
                 correct: ["A", "C", "E"],
                 multiple: true,
-                explanation: "Secondary keys: se permiten múltiples en cualquier tipo de tabla, deben especificarse explícitamente en READ, y las sorted secondary keys pueden ser no únicas."
+                explanation: "Secondary keys: multiple are allowed for any table type, must be specified explicitly in READ, and sorted secondary keys can be non-unique.",
+                explanationEs: "Secondary keys: se permiten múltiples en cualquier tipo de tabla, deben especificarse explícitamente en READ, y las sorted secondary keys pueden ser no únicas."
             },
             // Preguntas 71-80
             {
                 id: 71,
                 question: "Given Core Data Service view entity with parameter, which ABAP SQL snippets correctly provide parameter value? Note: There are 2 correct answers.",
+                questionEs: "Dada una entidad de vista Core Data Service con parámetro, ¿qué fragmentos de ABAP SQL proporcionan correctamente el valor del parámetro? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "SELECT * FROM demo_cds_param_view_entity (p_date: $session.system_date)",
                     "SELECT * FROM demo_cds_param_view_entity (p_date: '20238181')",
@@ -1605,11 +2111,13 @@
                 ],
                 correct: ["C", "D"],
                 multiple: true,
-                explanation: "Los parámetros CDS se pasan con = y @: p_date = @(expression) o p_date = 'literal'. La sintaxis con : no es válida en ABAP SQL."
+                explanation: "CDS parameters are passed with = and @: p_date = @(expression) or p_date = 'literal'. The syntax with : is not valid in ABAP SQL.",
+                explanationEs: "Los parámetros CDS se pasan con = y @: p_date = @(expression) o p_date = 'literal'. La sintaxis con : no es válida en ABAP SQL."
             },
             {
                 id: 72,
                 question: "Given CDS definition with association, which ON condition must you insert?",
+                questionEs: "Dada la definición CDS con asociación, ¿qué condición ON debes insertar?",
                 options: [
                     "ON Z_Source1.carrier_id=Z_Source2.carrier_id",
                     "ON $projection. Carrier = Source2.carrier",
@@ -1618,24 +2126,34 @@
                 ],
                 correct: ["C"],
                 multiple: false,
-                explanation: "En asociaciones CDS, usa $projection para referenciar campos de la vista actual y el nombre de la asociación para la vista relacionada."
+                explanation: "In CDS associations, use $projection to reference fields from the current view and the association name for the related view.",
+                explanationEs: "En asociaciones CDS, usa $projection para referenciar campos de la vista actual y el nombre de la asociación para la vista relacionada."
             },
             {
                 id: 73,
                 question: "For expression itab1 = corresponding #( itab2 ), what is true? Note: There are 2 correct answers.",
+                questionEs: "Para la expresión itab1 = corresponding #( itab2 ), ¿qué es cierto? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "Fields with the same name and the same type will be copied from itab2 to itab1.",
                     "itab1 and itab2 must have at least one field name in common.",
                     "itab1 and itab2 must have the same data type.",
                     "Fields with the same name but with different types may be copied from itab2 to itab1."
                 ],
+                optionsEs: [
+                    "Los campos con el mismo nombre y el mismo tipo se copiarán de itab2 a itab1.",
+                    "itab1 e itab2 deben tener al menos un nombre de campo en común.",
+                    "itab1 e itab2 deben tener el mismo tipo de datos.",
+                    "Los campos con el mismo nombre pero con tipos diferentes pueden copiarse de itab2 a itab1."
+                ],
                 correct: ["B", "D"],
                 multiple: true,
-                explanation: "CORRESPONDING requiere al menos un campo común entre tablas y puede copiar campos con nombres iguales pero tipos diferentes (con conversión automática)."
+                explanation: "CORRESPONDING requires at least one common field between tables and can copy fields with same names but different types (with automatic conversion).",
+                explanationEs: "CORRESPONDING requiere al menos un campo común entre tablas y puede copiar campos con nombres iguales pero tipos diferentes (con conversión automática)."
             },
             {
                 id: 74,
                 question: "What would be the correct expression to change 'mr joe doe' into 'JOE' in an ABAP SQL field list?",
+                questionEs: "¿Cuál sería la expresión correcta para cambiar 'mr joe doe' a 'JOE' en una lista de campos ABAP SQL?",
                 options: [
                     "substring(upper('mr joe doe'), 4, 3) AS f2_sub_up",
                     "upper(left( 'mr joe doe', 6)) AS f2_up_left",
@@ -1644,37 +2162,55 @@
                 ],
                 correct: ["A"],
                 multiple: false,
-                explanation: "substring(upper('mr joe doe'), 4, 3) toma 3 caracteres desde posición 4 de la string en mayúsculas, extrayendo 'JOE'."
+                explanation: "substring(upper('mr joe doe'), 4, 3) takes 3 characters from position 4 of the uppercase string, extracting 'JOE'.",
+                explanationEs: "substring(upper('mr joe doe'), 4, 3) toma 3 caracteres desde posición 4 de la string en mayúsculas, extrayendo 'JOE'."
             },
             {
                 id: 75,
                 question: "For assignment gv_target = gv_source, which data declarations will always work without truncation or rounding? Note: There are 2 correct answers.",
+                questionEs: "Para la asignación gv_target = gv_source, ¿qué declaraciones de datos siempre funcionarán sin truncamiento o redondeo? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "DATA gv_source TYPE p LENGTH 8 DECIMALS 3 to DATA gv_target TYPE p LENGTH 16 DECIMALS 2.",
                     "DATA gv_source TYPE d to DATA gv_target TYPE string.",
                     "DATA gv_source TYPE c to DATA gv_target TYPE string.",
                     "DATA gv_source TYPE string to DATA gv_target TYPE c."
                 ],
+                optionsEs: [
+                    "DATA gv_source TYPE p LENGTH 8 DECIMALS 3 a DATA gv_target TYPE p LENGTH 16 DECIMALS 2.",
+                    "DATA gv_source TYPE d a DATA gv_target TYPE string.",
+                    "DATA gv_source TYPE c a DATA gv_target TYPE string.",
+                    "DATA gv_source TYPE string a DATA gv_target TYPE c."
+                ],
                 correct: ["B", "C"],
                 multiple: true,
-                explanation: "Siempre funcionan sin pérdida: TYPE d a string (conversión directa) y TYPE c a string (extensión automática). P con diferentes decimales puede redondear."
+                explanation: "Always work without loss: TYPE d to string (direct conversion) and TYPE c to string (automatic extension). P with different decimals may round.",
+                explanationEs: "Siempre funcionan sin pérdida: TYPE d a string (conversión directa) y TYPE c a string (extensión automática). P con diferentes decimales puede redondear."
             },
             {
                 id: 76,
                 question: "Given Core Data Service View Entity Data Definition with UNION, what will be the activation response?",
+                questionEs: "Dada la Definición de Entidad de Vista de Core Data Service con UNION, ¿cuál será la respuesta de activación?",
                 options: [
                     "Activation error because the field names of the union do not match",
                     "Activation successful",
                     "Activation error because the field types of the union do not match",
                     "Activation error because the key fields of the union do not match"
                 ],
+                optionsEs: [
+                    "Error de activación porque los nombres de campo de la unión no coinciden",
+                    "Activación exitosa",
+                    "Error de activación porque los tipos de campo de la unión no coinciden",
+                    "Error de activación porque los campos clave de la unión no coinciden"
+                ],
                 correct: ["D"],
                 multiple: false,
-                explanation: "En UNION de CDS views, los key fields deben coincidir entre todas las vistas unidas. Diferencias en key fields causan error de activación."
+                explanation: "In CDS view UNION, key fields must match between all united views. Differences in key fields cause activation error.",
+                explanationEs: "En UNION de CDS views, los key fields deben coincidir entre todas las vistas unidas. Diferencias en key fields causan error de activación."
             },
             {
                 id: 77,
                 question: "Given Core Data Service View Entity, which select statement selects the 'mat' field?",
+                questionEs: "Dada la Entidad de Vista de Core Data Service, ¿qué sentencia select selecciona el campo 'mat'?",
                 options: [
                     "SELECT mat FROM demo_sales_so_i",
                     "SELECT mat FROM demo_sales_cds_material_ve",
@@ -1683,11 +2219,13 @@
                 ],
                 correct: ["C"],
                 multiple: false,
-                explanation: "El campo 'mat' está expuesto en la vista demo_sales_cds_so_i_ve según la definición de la CDS view entity."
+                explanation: "The 'mat' field is exposed in the view demo_sales_cds_so_i_ve according to the CDS view entity definition.",
+                explanationEs: "El campo 'mat' está expuesto en la vista demo_sales_cds_so_i_ve según la definición de la CDS view entity."
             },
             {
                 id: 78,
                 question: "Which of the following is a generic internal table type?",
+                questionEs: "¿Cuál de los siguientes es un tipo de tabla interna genérico?",
                 options: [
                     "SORTED TABLE",
                     "HASHED TABLE",
@@ -1696,32 +2234,48 @@
                 ],
                 correct: ["C"],
                 multiple: false,
-                explanation: "INDEX TABLE es un tipo genérico que incluye tanto STANDARD como SORTED tables (ambas tienen índice). HASHED no tiene índice numérico."
+                explanation: "INDEX TABLE is a generic type that includes both STANDARD and SORTED tables (both have index). HASHED doesn't have numeric index.",
+                explanationEs: "INDEX TABLE es un tipo genérico que incluye tanto STANDARD como SORTED tables (ambas tienen índice). HASHED no tiene índice numérico."
             },
             {
                 id: 79,
                 question: "/DMO/I_Connection is a CDS view. What variable type is connection_full based on: DATA connection_full TYPE /DMO/I_Connection.",
+                questionEs: "/DMO/I_Connection es una vista CDS. ¿Qué tipo de variable es connection_full basada en: DATA connection_full TYPE /DMO/I_Connection.",
                 options: [
                     "Simple variable",
                     "Internal table",
                     "Structure"
                 ],
+                optionsEs: [
+                    "Variable simple",
+                    "Tabla interna",
+                    "Estructura"
+                ],
                 correct: ["C"],
                 multiple: false,
-                explanation: "Cuando declaras TYPE con una CDS view, creas una estructura basada en los campos expuestos por esa vista."
+                explanation: "When you declare TYPE with a CDS view, you create a structure based on the fields exposed by that view.",
+                explanationEs: "Cuando declaras TYPE con una CDS view, creas una estructura basada en los campos expuestos por esa vista."
             },
             {
                 id: 80,
                 question: "In ABAP SQL code, what are valid case distinctions? Note: There are 2 correct answers.",
+                questionEs: "En código ABAP SQL, ¿cuáles son distinciones de caso válidas? Nota: Hay 2 respuestas correctas.",
                 options: [
                     "CASE WHEN F2 = '1' THEN 'Value 1' WHEN f2='2' THEN 'Value 2' ELSE 'Value for the rest' END AS f_case",
                     "CASE WHEN F2 = '1' THEN 'Value 1' WHEN f2 < f3 AND f2 = '2' THEN 'Value 2' WHEN OTHERS 'Value for the rest' END AS f_case",
                     "CASE f2 WHEN '1' THEN 'Value 1' WHEN '2' THEN 'Value 2' ELSE 'Value for the rest' END AS f_case",
                     "CASE f2, WHEN '1' THEN 'Value 1', WHEN '2' THEN 'Value 2', WHEN OTHERS 'Value for the rest', END AS f_case"
                 ],
+                optionsEs: [
+                    "CASE WHEN F2 = '1' THEN 'Valor 1' WHEN f2='2' THEN 'Valor 2' ELSE 'Valor para el resto' END AS f_case",
+                    "CASE WHEN F2 = '1' THEN 'Valor 1' WHEN f2 < f3 AND f2 = '2' THEN 'Valor 2' WHEN OTHERS 'Valor para el resto' END AS f_case",
+                    "CASE f2 WHEN '1' THEN 'Valor 1' WHEN '2' THEN 'Valor 2' ELSE 'Valor para el resto' END AS f_case",
+                    "CASE f2, WHEN '1' THEN 'Valor 1', WHEN '2' THEN 'Valor 2', WHEN OTHERS 'Valor para el resto', END AS f_case"
+                ],
                 correct: ["A", "C"],
                 multiple: true,
-                explanation: "Válidas: CASE WHEN (con condiciones complejas) y CASE field WHEN (comparación simple). WHEN OTHERS no es válido, usa ELSE. No uses comas en CASE."
+                explanation: "Valid: CASE WHEN (with complex conditions) and CASE field WHEN (simple comparison). WHEN OTHERS is not valid, use ELSE. Don't use commas in CASE.",
+                explanationEs: "Válidas: CASE WHEN (con condiciones complejas) y CASE field WHEN (comparación simple). WHEN OTHERS no es válido, usa ELSE. No uses comas en CASE."
             }
         ];
 
@@ -1751,6 +2305,53 @@
             if (debugMode) updateDebugInfo();
         }
 
+        // Función para cambiar idioma
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
+            const toggleText = document.getElementById('lang-toggle-text');
+            toggleText.textContent = currentLanguage === 'en' ? '🇬🇧 EN' : '🇪🇸 ES';
+            
+            // Guardar preferencia de idioma
+            localStorage.setItem('quizLanguage', currentLanguage);
+            
+            // Actualizar todos los textos de la UI
+            updateUILanguage();
+            
+            // Actualizar la vista actual (forzar actualización completa)
+            updateUI(true);
+        }
+
+        // Cargar preferencia de idioma
+        function loadLanguagePreference() {
+            const savedLanguage = localStorage.getItem('quizLanguage');
+            if (savedLanguage) {
+                currentLanguage = savedLanguage;
+                const toggleText = document.getElementById('lang-toggle-text');
+                if (toggleText) {
+                    toggleText.textContent = currentLanguage === 'en' ? '🇬🇧 EN' : '🇪🇸 ES';
+                }
+            }
+            updateUILanguage();
+        }
+
+        // Actualizar textos de UI según idioma
+        function updateUILanguage() {
+            // Botones
+            document.getElementById('prev-btn-text').textContent = t('previous');
+            document.getElementById('next-btn-text').textContent = t('next');
+            document.getElementById('check-btn-text').textContent = t('check');
+            document.getElementById('reset-btn-text').textContent = t('reset');
+            document.getElementById('finish-btn-text').textContent = t('finish');
+            document.getElementById('continue-btn-text').textContent = t('continueBtn');
+            document.getElementById('clear-btn-text').textContent = t('clearProgress');
+            document.getElementById('multiple-notice-text').textContent = t('multipleSelect');
+            
+            // Actualizar contadores
+            document.getElementById('correct-count').textContent = `${t('correct')}: ${score.correct}`;
+            document.getElementById('incorrect-count').textContent = `${t('incorrect')}: ${score.incorrect}`;
+            document.getElementById('pending-count').textContent = `${t('pending')}: ${pendingQuestionIds.size}`;
+        }
+
         // Funciones para guardar y cargar progreso
         function saveProgress() {
             const progressData = {
@@ -1764,8 +2365,16 @@
                 isReviewMode,
                 currentReviewIndex,
                 reviewCycle,
-                // Guardar solo los IDs de las preguntas de repaso para reconstruirlas
-                reviewQuestionIds: reviewQuestions.map(q => q.id),
+                // Para el modo repaso, guardar las preguntas completas para preservar el orden exacto de las opciones
+                reviewQuestionsData: isReviewMode ? reviewQuestions.map(q => ({
+                    id: q.id,
+                    options: q.options,
+                    optionsEs: q.optionsEs || null,
+                    correct: q.correct,
+                    // Guardar también las traducciones de la pregunta y explicación
+                    questionEs: q.questionEs || null,
+                    explanationEs: q.explanationEs || null
+                })) : [],
                 // Guardar el orden de las preguntas mezcladas
                 shuffledQuestionIds: shuffledQuestions.map(q => q.id),
                 // Guardar la semilla de mezcla para cada pregunta (opciones)
@@ -1810,17 +2419,50 @@
                         const seedData = progressData.shuffledOptionsSeeds.find(s => s.id === id);
                         
                         // Recrear la pregunta con las opciones mezcladas
-                        const shuffled = {...originalQuestion};
+                        const shuffled = shuffleQuestionOptions(originalQuestion);
+                        
+                        // Mantener las respuestas correctas del guardado para consistencia
                         shuffled.correct = seedData.correctAnswers;
                         
-                        // Determinar el orden de las opciones basado en las respuestas correctas guardadas
-                        // Esto es aproximado pero mantiene la coherencia
                         return shuffled;
                     });
                 }
                 
                 // Reconstruir reviewQuestions si estamos en modo repaso
-                if (isReviewMode && progressData.reviewQuestionIds) {
+                if (isReviewMode && progressData.reviewQuestionsData && progressData.reviewQuestionsData.length > 0) {
+                    // Usar los datos guardados para preservar el orden exacto de las opciones
+                    reviewQuestions = progressData.reviewQuestionsData.map(savedData => {
+                        const originalQuestion = questions.find(q => q.id === savedData.id);
+                        if (!originalQuestion) {
+                            console.error('No se encontró la pregunta con ID:', savedData.id);
+                            return null;
+                        }
+                        
+                        // Crear una copia completa de la pregunta
+                        const result = {
+                            id: originalQuestion.id,
+                            question: originalQuestion.question,
+                            options: savedData.options,
+                            correct: savedData.correct,
+                            multiple: originalQuestion.multiple,
+                            explanation: originalQuestion.explanation
+                        };
+                        
+                        // Usar las traducciones guardadas si existen, si no usar las originales
+                        if (savedData.questionEs || originalQuestion.questionEs) {
+                            result.questionEs = savedData.questionEs || originalQuestion.questionEs;
+                        }
+                        if (savedData.explanationEs || originalQuestion.explanationEs) {
+                            result.explanationEs = savedData.explanationEs || originalQuestion.explanationEs;
+                        }
+                        if (savedData.optionsEs || originalQuestion.optionsEs) {
+                            result.optionsEs = savedData.optionsEs || originalQuestion.optionsEs;
+                        }
+                        
+                        return result;
+                    }).filter(q => q !== null);
+                } else if (isReviewMode && progressData.reviewQuestionIds) {
+                    // Fallback para datos antiguos
                     reviewQuestions = progressData.reviewQuestionIds.map(id => {
                         const originalQuestion = questions.find(q => q.id === id);
                         return shuffleQuestionOptions(originalQuestion);
@@ -1837,10 +2479,17 @@
         }
 
         function clearSavedProgress() {
-            if (confirm('¿Estás seguro de que quieres borrar el progreso guardado?')) {
+            const confirmText = currentLanguage === 'es' ? 
+                '¿Estás seguro de que quieres borrar el progreso guardado?' : 
+                'Are you sure you want to clear the saved progress?';
+            const alertText = currentLanguage === 'es' ?
+                'Progreso guardado eliminado. La página se recargará.' :
+                'Saved progress cleared. The page will reload.';
+                
+            if (confirm(confirmText)) {
                 localStorage.removeItem('abapQuizProgress');
                 console.log('🗑️ Progreso guardado eliminado');
-                alert('Progreso guardado eliminado. La página se recargará.');
+                alert(alertText);
                 location.reload();
             }
         }
@@ -1870,8 +2519,10 @@
             const indices = Array.from({length: question.options.length}, (_, i) => i);
             const shuffledIndices = shuffleArray(indices);
             
+            // Mezclar las opciones en inglés
             const shuffledOptions = shuffledIndices.map(index => question.options[index]);
             
+            // Calcular las nuevas respuestas correctas
             const newCorrectAnswers = question.correct.map(correctLetter => {
                 const originalIndex = correctLetter.charCodeAt(0) - 65;
                 const newPosition = shuffledIndices.indexOf(originalIndex);
@@ -1879,11 +2530,31 @@
                 return newLetter;
             });
             
-            return {
-                ...question,
+            // Crear el objeto resultado copiando la estructura básica
+            const result = {
+                id: question.id,
+                question: question.question,
                 options: shuffledOptions,
-                correct: newCorrectAnswers
+                correct: newCorrectAnswers,
+                multiple: question.multiple,
+                explanation: question.explanation
             };
+            
+            // Copiar las traducciones si existen
+            if (question.hasOwnProperty('questionEs')) {
+                result.questionEs = question.questionEs;
+            }
+            
+            if (question.hasOwnProperty('explanationEs')) {
+                result.explanationEs = question.explanationEs;
+            }
+            
+            // Si hay opciones en español, mezclarlas con el mismo orden
+            if (question.hasOwnProperty('optionsEs') && Array.isArray(question.optionsEs)) {
+                result.optionsEs = shuffledIndices.map(index => question.optionsEs[index]);
+            }
+            
+            return result;
         }
 
         // Inicializar las preguntas mezcladas
@@ -1922,20 +2593,26 @@
             
             // Update question info
             if (isReviewMode) {
-                document.getElementById('question-counter').textContent = `Pregunta ${currentReviewIndex + 1} de ${reviewQuestions.length} (Repaso - Ciclo ${reviewCycle})`;
+                document.getElementById('question-counter').textContent = t('questionCounter', currentReviewIndex + 1, reviewQuestions.length, true, reviewCycle);
                 document.getElementById('review-mode-indicator').style.display = 'block';
                 document.getElementById('cycle-number').textContent = reviewCycle;
             } else {
-                document.getElementById('question-counter').textContent = `Pregunta ${currentQuestion + 1} de ${shuffledQuestions.length}`;
+                document.getElementById('question-counter').textContent = t('questionCounter', currentQuestion + 1, shuffledQuestions.length, false, 0);
                 document.getElementById('review-mode-indicator').style.display = 'none';
             }
             
-            document.getElementById('question-number').textContent = `Pregunta ${question.id}`;
-            document.getElementById('question-text').textContent = question.question;
+            // Pregunta número
+            const questionNumberText = currentLanguage === 'es' ? `Pregunta ${question.id}` : `Question ${question.id}`;
+            document.getElementById('question-number').textContent = questionNumberText;
+            
+            // Texto de la pregunta
+            const questionText = currentLanguage === 'es' && question.questionEs ? question.questionEs : question.question;
+            document.getElementById('question-text').textContent = questionText;
             
             // Show/hide multiple choice notice
             const multipleNotice = document.getElementById('multiple-notice');
             multipleNotice.style.display = question.multiple ? 'block' : 'none';
+            document.getElementById('multiple-notice-text').textContent = t('multipleSelect');
             
             // Update progress bar
             const totalInCurrentMode = isReviewMode ? reviewQuestions.length : shuffledQuestions.length;
@@ -1944,9 +2621,9 @@
             document.getElementById('progress-fill').style.width = `${progress}%`;
             
             // Update score and counts
-            document.getElementById('correct-count').textContent = `Correctas: ${score.correct}`;
-            document.getElementById('incorrect-count').textContent = `Incorrectas: ${score.incorrect}`;
-            document.getElementById('pending-count').textContent = `Pendientes: ${pendingQuestionIds.size}`;
+            document.getElementById('correct-count').textContent = `${t('correct')}: ${score.correct}`;
+            document.getElementById('incorrect-count').textContent = `${t('incorrect')}: ${score.incorrect}`;
+            document.getElementById('pending-count').textContent = `${t('pending')}: ${pendingQuestionIds.size}`;
             
             // Update options
             updateOptions();
@@ -1985,9 +2662,12 @@
                     optionDiv.className += ' selected';
                 }
                 
+                // Usar opciones en español si están disponibles
+                const optionText = currentLanguage === 'es' && question.optionsEs ? question.optionsEs[index] : option;
+                
                 optionDiv.innerHTML = `
                     <span class="option-letter">${optionLetter}</span>
-                    <span class="option-text">${option}</span>
+                    <span class="option-text">${optionText}</span>
                 `;
                 
                 optionDiv.onclick = () => selectOption(optionLetter);
@@ -2032,7 +2712,7 @@
             processQuestionAnswer(question.id, isCorrect);
             
             // Mostrar modal
-            showModal(isCorrect, correct, question.explanation, question);
+            showModal(isCorrect, correct, question.explanation || question.explanationEs, question);
             updateUI(); // Actualizar contadores
         }
 
@@ -2069,9 +2749,9 @@
         }
 
         function updateScoreCounters() {
-            document.getElementById('correct-count').textContent = `Correctas: ${score.correct}`;
-            document.getElementById('incorrect-count').textContent = `Incorrectas: ${score.incorrect}`;
-            document.getElementById('pending-count').textContent = `Pendientes: ${pendingQuestionIds.size}`;
+            document.getElementById('correct-count').textContent = `${t('correct')}: ${score.correct}`;
+            document.getElementById('incorrect-count').textContent = `${t('incorrect')}: ${score.incorrect}`;
+            document.getElementById('pending-count').textContent = `${t('pending')}: ${pendingQuestionIds.size}`;
         }
 
         function processSkippedQuestion() {
@@ -2102,11 +2782,11 @@
             // Set icon and title
             if (isCorrect) {
                 icon.textContent = '🎉';
-                title.textContent = '¡Correcto!';
+                title.textContent = t('correctTitle');
                 title.className = 'modal-title modal-correct';
             } else {
                 icon.textContent = '😅';
-                title.textContent = 'Incorrecto';
+                title.textContent = t('incorrectTitle');
                 title.className = 'modal-title modal-incorrect';
             }
             
@@ -2116,13 +2796,17 @@
             // Mostrar la respuesta correcta
             const correctAnswerTexts = correctAnswers.map(letter => {
                 const index = letter.charCodeAt(0) - 65;
-                return `${letter}: ${question.options[index]}`;
+                const optionText = currentLanguage === 'es' && question.optionsEs ? 
+                    question.optionsEs[index] : question.options[index];
+                return `${letter}: ${optionText}`;
             });
+            
+            const correctAnswerTitle = correctAnswers.length > 1 ? t('correctAnswers') : t('correctAnswer');
             
             contentHTML += `
                 <div class="correct-answer">
                     <div class="correct-answer-title">
-                        ${isCorrect ? '✓ ' : ''}Respuesta${correctAnswers.length > 1 ? 's' : ''} correcta${correctAnswers.length > 1 ? 's' : ''}:
+                        ${isCorrect ? '✓ ' : ''}${correctAnswerTitle}:
                     </div>
                     ${correctAnswerTexts.map(text => `<div class="correct-answer-option">${text}</div>`).join('')}
                 </div>
@@ -2132,21 +2816,29 @@
             if (!isCorrect && selectedAnswers.length > 0) {
                 const userAnswerTexts = selectedAnswers.map(letter => {
                     const index = letter.charCodeAt(0) - 65;
-                    return `${letter}: ${question.options[index]}`;
+                    const optionText = currentLanguage === 'es' && question.optionsEs ? 
+                        question.optionsEs[index] : question.options[index];
+                    return `${letter}: ${optionText}`;
                 });
+                
+                const userAnswerTitle = selectedAnswers.length > 1 ? t('yourAnswers') : t('yourAnswer');
                 
                 contentHTML += `
                     <div class="user-answer">
-                        <div class="user-answer-title">Tu${selectedAnswers.length > 1 ? 's' : ''} respuesta${selectedAnswers.length > 1 ? 's' : ''}:</div>
+                        <div class="user-answer-title">${userAnswerTitle}:</div>
                         ${userAnswerTexts.map(text => `<div class="user-answer-option">${text}</div>`).join('')}
                     </div>
                 `;
             }
             
+            // Usar explicación en español si está disponible
+            const explanationText = currentLanguage === 'es' && question.explanationEs ? 
+                question.explanationEs : explanation;
+            
             contentHTML += `
                 <div class="explanation">
-                    <div class="explanation-title">💡 Explicación</div>
-                    <div class="explanation-text">${explanation}</div>
+                    <div class="explanation-title">💡 ${t('explanation')}</div>
+                    <div class="explanation-text">${explanationText}</div>
                 </div>
             `;
             
@@ -2228,8 +2920,12 @@
             // Crear array de preguntas para el repaso (mezcladas)
             reviewQuestions = [...questionIds].map(id => {
                 const originalQuestion = questions.find(q => q.id === id);
+                if (!originalQuestion) {
+                    console.error('No se encontró la pregunta con ID:', id);
+                    return null;
+                }
                 return shuffleQuestionOptions(originalQuestion);
-            });
+            }).filter(q => q !== null);
             
             // Mezclar el orden de las preguntas de repaso
             reviewQuestions = shuffleArray(reviewQuestions);
@@ -2287,19 +2983,19 @@
             
             let performanceMessage = "";
             let performanceColor = "";
-            let titleMessage = isManualFinish ? "📊 Quiz Finalizado" : "🏆 ¡Quiz Completado!";
+            let titleMessage = isManualFinish ? t('quizFinished') : t('quizCompleted');
             
             if (percentage >= 90) {
-                performanceMessage = "🎉 ¡Excelente! Dominas muy bien ABAP";
+                performanceMessage = t('performanceExcellent');
                 performanceColor = "#10b981";
             } else if (percentage >= 70) {
-                performanceMessage = "👍 ¡Bien! Tienes una base sólida";
+                performanceMessage = t('performanceGood');
                 performanceColor = "#3b82f6";
             } else if (percentage >= 50) {
-                performanceMessage = "📚 Necesitas repasar algunos conceptos";
+                performanceMessage = t('performanceNeedsWork');
                 performanceColor = "#f59e0b";
             } else {
-                performanceMessage = "💪 ¡Sigue estudiando! Puedes mejorar mucho";
+                performanceMessage = t('performanceKeepStudying');
                 performanceColor = "#ef4444";
             }
             
@@ -2312,8 +3008,8 @@
             finalScoreDiv.innerHTML = `
                 <div class="final-score">
                     <h2>${titleMessage}</h2>
-                    <p style="opacity: 0.9; margin-bottom: 20px;">Has completado ${completionPercentage}% del quiz (${answeredQuestions}/${totalQuestions} preguntas)</p>
-                    ${percentage === 100 && !isManualFinish ? '<p style="opacity: 0.9; margin-bottom: 20px;">🎊 ¡Has respondido correctamente todas las preguntas!</p>' : ''}
+                    <p style="opacity: 0.9; margin-bottom: 20px;">${t('completionText', completionPercentage, answeredQuestions, totalQuestions)}</p>
+                    ${percentage === 100 && !isManualFinish ? `<p style="opacity: 0.9; margin-bottom: 20px;">${t('perfectScore')}</p>` : ''}
                     
                     <div class="percentage-circle" style="--percentage: ${percentage * 3.6}deg;">
                         <div class="percentage-inner">
@@ -2324,15 +3020,15 @@
                     <div class="score-grid">
                         <div class="score-item">
                             <div class="score-number" style="color: #10b981;">${score.correct}</div>
-                            <div class="score-label">Respuestas Correctas</div>
+                            <div class="score-label">${currentLanguage === 'es' ? 'Respuestas Correctas' : 'Correct Answers'}</div>
                         </div>
                         <div class="score-item">
                             <div class="score-number" style="color: #ef4444;">${score.incorrect}</div>
-                            <div class="score-label">Respuestas Incorrectas</div>
+                            <div class="score-label">${currentLanguage === 'es' ? 'Respuestas Incorrectas' : 'Incorrect Answers'}</div>
                         </div>
                         <div class="score-item">
                             <div class="score-number" style="color: #ed8936;">${pendingQuestionIds.size}</div>
-                            <div class="score-label">Sin Responder</div>
+                            <div class="score-label">${currentLanguage === 'es' ? 'Sin Responder' : 'Not Answered'}</div>
                         </div>
                     </div>
                     
@@ -2342,9 +3038,9 @@
                     
                     <div style="display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap;">
                         <button class="btn btn-primary" onclick="resetQuiz()" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);">
-                            🔄 Nuevo Quiz
+                            🔄 ${t('newQuiz')}
                         </button>
-                        ${isManualFinish && answeredQuestions < totalQuestions ? '<button class="btn btn-primary" onclick="continueQuiz()" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);">📚 Continuar Quiz</button>' : ''}
+                        ${isManualFinish && answeredQuestions < totalQuestions ? `<button class="btn btn-primary" onclick="continueQuiz()" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);">📚 ${t('continueQuiz')}</button>` : ''}
                     </div>
                 </div>
             `;
@@ -2393,6 +3089,7 @@
 
         // Initialize
         initializeQuiz();
+        loadLanguagePreference();
         
         // Si el quiz estaba completado, mostrar la pantalla final
         if (quizCompleted) {
