@@ -707,10 +707,10 @@
                     <div class="battery-stats">80 preguntas • Nivel: Intermedio-Avanzado</div>
                 </div>
                 
-                <div class="battery-option" onclick="selectBattery('latex')">
-                    <div class="battery-title">📄 Batería LaTeX</div>
-                    <div class="battery-description">Preguntas adicionales del documento de estudio LaTeX</div>
-                    <div class="battery-stats">85 preguntas • Nivel: Completo</div>
+                <div class="battery-option" onclick="selectBattery('cloud')">
+                    <div class="battery-title">📄 Batería Cloud</div>
+                    <div class="battery-description">Preguntas adicionales del documento de estudio Cloud</div>
+                    <div class="battery-stats">64 preguntas • Nivel: Completo</div>
                 </div>
             </div>
             
@@ -831,7 +831,7 @@
     <script>
         // Variable para el idioma actual
         let currentLanguage = 'es';
-        let currentBattery = null; // 'certification' o 'latex'
+        let currentBattery = null; // 'certification' o 'cloud'
         
         // Traducciones de UI
         const uiTranslations = {
@@ -873,9 +873,9 @@
                 certificationBattery: '🎓 Certification Battery',
                 certificationDesc: 'Questions oriented to official ABAP certification',
                 certificationStats: '80 questions • Level: Intermediate-Advanced',
-                latexBattery: '📄 LaTeX Battery',
-                latexDesc: 'Additional questions from LaTeX study document',
-                latexStats: '85 questions • Level: Complete',
+                cloudBattery: '📄 Cloud Battery',
+                cloudDesc: 'Additional questions from Cloud study document',
+                cloudStats: '85 questions • Level: Complete',
                 currentBattery: 'Current Battery'
             },
             es: {
@@ -916,9 +916,9 @@
                 certificationBattery: '🎓 Batería Certificación',
                 certificationDesc: 'Preguntas orientadas a la certificación oficial ABAP',
                 certificationStats: '80 preguntas • Nivel: Intermedio-Avanzado',
-                latexBattery: '📄 Batería LaTeX',
-                latexDesc: 'Preguntas adicionales del documento de estudio LaTeX',
-                latexStats: '85 preguntas • Nivel: Completo',
+                cloudBattery: '📄 Batería Cloud',
+                cloudDesc: 'Preguntas adicionales del documento de estudio Cloud',
+                cloudStats: '64 preguntas • Nivel: Completo',
                 currentBattery: 'Batería Actual'
             }
         };
@@ -2407,1289 +2407,1172 @@ D. SELECT FROM dbtab1
             }
         ];
         
-        // BATERÍA LATEX - Preguntas del documento LaTeX (85 preguntas)
-        const latexQuestions = [
-            {
-                id: 1,
-                question: "Which function call returns 0?",
-                questionEs: "¿Qué llamada de función devuelve 0?",
-                options: [
-                    "Count_any_of (val = 'ABAP ABAP abap' sub = \"AB\")",
-                    "Count (val = 'ABAP ABAP abap' sub = 'AB')",
-                    "find_any_of (val = \"ABAP ABAP abap\" sub = \"AB\")",
-                    "find_any_not_of (val = 'ABAP ABAP abap' sub = 'AB')"
-                ],
-                correct: ["D"],
-                multiple: false,
-                explanation: "find_any_not_of returns the position of the first character in 'val' that is NOT in 'sub'. Since all characters in 'ABAP ABAP abap' are contained in 'AB', it returns 0.",
-                explanationEs: "find_any_not_of retorna la posición del primer carácter en 'val' que NO está en 'sub'. Como todos los caracteres en 'ABAP ABAP abap' están contenidos en 'AB', retorna 0."
-            },
-            {
-                id: 2,
-                question: "In which products must you use the ABAP Cloud Development Model? Note: There are 2 correct answers to this question.",
-                questionEs: "¿En qué productos debe usar el Modelo de Desarrollo ABAP Cloud? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "SAP S/4HANA Cloud, private edition",
-                    "SAP BTP, ABAP environment",
-                    "SAP S/4HANA on premise",
-                    "SAP S/4HANA Cloud, public edition"
-                ],
-                correct: ["B", "D"],
-                multiple: true,
-                explanation: "ABAP Cloud Development Model is mandatory in SAP BTP ABAP environment and SAP S/4HANA Cloud public edition. In private edition and on-premise, you can choose between Cloud and Classic ABAP.",
-                explanationEs: "El Modelo de Desarrollo ABAP Cloud es obligatorio en SAP BTP ABAP environment y SAP S/4HANA Cloud public edition. En edición privada y on-premise, puedes elegir entre Cloud y Classic ABAP."
-            },
-            {
-                id: 3,
-                question: "When accessing the subclass instance through go_super, what can you do? Note: There are 2 correct answers to this question.",
-                questionEs: "Al acceder a la instancia de la subclase a través de go_super, ¿qué puedes hacer? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "Access the inherited private components",
-                    "Access the inherited public components",
-                    "Call a subclass specific public method",
-                    "Call inherited public redefined methods"
-                ],
-                correct: ["A", "B"],
-                multiple: true,
-                explanation: "Through go_super (reference to superclass), you can access both inherited private and public components, but not subclass-specific methods.",
-                explanationEs: "A través de go_super (referencia a la superclase), puedes acceder tanto a componentes privados como públicos heredados, pero no a métodos específicos de la subclase."
-            },
-            {
-                id: 4,
-                question: "Regarding line 16, which of the following is a valid statement?",
-                questionEs: "Con respecto a la línea 16, ¿cuál de las siguientes es una declaración válida?",
-                options: [
-                    "Z1 can be called whether it has been released or not for cloud development",
-                    "Z1 can be called via a wrapper that itself has been released for cloud development",
-                    "Z1 can be called via a wrapper that itself has not been released for cloud development"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "In ABAP Cloud, only released APIs can be called. Non-released function modules require a wrapper that is released for cloud development.",
-                explanationEs: "En ABAP Cloud, solo se pueden llamar APIs liberadas. Los módulos de función no liberados requieren un wrapper que esté liberado para desarrollo cloud."
-            },
-            {
-                id: 5,
-                question: "Which restrictions exist for ABAP SQL arithmetic expressions? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Qué restricciones existen para las expresiones aritméticas de ABAP SQL? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "Floating point types and integer types can NOT be used in the same expression",
-                    "The operator / is allowed only in floating point expressions",
-                    "Decimal types and integer types can NOT be used in the same expression",
-                    "The operator ** is allowed only in floating point expressions"
-                ],
-                correct: ["B", "D"],
-                multiple: true,
-                explanation: "Division (/) and power (**) operators are only allowed in floating point expressions in ABAP SQL.",
-                explanationEs: "Los operadores de división (/) y potencia (**) solo están permitidos en expresiones de punto flotante en ABAP SQL."
-            },
-            {
-                id: 6,
-                question: "When processing a loop with the statement DO... ENDDO, what system variable contains the implicit loop counter?",
-                questionEs: "Al procesar un bucle con la sentencia DO... ENDDO, ¿qué variable del sistema contiene el contador implícito del bucle?",
-                options: [
-                    "sy-linno",
-                    "sy-tabix",
-                    "sy-subrc",
-                    "sy-index"
-                ],
-                correct: ["D"],
-                multiple: false,
-                explanation: "sy-index contains the loop counter for DO...ENDDO and WHILE...ENDWHILE loops.",
-                explanationEs: "sy-index contiene el contador del bucle para bucles DO...ENDDO y WHILE...ENDWHILE."
-            },
-            {
-                id: 7,
-                question: "Which of the following are valid sort operations for internal tables? Note: There are 3 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son operaciones de ordenamiento válidas para tablas internas? Nota: Hay 3 respuestas correctas a esta pregunta.",
-                options: [
-                    "SORT itab",
-                    "SORT itab BY field1 field2",
-                    "SORT itab DESCENDING",
-                    "SORT itab BY field1 ASCENDING field2 DESCENDING",
-                    "SORT itab ASCENDING"
-                ],
-                correct: ["A", "B", "C"],
-                multiple: true,
-                explanation: "Valid SORT operations include: SORT itab (by primary key), SORT itab BY fields, and SORT itab DESCENDING. ASCENDING/DESCENDING must follow field names in BY clause.",
-                explanationEs: "Las operaciones SORT válidas incluyen: SORT itab (por clave primaria), SORT itab BY campos, y SORT itab DESCENDING. ASCENDING/DESCENDING debe seguir nombres de campos en cláusula BY."
-            },
-            {
-                id: 8,
-                question: "Which of the following are valid statements? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son declaraciones válidas? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "DATA var TYPE p DECIMALS 3 VALUE '1.0'.",
-                    "DATA var TYPE p DECIMALS 3 VALUE 1.0.",
-                    "DATA var TYPE string VALUE `Hello`.",
-                    "DATA var TYPE string VALUE 'Hello'."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Valid: P type with string literal value and STRING with text field literal (backticks). P type cannot have numeric literal with decimals.",
-                explanationEs: "Válido: tipo P con valor literal string y STRING con literal de campo de texto (backticks). El tipo P no puede tener literal numérico con decimales."
-            },
-            {
-                id: 9,
-                question: "Which of the following are valid ways to provide a check table for the field in the table definition? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de proporcionar una tabla de verificación para el campo en la definición de tabla? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "Using a FOREIGN KEY clause",
-                    "Using a CHECK TABLE statement",
-                    "Using a TEXT TABLE clause",
-                    "Using a field list with SELECT statement"
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Check tables are provided through FOREIGN KEY relationships and TEXT TABLE associations in ABAP Dictionary.",
-                explanationEs: "Las tablas de verificación se proporcionan a través de relaciones FOREIGN KEY y asociaciones TEXT TABLE en el Diccionario ABAP."
-            },
-            {
-                id: 10,
-                question: "Which of the following are features of Core Data Services (CDS) that are NOT part of AMDP (ABAP Managed Database Procedures)? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son características de Core Data Services (CDS) que NO son parte de AMDP (ABAP Managed Database Procedures)? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "Annotations",
-                    "Data definitions",
-                    "SQL expressions",
-                    "Database procedure implementations"
-                ],
-                correct: ["A", "B"],
-                multiple: true,
-                explanation: "Annotations and Data definitions are CDS-specific features. AMDP focuses on database procedures and SQL expressions.",
-                explanationEs: "Las Anotaciones y Definiciones de datos son características específicas de CDS. AMDP se enfoca en procedimientos de base de datos y expresiones SQL."
-            },
-            {
-                id: 11,
-                question: "Which of the following are valid ways to declare a foreign key relationship in an ABAP CDS view? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de declarar una relación de clave foránea en una vista ABAP CDS? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "Using the @ObjectModel.foreignKey.association annotation",
-                    "Using a JOIN clause with a condition",
-                    "Using the association keyword",
-                    "Using a WHERE clause with a key field"
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Foreign key relationships in CDS are declared using @ObjectModel.foreignKey.association annotation and association definitions.",
-                explanationEs: "Las relaciones de clave foránea en CDS se declaran usando la anotación @ObjectModel.foreignKey.association y definiciones de asociación."
-            },
-            {
-                id: 12,
-                question: "In a subclass, what happens when you redefine a method of the superclass?",
-                questionEs: "En una subclase, ¿qué sucede cuando redefines un método de la superclase?",
-                options: [
-                    "The superclass method is automatically called",
-                    "The redefined method can have a different implementation",
-                    "The superclass method is overwritten and cannot be called",
-                    "The redefined method must have the same signature"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "When redefining a method, you provide a new implementation while keeping the same signature. The superclass method can still be called using super->.",
-                explanationEs: "Al redefinir un método, proporcionas una nueva implementación manteniendo la misma signatura. El método de la superclase aún puede llamarse usando super->."
-            },
-            {
-                id: 13,
-                question: "Which of the following are valid statements to define a data object? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son declaraciones válidas para definir un objeto de datos? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "DATA: lv_var TYPE i.",
-                    "DATA lv_var TYPE i VALUE 10.",
-                    "DATA(lv_var) = 10.",
-                    "DATA: lv_var TYPE i INITIAL VALUE 0."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Valid: Traditional DATA declaration and inline declaration with DATA(). 'INITIAL VALUE' is not valid syntax.",
-                explanationEs: "Válido: Declaración DATA tradicional y declaración inline con DATA(). 'INITIAL VALUE' no es sintaxis válida."
-            },
-            {
-                id: 14,
-                question: "What is the purpose of the READ TABLE statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia READ TABLE en ABAP?",
-                options: [
-                    "To insert a new row into an internal table",
-                    "To read a specific row from an internal table",
-                    "To delete a row from an internal table",
-                    "To modify a row in an internal table"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "READ TABLE is used to read a specific row from an internal table based on a key or index.",
-                explanationEs: "READ TABLE se usa para leer una fila específica de una tabla interna basándose en una clave o índice."
-            },
-            {
-                id: 15,
-                question: "Which of the following are valid loop constructs in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de los siguientes son constructos de bucle válidos en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "DO ... ENDDO",
-                    "WHILE ... ENDWHILE",
-                    "LOOP AT ... ENDLOOP",
-                    "FOR ... ENDFOR"
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Valid loop constructs in ABAP are DO...ENDDO and LOOP AT...ENDLOOP. WHILE...ENDWHILE exists but with different syntax.",
-                explanationEs: "Los constructos de bucle válidos en ABAP son DO...ENDDO y LOOP AT...ENDLOOP. WHILE...ENDWHILE existe pero con sintaxis diferente."
-            },
-            {
-                id: 16,
-                question: "What does the sy-subrc system variable indicate after a SELECT statement?",
-                questionEs: "¿Qué indica la variable del sistema sy-subrc después de una sentencia SELECT?",
-                options: [
-                    "The number of rows selected",
-                    "The success or failure of the operation (0 for success, non-zero for failure)",
-                    "The current line number",
-                    "The index of the internal table"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "sy-subrc indicates the return code of an operation. 0 means success, non-zero means failure or no data found.",
-                explanationEs: "sy-subrc indica el código de retorno de una operación. 0 significa éxito, no-cero significa falla o no se encontraron datos."
-            },
-            {
-                id: 17,
-                question: "Which of the following are valid data types in ABAP? Note: There are 3 correct answers to this question.",
-                questionEs: "¿Cuáles de los siguientes son tipos de datos válidos en ABAP? Nota: Hay 3 respuestas correctas a esta pregunta.",
-                options: [
-                    "I (Integer)",
-                    "C (Character)",
-                    "P (Packed number)",
-                    "D (Date and time)",
-                    "T (Time only)"
-                ],
-                correct: ["A", "B", "C"],
-                multiple: true,
-                explanation: "Valid elementary types include I (Integer), C (Character), and P (Packed number). D is for Date only, not Date and time.",
-                explanationEs: "Los tipos elementales válidos incluyen I (Integer), C (Character), y P (Packed number). D es solo para Fecha, no Fecha y hora."
-            },
-            {
-                id: 18,
-                question: "What is the purpose of the MODIFY statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia MODIFY en ABAP?",
-                options: [
-                    "To delete a row from a database table",
-                    "To modify an existing row in an internal table or database table",
-                    "To insert a new row into a database table",
-                    "To read data from a database table"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "MODIFY is used to change existing data in internal tables or database tables.",
-                explanationEs: "MODIFY se usa para cambiar datos existentes en tablas internas o tablas de base de datos."
-            },
-            {
-                id: 19,
-                question: "Which of the following are valid ways to handle exceptions in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de manejar excepciones en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "TRY ... CATCH ... ENDTRY",
-                    "IF ... ENDIF",
-                    "RAISE EXCEPTION",
-                    "WHILE ... ENDWHILE"
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Exception handling in ABAP uses TRY...CATCH...ENDTRY blocks and RAISE EXCEPTION to throw exceptions.",
-                explanationEs: "El manejo de excepciones en ABAP usa bloques TRY...CATCH...ENDTRY y RAISE EXCEPTION para lanzar excepciones."
-            },
-            {
-                id: 20,
-                question: "What is the purpose of the APPEND statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia APPEND en ABAP?",
-                options: [
-                    "To delete a row from an internal table",
-                    "To add a new row to the end of an internal table",
-                    "To modify an existing row in an internal table",
-                    "To read a row from an internal table"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "APPEND adds a new row to the end of an internal table.",
-                explanationEs: "APPEND añade una nueva fila al final de una tabla interna."
-            },
-            {
-                id: 21,
-                question: "Which of the following are valid table types in ABAP? Note: There are 3 correct answers to this question.",
-                questionEs: "¿Cuáles de los siguientes son tipos de tabla válidos en ABAP? Nota: Hay 3 respuestas correctas a esta pregunta.",
-                options: [
-                    "Standard table",
-                    "Sorted table",
-                    "Hashed table",
-                    "Indexed table",
-                    "Dynamic table"
-                ],
-                correct: ["A", "B", "C"],
-                multiple: true,
-                explanation: "The three table types in ABAP are Standard, Sorted, and Hashed tables.",
-                explanationEs: "Los tres tipos de tabla en ABAP son tablas Standard, Sorted, y Hashed."
-            },
-            {
-                id: 22,
-                question: "What does the CLEAR statement do in ABAP?",
-                questionEs: "¿Qué hace la sentencia CLEAR en ABAP?",
-                options: [
-                    "Deletes a row from an internal table",
-                    "Initializes a data object to its initial value",
-                    "Modifies a row in an internal table",
-                    "Reads a row from an internal table"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "CLEAR resets a data object to its initial value (zeros, spaces, etc.).",
-                explanationEs: "CLEAR reinicia un objeto de datos a su valor inicial (ceros, espacios, etc.)."
-            },
-            {
-                id: 23,
-                question: "Which of the following are valid arithmetic operators in ABAP? Note: There are 3 correct answers to this question.",
-                questionEs: "¿Cuáles de los siguientes son operadores aritméticos válidos en ABAP? Nota: Hay 3 respuestas correctas a esta pregunta.",
-                options: [
-                    "+ (Addition)",
-                    "- (Subtraction)",
-                    "/ (Division)",
-                    "* (Multiplication only)",
-                    "% (Modulus)"
-                ],
-                correct: ["A", "B", "C"],
-                multiple: true,
-                explanation: "Valid arithmetic operators in ABAP include +, -, /, and * (multiplication). % is not a valid operator; use MOD instead.",
-                explanationEs: "Los operadores aritméticos válidos en ABAP incluyen +, -, /, y * (multiplicación). % no es un operador válido; usa MOD en su lugar."
-            },
-            {
-                id: 24,
-                question: "What is the purpose of the DELETE statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia DELETE en ABAP?",
-                options: [
-                    "To add a row to an internal table",
-                    "To modify a row in an internal table",
-                    "To delete a row from an internal table or database table",
-                    "To read a row from an internal table"
-                ],
-                correct: ["C"],
-                multiple: false,
-                explanation: "DELETE removes rows from internal tables or database tables.",
-                explanationEs: "DELETE elimina filas de tablas internas o tablas de base de datos."
-            },
-            {
-                id: 25,
-                question: "Which of the following are valid ways to define a structure in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir una estructura en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "TYPES: BEGIN OF struc, ... END OF struc.",
-                    "DATA: BEGIN OF struc, ... END OF struc.",
-                    "TYPES: struc TYPE TABLE OF ...",
-                    "DEFINE struc AS ..."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Structures can be defined using TYPES: BEGIN OF...END OF. TYPES can also define table types. DATA: BEGIN OF creates a data object, not a type.",
-                explanationEs: "Las estructuras se pueden definir usando TYPES: BEGIN OF...END OF. TYPES también puede definir tipos de tabla. DATA: BEGIN OF crea un objeto de datos, no un tipo."
-            },
-            {
-                id: 26,
-                question: "What is the purpose of the SELECT statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia SELECT en ABAP?",
-                options: [
-                    "To insert data into a database table",
-                    "To retrieve data from a database table",
-                    "To delete data from a database table",
-                    "To modify data in a database table"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "SELECT is used to retrieve data from database tables.",
-                explanationEs: "SELECT se usa para recuperar datos de tablas de base de datos."
-            },
-            {
-                id: 27,
-                question: "Which of the following are valid comparison operators in ABAP? Note: There are 3 correct answers to this question.",
-                questionEs: "¿Cuáles de los siguientes son operadores de comparación válidos en ABAP? Nota: Hay 3 respuestas correctas a esta pregunta.",
-                options: [
-                    "= (Equal)",
-                    "<> (Not equal)",
-                    "> (Greater than)",
-                    "== (Strict equal)",
-                    "<= (Less than or equal to only)"
-                ],
-                correct: ["A", "B", "C"],
-                multiple: true,
-                explanation: "Valid comparison operators include =, <>, >, <, >=, and <=. There is no == operator in ABAP.",
-                explanationEs: "Los operadores de comparación válidos incluyen =, <>, >, <, >=, y <=. No existe el operador == en ABAP."
-            },
-            {
-                id: 28,
-                question: "What is the purpose of the INSERT statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia INSERT en ABAP?",
-                options: [
-                    "To delete a row from a database table",
-                    "To insert a new row into a database table or internal table",
-                    "To modify a row in a database table",
-                    "To read data from a database table"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "INSERT adds new rows to database tables or internal tables.",
-                explanationEs: "INSERT añade nuevas filas a tablas de base de datos o tablas internas."
-            },
-            {
-                id: 29,
-                question: "Which of the following are valid logical operators in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de los siguientes son operadores lógicos válidos en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "AND",
-                    "OR",
-                    "NOT",
-                    "XOR"
-                ],
-                correct: ["A", "B"],
-                multiple: true,
-                explanation: "The main logical operators in ABAP are AND, OR, and NOT. XOR is not a standard logical operator.",
-                explanationEs: "Los operadores lógicos principales en ABAP son AND, OR, y NOT. XOR no es un operador lógico estándar."
-            },
-            {
-                id: 30,
-                question: "What does the sy-datum system variable contain?",
-                questionEs: "¿Qué contiene la variable del sistema sy-datum?",
-                options: [
-                    "The current time",
-                    "The current date",
-                    "The current user",
-                    "The current system ID"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "sy-datum contains the current system date.",
-                explanationEs: "sy-datum contiene la fecha actual del sistema."
-            },
-            {
-                id: 31,
-                question: "Which of the following are valid ways to comment code in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de comentar código en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "\" Single-line comment",
-                    "* Single-line comment",
-                    "*...* Multi-line comment",
-                    "// Single-line comment"
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "In ABAP, use \" for end-of-line comments and * at the beginning of a line for full-line comments.",
-                explanationEs: "En ABAP, usa \" para comentarios al final de línea y * al inicio de una línea para comentarios de línea completa."
-            },
-            {
-                id: 32,
-                question: "What is the purpose of the MOVE statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia MOVE en ABAP?",
-                options: [
-                    "To delete a variable",
-                    "To assign a value from one variable to another",
-                    "To create a new variable",
-                    "To read a value from a database"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "MOVE assigns values between variables. It's equivalent to the = operator.",
-                explanationEs: "MOVE asigna valores entre variables. Es equivalente al operador =."
-            },
-            {
-                id: 33,
-                question: "Which of the following are valid data dictionary objects in ABAP? Note: There are 3 correct answers to this question.",
-                questionEs: "¿Cuáles de los siguientes son objetos del diccionario de datos válidos en ABAP? Nota: Hay 3 respuestas correctas a esta pregunta.",
-                options: [
-                    "Table",
-                    "View",
-                    "Data element",
-                    "Report",
-                    "Transaction"
-                ],
-                correct: ["A", "B", "C"],
-                multiple: true,
-                explanation: "Data Dictionary objects include Tables, Views, Data Elements, Domains, and Type Groups. Reports and Transactions are repository objects.",
-                explanationEs: "Los objetos del Diccionario de Datos incluyen Tablas, Vistas, Elementos de Datos, Dominios y Grupos de Tipos. Reports y Transacciones son objetos del repositorio."
-            },
-            {
-                id: 34,
-                question: "What is the purpose of the COMMIT WORK statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia COMMIT WORK en ABAP?",
-                options: [
-                    "To rollback a transaction",
-                    "To save changes made to a database",
-                    "To start a new transaction",
-                    "To delete a transaction"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "COMMIT WORK saves all database changes made in the current LUW (Logical Unit of Work) to the database.",
-                explanationEs: "COMMIT WORK guarda todos los cambios de base de datos realizados en la LUW actual (Unidad Lógica de Trabajo) en la base de datos."
-            },
-            {
-                id: 35,
-                question: "Which of the following are valid ways to define a constant in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir una constante en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "CONSTANTS: c_var TYPE i VALUE 10.",
-                    "DATA: c_var TYPE i VALUE 10.",
-                    "CONSTANTS c_var TYPE i VALUE 10.",
-                    "DEFINE c_var AS 10."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Constants are defined using the CONSTANTS keyword, either with or without the colon syntax.",
-                explanationEs: "Las constantes se definen usando la palabra clave CONSTANTS, ya sea con o sin la sintaxis de dos puntos."
-            },
-            {
-                id: 36,
-                question: "What does the sy-uzeit system variable contain?",
-                questionEs: "¿Qué contiene la variable del sistema sy-uzeit?",
-                options: [
-                    "The current date",
-                    "The current time",
-                    "The current user",
-                    "The current system ID"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "sy-uzeit contains the current system time.",
-                explanationEs: "sy-uzeit contiene la hora actual del sistema."
-            },
-            {
-                id: 37,
-                question: "Which of the following are valid ways to define an internal table in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir una tabla interna en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "TYPES: BEGIN OF line, ... END OF line. DATA itab TYPE TABLE OF line.",
-                    "DATA itab TYPE STANDARD TABLE OF i.",
-                    "DATA itab TYPE SORTED TABLE OF i WITH UNIQUE KEY.",
-                    "TYPES itab TYPE TABLE OF i."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Internal tables can be defined by first defining a line type, or directly with specific table kinds (SORTED TABLE WITH KEY).",
-                explanationEs: "Las tablas internas se pueden definir primero definiendo un tipo de línea, o directamente con tipos de tabla específicos (SORTED TABLE WITH KEY)."
-            },
-            {
-                id: 38,
-                question: "What is the purpose of the ROLLBACK WORK statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia ROLLBACK WORK en ABAP?",
-                options: [
-                    "To save changes to a database",
-                    "To undo changes made to a database",
-                    "To start a new transaction",
-                    "To delete a transaction"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "ROLLBACK WORK undoes all database changes made in the current LUW (Logical Unit of Work).",
-                explanationEs: "ROLLBACK WORK deshace todos los cambios de base de datos realizados en la LUW actual (Unidad Lógica de Trabajo)."
-            },
-            {
-                id: 39,
-                question: "Which of the following are valid ways to use the CASE statement in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de usar la sentencia CASE en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "CASE var. WHEN 'A'. ... ENDCASE.",
-                    "IF var = 'A'. ... ENDIF.",
-                    "CASE var. WHEN OTHERS. ... ENDCASE.",
-                    "WHILE var = 'A'. ... ENDWHILE."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "CASE statements use WHEN for specific values and WHEN OTHERS for default cases.",
-                explanationEs: "Las sentencias CASE usan WHEN para valores específicos y WHEN OTHERS para casos por defecto."
-            },
-            {
-                id: 40,
-                question: "What does the sy-uname system variable contain?",
-                questionEs: "¿Qué contiene la variable del sistema sy-uname?",
-                options: [
-                    "The current date",
-                    "The current time",
-                    "The current user name",
-                    "The current system ID"
-                ],
-                correct: ["C"],
-                multiple: false,
-                explanation: "sy-uname contains the current user's login name.",
-                explanationEs: "sy-uname contiene el nombre de login del usuario actual."
-            },
-            {
-                id: 41,
-                question: "Which of the following are valid ways to define a range table in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir una tabla de rangos en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "TYPES: r_tab TYPE RANGE OF i.",
-                    "DATA: r_tab TYPE TABLE OF i.",
-                    "DATA: r_tab TYPE RANGE OF i.",
-                    "TYPES: r_tab TYPE STANDARD TABLE OF i."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Range tables are defined using TYPE RANGE OF, either in TYPES or DATA statements.",
-                explanationEs: "Las tablas de rango se definen usando TYPE RANGE OF, ya sea en sentencias TYPES o DATA."
-            },
-            {
-                id: 42,
-                question: "What is the purpose of the MESSAGE statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia MESSAGE en ABAP?",
-                options: [
-                    "To define a new variable",
-                    "To display a message to the user",
-                    "To read data from a database",
-                    "To modify a database table"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "MESSAGE displays messages to users, with different types (I, S, E, W, A, X) for different purposes.",
-                explanationEs: "MESSAGE muestra mensajes a los usuarios, con diferentes tipos (I, S, E, W, A, X) para diferentes propósitos."
-            },
-            {
-                id: 43,
-                question: "Which of the following are valid ways to define a class in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir una clase en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "CLASS cl_demo DEFINITION. ... ENDCLASS.",
-                    "DATA cl_demo TYPE CLASS.",
-                    "CLASS cl_demo IMPLEMENTATION. ... ENDCLASS.",
-                    "DEFINE cl_demo AS CLASS."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Classes require both DEFINITION and IMPLEMENTATION sections in ABAP.",
-                explanationEs: "Las clases requieren tanto secciones DEFINITION como IMPLEMENTATION en ABAP."
-            },
-            {
-                id: 44,
-                question: "What is the purpose of the CALL METHOD statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia CALL METHOD en ABAP?",
-                options: [
-                    "To define a new method",
-                    "To call a method of a class or object",
-                    "To create a new object",
-                    "To read data from a method"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "CALL METHOD invokes methods of classes or objects. Modern syntax allows direct method calls with ->.",
-                explanationEs: "CALL METHOD invoca métodos de clases u objetos. La sintaxis moderna permite llamadas directas con ->."
-            },
-            {
-                id: 45,
-                question: "Which of the following are valid visibility sections in an ABAP class? Note: There are 3 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son secciones de visibilidad válidas en una clase ABAP? Nota: Hay 3 respuestas correctas a esta pregunta.",
-                options: [
-                    "PUBLIC",
-                    "PROTECTED",
-                    "PRIVATE",
-                    "GLOBAL",
-                    "LOCAL"
-                ],
-                correct: ["A", "B", "C"],
-                multiple: true,
-                explanation: "The three visibility sections in ABAP classes are PUBLIC, PROTECTED, and PRIVATE.",
-                explanationEs: "Las tres secciones de visibilidad en clases ABAP son PUBLIC, PROTECTED, y PRIVATE."
-            },
-            {
-                id: 46,
-                question: "What is the purpose of the CREATE OBJECT statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia CREATE OBJECT en ABAP?",
-                options: [
-                    "To delete an object",
-                    "To create an instance of a class",
-                    "To modify an object",
-                    "To read data from an object"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "CREATE OBJECT instantiates a class to create an object. Modern syntax uses NEW.",
-                explanationEs: "CREATE OBJECT instancia una clase para crear un objeto. La sintaxis moderna usa NEW."
-            },
-            {
-                id: 47,
-                question: "Which of the following are valid ways to define an interface in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir una interfaz en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "INTERFACE if_demo. ... ENDINTERFACE.",
-                    "DATA if_demo TYPE INTERFACE.",
-                    "INTERFACE if_demo PUBLIC.",
-                    "DEFINE if_demo AS INTERFACE."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Interfaces are defined with INTERFACE...ENDINTERFACE and can have visibility modifiers.",
-                explanationEs: "Las interfaces se definen con INTERFACE...ENDINTERFACE y pueden tener modificadores de visibilidad."
-            },
-            {
-                id: 48,
-                question: "What is the purpose of the RAISE EVENT statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia RAISE EVENT en ABAP?",
-                options: [
-                    "To define a new event",
-                    "To trigger an event in a class",
-                    "To read data from an event",
-                    "To modify an event"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "RAISE EVENT triggers an event that can be handled by registered event handlers.",
-                explanationEs: "RAISE EVENT dispara un evento que puede ser manejado por manejadores de eventos registrados."
-            },
-            {
-                id: 49,
-                question: "Which of the following are valid ways to handle events in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de manejar eventos en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "METHODS: handle_event FOR EVENT evt OF cl_demo.",
-                    "IF evt = 'triggered'. ... ENDIF.",
-                    "SET HANDLER handle_event FOR cl_demo.",
-                    "WHILE evt = 'triggered'. ... ENDWHILE."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Event handling requires defining event handler methods and registering them with SET HANDLER.",
-                explanationEs: "El manejo de eventos requiere definir métodos manejadores de eventos y registrarlos con SET HANDLER."
-            },
-            {
-                id: 50,
-                question: "What is the purpose of the GET PARAMETER statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia GET PARAMETER en ABAP?",
-                options: [
-                    "To set a parameter value",
-                    "To retrieve the value of a parameter",
-                    "To delete a parameter",
-                    "To create a new parameter"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "GET PARAMETER retrieves values from SAP memory that were previously set with SET PARAMETER.",
-                explanationEs: "GET PARAMETER recupera valores de la memoria SAP que fueron previamente establecidos con SET PARAMETER."
-            },
-            {
-                id: 51,
-                question: "Which of the following are valid ways to define a function module in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir un módulo de función en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "FUNCTION z_fm. ... ENDFUNCTION.",
-                    "DATA z_fm TYPE FUNCTION.",
-                    "FUNCTION-POOL z_fp.",
-                    "DEFINE z_fm AS FUNCTION."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Function modules are defined with FUNCTION...ENDFUNCTION within a FUNCTION-POOL.",
-                explanationEs: "Los módulos de función se definen con FUNCTION...ENDFUNCTION dentro de un FUNCTION-POOL."
-            },
-            {
-                id: 52,
-                question: "What is the purpose of the CALL FUNCTION statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia CALL FUNCTION en ABAP?",
-                options: [
-                    "To define a new function module",
-                    "To call a function module",
-                    "To read data from a function module",
-                    "To modify a function module"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "CALL FUNCTION invokes function modules with their parameters.",
-                explanationEs: "CALL FUNCTION invoca módulos de función con sus parámetros."
-            },
-            {
-                id: 53,
-                question: "Which of the following are valid ways to define a report in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir un reporte en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "REPORT z_report.",
-                    "DATA z_report TYPE REPORT.",
-                    "PROGRAM z_program.",
-                    "DEFINE z_report AS REPORT."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Reports are defined with REPORT or PROGRAM statements at the beginning of the source code.",
-                explanationEs: "Los reportes se definen con sentencias REPORT o PROGRAM al inicio del código fuente."
-            },
-            {
-                id: 54,
-                question: "What is the purpose of the SUBMIT statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia SUBMIT en ABAP?",
-                options: [
-                    "To define a new report",
-                    "To call another report or program",
-                    "To read data from a report",
-                    "To modify a report"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "SUBMIT executes another ABAP program from within the current program.",
-                explanationEs: "SUBMIT ejecuta otro programa ABAP desde dentro del programa actual."
-            },
-            {
-                id: 55,
-                question: "Which of the following are valid ways to define a selection screen in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir una pantalla de selección en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "SELECTION-SCREEN BEGIN OF BLOCK b1. ... END OF BLOCK b1.",
-                    "DATA: sscr TYPE SELECTION-SCREEN.",
-                    "PARAMETERS: p_var TYPE i.",
-                    "DEFINE sscr AS SELECTION-SCREEN."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Selection screens are defined using SELECTION-SCREEN blocks and PARAMETERS/SELECT-OPTIONS.",
-                explanationEs: "Las pantallas de selección se definen usando bloques SELECTION-SCREEN y PARAMETERS/SELECT-OPTIONS."
-            },
-            {
-                id: 56,
-                question: "What is the purpose of the AT SELECTION-SCREEN event in ABAP?",
-                questionEs: "¿Cuál es el propósito del evento AT SELECTION-SCREEN en ABAP?",
-                options: [
-                    "To define a new selection screen",
-                    "To validate input on a selection screen",
-                    "To read data from a selection screen",
-                    "To modify a selection screen"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "AT SELECTION-SCREEN is used for input validation and processing before the main program logic.",
-                explanationEs: "AT SELECTION-SCREEN se usa para validación de entrada y procesamiento antes de la lógica principal del programa."
-            },
-            {
-                id: 57,
-                question: "Which of the following are valid ways to define a parameter on a selection screen in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir un parámetro en una pantalla de selección en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "PARAMETERS: p_var TYPE i.",
-                    "DATA: p_var TYPE i ON SCREEN.",
-                    "SELECT-OPTIONS: s_var FOR field.",
-                    "DEFINE p_var AS PARAMETER."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "PARAMETERS defines single input fields, SELECT-OPTIONS defines range selections.",
-                explanationEs: "PARAMETERS define campos de entrada únicos, SELECT-OPTIONS define selecciones de rango."
-            },
-            {
-                id: 58,
-                question: "What is the purpose of the START-OF-SELECTION event in ABAP?",
-                questionEs: "¿Cuál es el propósito del evento START-OF-SELECTION en ABAP?",
-                options: [
-                    "To define a new report",
-                    "To mark the beginning of the main processing block",
-                    "To validate input on a selection screen",
-                    "To end a report"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "START-OF-SELECTION marks where the main processing logic begins in a report.",
-                explanationEs: "START-OF-SELECTION marca donde comienza la lógica de procesamiento principal en un reporte."
-            },
-            {
-                id: 59,
-                question: "Which of the following are valid ways to define a select-option in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir una select-option en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "SELECT-OPTIONS: s_var FOR field.",
-                    "DATA: s_var TYPE SELECT-OPTION.",
-                    "SELECT-OPTIONS: s_var FOR field NO INTERVALS.",
-                    "DEFINE s_var AS SELECT-OPTION."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "SELECT-OPTIONS can be defined with various options like NO INTERVALS to restrict functionality.",
-                explanationEs: "SELECT-OPTIONS puede definirse con varias opciones como NO INTERVALS para restringir funcionalidad."
-            },
-            {
-                id: 60,
-                question: "What is the purpose of the END-OF-SELECTION event in ABAP?",
-                questionEs: "¿Cuál es el propósito del evento END-OF-SELECTION en ABAP?",
-                options: [
-                    "To define a new report",
-                    "To mark the end of the main processing block",
-                    "To validate input on a selection screen",
-                    "To start a report"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "END-OF-SELECTION marks the end of the main processing logic in a report.",
-                explanationEs: "END-OF-SELECTION marca el final de la lógica de procesamiento principal en un reporte."
-            },
-            {
-                id: 61,
-                question: "Which of the following are valid ways to define a table control in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir un control de tabla en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "CONTROLS: tc_name TYPE TABLEVIEW USING SCREEN 0100.",
-                    "DATA: tc_name TYPE TABLE CONTROL.",
-                    "PROCESS BEFORE OUTPUT. LOOP AT itab INTO wa WITH CONTROL tc_name.",
-                    "DEFINE tc_name AS TABLE CONTROL."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Table controls are defined with CONTROLS statement and used in LOOP...WITH CONTROL.",
-                explanationEs: "Los controles de tabla se definen con la sentencia CONTROLS y se usan en LOOP...WITH CONTROL."
-            },
-            {
-                id: 62,
-                question: "What is the purpose of the LOOP AT statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia LOOP AT en ABAP?",
-                options: [
-                    "To delete rows from an internal table",
-                    "To iterate over the rows of an internal table",
-                    "To insert rows into an internal table",
-                    "To read a single row from an internal table"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "LOOP AT iterates through all rows of an internal table.",
-                explanationEs: "LOOP AT itera a través de todas las filas de una tabla interna."
-            },
-            {
-                id: 63,
-                question: "Which of the following are valid ways to define a module pool in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir un module pool en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "PROGRAM z_mp TYPE M.",
-                    "DATA z_mp TYPE MODULE.",
-                    "PROGRAM z_mp. PROCESS BEFORE OUTPUT. MODULE init.",
-                    "DEFINE z_mp AS MODULE POOL."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Module pools are defined with PROGRAM statement and contain PBO/PAI modules.",
-                explanationEs: "Los module pools se definen con la sentencia PROGRAM y contienen módulos PBO/PAI."
-            },
-            {
-                id: 64,
-                question: "What is the purpose of the PROCESS BEFORE OUTPUT event in ABAP?",
-                questionEs: "¿Cuál es el propósito del evento PROCESS BEFORE OUTPUT en ABAP?",
-                options: [
-                    "To validate input on a screen",
-                    "To process data before the screen is displayed",
-                    "To process data after the screen is displayed",
-                    "To end a screen"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "PROCESS BEFORE OUTPUT (PBO) prepares data and screen elements before display.",
-                explanationEs: "PROCESS BEFORE OUTPUT (PBO) prepara datos y elementos de pantalla antes de mostrar."
-            },
-            {
-                id: 65,
-                question: "Which of the following are valid ways to define a screen in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir una pantalla en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "PROCESS BEFORE OUTPUT. MODULE status_0100.",
-                    "DATA scr TYPE SCREEN.",
-                    "PROCESS AFTER INPUT. MODULE user_command_0100.",
-                    "DEFINE scr AS SCREEN."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Screens are defined with PBO and PAI flow logic modules.",
-                explanationEs: "Las pantallas se definen con módulos de lógica de flujo PBO y PAI."
-            },
-            {
-                id: 66,
-                question: "What is the purpose of the PROCESS AFTER INPUT event in ABAP?",
-                questionEs: "¿Cuál es el propósito del evento PROCESS AFTER INPUT en ABAP?",
-                options: [
-                    "To process data before the screen is displayed",
-                    "To process data after user input on a screen",
-                    "To validate data before display",
-                    "To end a screen"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "PROCESS AFTER INPUT (PAI) handles user input and actions after screen interaction.",
-                explanationEs: "PROCESS AFTER INPUT (PAI) maneja la entrada del usuario y acciones después de la interacción con la pantalla."
-            },
-            {
-                id: 67,
-                question: "Which of the following are valid ways to define a GUI status in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir un estado GUI en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "SET PF-STATUS 'STATUS_100'.",
-                    "DATA gui TYPE GUI STATUS.",
-                    "MODULE set_status OUTPUT. SET PF-STATUS 'STATUS_100'.",
-                    "DEFINE gui AS GUI STATUS."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "GUI status is set using SET PF-STATUS, typically in PBO modules.",
-                explanationEs: "El estado GUI se establece usando SET PF-STATUS, típicamente en módulos PBO."
-            },
-            {
-                id: 68,
-                question: "What is the purpose of the LEAVE TO SCREEN statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia LEAVE TO SCREEN en ABAP?",
-                options: [
-                    "To end a program",
-                    "To navigate to a different screen",
-                    "To validate input on a screen",
-                    "To process data before display"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "LEAVE TO SCREEN navigates to a specified screen number.",
-                explanationEs: "LEAVE TO SCREEN navega a un número de pantalla especificado."
-            },
-            {
-                id: 69,
-                question: "Which of the following are valid ways to define a transaction code in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir un código de transacción en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "Transaction code ZT01 program ZPROG.",
-                    "DATA tc TYPE TRANSACTION.",
-                    "CALL TRANSACTION 'ZT01'.",
-                    "DEFINE tc AS TRANSACTION."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Transaction codes are defined in SE93 and called with CALL TRANSACTION.",
-                explanationEs: "Los códigos de transacción se definen en SE93 y se llaman con CALL TRANSACTION."
-            },
-            {
-                id: 70,
-                question: "What is the purpose of the SET SCREEN statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia SET SCREEN en ABAP?",
-                options: [
-                    "To end a screen",
-                    "To set the next screen to be displayed",
-                    "To validate input on a screen",
-                    "To process data before display"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "SET SCREEN sets the next screen number to be processed.",
-                explanationEs: "SET SCREEN establece el siguiente número de pantalla a procesar."
-            },
-            {
-                id: 71,
-                question: "Which of the following are valid ways to define a BAPI in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir un BAPI en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "FUNCTION z_bapi. ... ENDFUNCTION.",
-                    "DATA bapi TYPE BAPI.",
-                    "CALL FUNCTION 'Z_BAPI'.",
-                    "DEFINE bapi AS BAPI."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "BAPIs are function modules with specific naming conventions and are called like regular function modules.",
-                explanationEs: "Los BAPIs son módulos de función con convenciones de nomenclatura específicas y se llaman como módulos de función regulares."
-            },
-            {
-                id: 72,
-                question: "What is the purpose of the BAPI_TRANSACTION_COMMIT statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia BAPI_TRANSACTION_COMMIT en ABAP?",
-                options: [
-                    "To undo a BAPI transaction",
-                    "To commit a BAPI transaction",
-                    "To start a BAPI transaction",
-                    "To delete a BAPI transaction"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "BAPI_TRANSACTION_COMMIT is a standard BAPI to commit changes made by other BAPIs.",
-                explanationEs: "BAPI_TRANSACTION_COMMIT es un BAPI estándar para confirmar cambios hechos por otros BAPIs."
-            },
-            {
-                id: 73,
-                question: "Which of the following are valid ways to define an enhancement point in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir un punto de mejora en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "ENHANCEMENT-POINT ep_01 SPOTS es_sap.",
-                    "DATA ep TYPE ENHANCEMENT.",
-                    "ENHANCEMENT 1 ep_01. ... ENDENHANCEMENT.",
-                    "DEFINE ep AS ENHANCEMENT."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Enhancement points are defined with ENHANCEMENT-POINT and implemented with ENHANCEMENT...ENDENHANCEMENT.",
-                explanationEs: "Los puntos de mejora se definen con ENHANCEMENT-POINT y se implementan con ENHANCEMENT...ENDENHANCEMENT."
-            },
-            {
-                id: 74,
-                question: "What is the purpose of the ENHANCEMENT-SECTION statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia ENHANCEMENT-SECTION en ABAP?",
-                options: [
-                    "To define a new enhancement point",
-                    "To provide a section for enhancement implementation",
-                    "To read data from an enhancement",
-                    "To modify an enhancement"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "ENHANCEMENT-SECTION provides replaceable code sections for enhancement implementations.",
-                explanationEs: "ENHANCEMENT-SECTION proporciona secciones de código reemplazables para implementaciones de mejora."
-            },
-            {
-                id: 75,
-                question: "Which of the following are valid ways to define a user exit in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir una salida de usuario en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "INCLUDE z_user_exit.",
-                    "DATA ue TYPE USER EXIT.",
-                    "ENHANCEMENT-POINT user_exit SPOTS es_sap.",
-                    "DEFINE ue AS USER EXIT."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "User exits can be implemented via includes or modern enhancement spots.",
-                explanationEs: "Las salidas de usuario pueden implementarse mediante includes o spots de mejora modernos."
-            },
-            {
-                id: 76,
-                question: "What is the purpose of the CALL CUSTOMER-FUNCTION statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia CALL CUSTOMER-FUNCTION en ABAP?",
-                options: [
-                    "To define a new customer function",
-                    "To call a customer exit function",
-                    "To read data from a customer function",
-                    "To modify a customer function"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "CALL CUSTOMER-FUNCTION invokes customer exit function modules.",
-                explanationEs: "CALL CUSTOMER-FUNCTION invoca módulos de función de salida de cliente."
-            },
-            {
-                id: 77,
-                question: "Which of the following are valid ways to define a BADL in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir un BADL en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "DEFINE BEHAVIOR FOR z_entity ALIAS alias.",
-                    "DATA badl TYPE BEHAVIOR DEFINITION.",
-                    "BEHAVIOR FOR z_entity IMPLEMENTATION IN CLASS z_cl_impl.",
-                    "DEFINE badl AS BEHAVIOR."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Behavior definitions are created with specific RAP syntax for business objects.",
-                explanationEs: "Las definiciones de comportamiento se crean con sintaxis RAP específica para objetos de negocio."
-            },
-            {
-                id: 78,
-                question: "What is the purpose of the unmanaged scenario in ABAP Cloud Development Model?",
-                questionEs: "¿Cuál es el propósito del escenario no gestionado en el Modelo de Desarrollo ABAP Cloud?",
-                options: [
-                    "To manage database transactions",
-                    "To handle data persistence without a RAP framework",
-                    "To define a new RAP model",
-                    "To modify a RAP model"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "Unmanaged scenario allows custom implementation of CRUD operations outside RAP framework.",
-                explanationEs: "El escenario no gestionado permite implementación personalizada de operaciones CRUD fuera del framework RAP."
-            },
-            {
-                id: 79,
-                question: "Which of the following are valid ways to define a RAP model in ABAP? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir un modelo RAP en ABAP? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "@AccessControl.authorizationCheck: #CHECK DEFINE BEHAVIOR FOR z_rap.",
-                    "DATA rap TYPE RAP MODEL.",
-                    "DEFINE SERVICE FOR z_rap.",
-                    "DEFINE rap AS RAP."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "RAP models use specific annotations and service definitions.",
-                explanationEs: "Los modelos RAP usan anotaciones específicas y definiciones de servicio."
-            },
-            {
-                id: 80,
-                question: "What is the purpose of the @AccessControl annotation in ABAP CDS?",
-                questionEs: "¿Cuál es el propósito de la anotación @AccessControl en ABAP CDS?",
-                options: [
-                    "To define a new data field",
-                    "To control access to CDS views",
-                    "To read data from a CDS view",
-                    "To modify a CDS view"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "@AccessControl annotation defines authorization checks for CDS views.",
-                explanationEs: "La anotación @AccessControl define verificaciones de autorización para vistas CDS."
-            },
-            {
-                id: 81,
-                question: "Which of the following are valid ways to define an association in ABAP CDS? Note: There are 2 correct answers to this question.",
-                questionEs: "¿Cuáles de las siguientes son formas válidas de definir una asociación en ABAP CDS? Nota: Hay 2 respuestas correctas a esta pregunta.",
-                options: [
-                    "association [0..1] to z_target as _target on $projection.id = _target.id;",
-                    "DATA assoc TYPE ASSOCIATION.",
-                    "association [*] to z_target as _target on $projection.id = _target.id;",
-                    "DEFINE assoc AS ASSOCIATION."
-                ],
-                correct: ["A", "C"],
-                multiple: true,
-                explanation: "Associations in CDS use specific syntax with cardinality and ON conditions.",
-                explanationEs: "Las asociaciones en CDS usan sintaxis específica con cardinalidad y condiciones ON."
-            },
-            {
-                id: 82,
-                question: "Which ABAP statement would you use to concatenate two strings?",
-                questionEs: "¿Qué sentencia ABAP usarías para concatenar dos cadenas?",
-                options: [
-                    "COMBINE",
-                    "CONCATENATE",
-                    "APPEND",
-                    "JOIN"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "CONCATENATE is used to join strings together in ABAP.",
-                explanationEs: "CONCATENATE se usa para unir cadenas en ABAP."
-            },
-            {
-                id: 83,
-                question: "What is the purpose of the SPLIT statement in ABAP?",
-                questionEs: "¿Cuál es el propósito de la sentencia SPLIT en ABAP?",
-                options: [
-                    "To divide numbers",
-                    "To separate a string into parts",
-                    "To create table partitions",
-                    "To split database connections"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "SPLIT divides a string into parts based on a delimiter.",
-                explanationEs: "SPLIT divide una cadena en partes basándose en un delimitador."
-            },
-            {
-                id: 84,
-                question: "Which of the following is used to define a database procedure proxy in ABAP?",
-                questionEs: "¿Cuál de los siguientes se usa para definir un proxy de procedimiento de base de datos en ABAP?",
-                options: [
-                    "CLASS...ENDCLASS",
-                    "FUNCTION...ENDFUNCTION",
-                    "AMDP METHOD",
-                    "PROCEDURE...ENDPROCEDURE"
-                ],
-                correct: ["C"],
-                multiple: false,
-                explanation: "AMDP (ABAP Managed Database Procedures) methods are used to define database procedure proxies.",
-                explanationEs: "Los métodos AMDP (Procedimientos de Base de Datos Gestionados por ABAP) se usan para definir proxies de procedimientos de base de datos."
-            },
-            {
-                id: 85,
-                question: "What keyword is used to define an inline declaration in ABAP?",
-                questionEs: "¿Qué palabra clave se usa para definir una declaración inline en ABAP?",
-                options: [
-                    "INLINE",
-                    "DATA()",
-                    "DECLARE",
-                    "VAR"
-                ],
-                correct: ["B"],
-                multiple: false,
-                explanation: "DATA() is used for inline declarations in ABAP, allowing variable declaration and assignment in one statement.",
-                explanationEs: "DATA() se usa para declaraciones inline en ABAP, permitiendo declaración de variable y asignación en una sentencia."
-            }
+        // BATERÍA Cloud - Preguntas del documento cloud (64 preguntas)
+        const cloudQuestions = [
+
+            {
+    id: 1,
+    question: "Which restrictions exist for ABAP SQL arithmetic expressions? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Qué restricciones existen para las expresiones aritméticas de ABAP SQL? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "Floating point types and integer types can NOT be used in the same expression",
+        "The operator / is allowed only in floating point expressions", 
+        "Decimal types and integer types can NOT be used in the same expression",
+        "The operator is allowed only in floating point expressions"
+    ],
+    correct: ["B", "D"],
+    multiple: true,
+    explanation: "In ABAP SQL arithmetic expressions, there are specific restrictions about mixing data types and operator usage. The division operator (/) has limitations in certain contexts, and there are rules about combining different numeric types.",
+    explanationEs: "En las expresiones aritméticas de ABAP SQL, existen restricciones específicas sobre la mezcla de tipos de datos y el uso de operadores. El operador de división (/) tiene limitaciones en ciertos contextos, y hay reglas sobre la combinación de diferentes tipos numéricos."
+},
+{
+    id: 2,
+    question: "What are valid statements? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuáles son declaraciones válidas? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "##NEEDED is checked by the syntax checker",
+        "The pragma is not checked by the syntax checker",
+        "#EC_NEEDED is not checked by the syntax checker",
+        "The pseudo-comment is checked by the syntax checker"
+    ],
+    correct: ["A", "B"],
+    multiple: true,
+    explanation: "Pragmas (##NEEDED) are checked by the syntax checker, while the pragma itself is not checked. This relates to how ABAP handles different types of code annotations.",
+    explanationEs: "Los pragmas (##NEEDED) son verificados por el verificador de sintaxis, mientras que el pragma en sí no es verificado. Esto se relaciona con cómo ABAP maneja diferentes tipos de anotaciones de código."
+},
+
+{
+    id: 3,
+    question: "Which internal table type allows unique and non-unique keys?",
+    questionEs: "¿Qué tipo de tabla interna permite claves únicas y no únicas?",
+    options: [
+        "Sorted",
+        "Hashed",
+        "Standard"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "STANDARD tables are the most flexible type of internal table and can have both unique and non-unique keys, unlike SORTED and HASHED tables which have specific key requirements.",
+    explanationEs: "Las tablas STANDARD son el tipo más flexible de tabla interna y pueden tener tanto claves únicas como no únicas, a diferencia de las tablas SORTED y HASHED que tienen requisitos específicos de clave."
+},
+
+{
+    id: 4,
+    question: "In this nested join below in which way is the join evaluated?",
+    questionEs: "¿En esta unión anidada, de qué manera se evalúa la unión?",
+    options: [
+        "From the left to the right in the order of the tables: 1. a is joined with b 2. b is joined with c",
+        "From the right to the left in the order of the tables: 1. b is joined with c. 2. b is joined with a",
+        "From the top to the bottom in the order of the on conditions 1. b is joined with c 2. a is joined with b",
+        "From the bottom to the top in the order of the on conditions: 1. a is joined with b 2. b is joined with c"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "In nested JOIN operations, the evaluation follows the order of the ON conditions from top to bottom, not the order of table appearance.",
+    explanationEs: "En operaciones JOIN anidadas, la evaluación sigue el orden de las condiciones ON de arriba hacia abajo, no el orden de aparición de las tablas."
+},
+
+{
+    id: 5,
+    question: "Which extensibility type does SAP recommend you use to enhance the existing UI for an SAP Fiori app?",
+    questionEs: "¿Qué tipo de extensibilidad recomienda SAP para mejorar la UI existente de una aplicación SAP Fiori?",
+    options: [
+        "Key user",
+        "Classic",
+        "Side-by-side",
+        "Developer"
+    ],
+    correct: ["D"],
+    multiple: false,
+    explanation: "For enhancing existing SAP Fiori app UIs, SAP recommends developer extensibility as it provides the most comprehensive capabilities for UI modifications.",
+    explanationEs: "Para mejorar las UIs de aplicaciones SAP Fiori existentes, SAP recomienda la extensibilidad de desarrollador ya que proporciona las capacidades más completas para modificaciones de UI."
+},
+
+{
+    id: 6,
+    question: "In the following ABAP SQL code, what are valid case distinctions? Note: There are 2 correct answers to this question.",
+    questionEs: "En el siguiente código ABAP SQL, ¿cuáles son distinciones de caso válidas? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "Option A",
+        "Option B", 
+        "Option C",
+        "Option D"
+    ],
+    correct: ["A", "B"],
+    multiple: true,
+    explanation: "Valid CASE expressions in ABAP SQL must follow proper syntax with WHEN-THEN-ELSE-END structure and proper field references.",
+    explanationEs: "Las expresiones CASE válidas en ABAP SQL deben seguir la sintaxis adecuada con estructura WHEN-THEN-ELSE-END y referencias de campo apropiadas."
+},
+{
+    id: 7,
+    question: "What are some features of a unique secondary key? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuáles son algunas características de una clave secundaria única? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "It is created when a table is filled",
+        "It is updated when the modified table is read again",
+        "It is created with the first read access of a table",
+        "It is updated when the table is modified"
+    ],
+    correct: ["C", "D"],
+    multiple: true,
+    explanation: "Unique secondary keys are created with the first read access and are updated when the table is modified to maintain consistency.",
+    explanationEs: "Las claves secundarias únicas se crean con el primer acceso de lectura y se actualizan cuando la tabla se modifica para mantener la consistencia."
+},
+
+{
+    id: 8,
+    question: "Which of the following types are permitted to be used for <source> on line #4? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuáles de los siguientes tipos están permitidos para usar en <source> en la línea #4? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    code: `@AccessControl.authorizationCheck: #NOT_REQUIRED
+DEFINE VIEW ENTITY demo_cds_data_source_matrix
+AS SELECT FROM
+<source>
+{
+  KEY field_1,
+  field_2,
+  field_3
+}`,
+    options: [
+        "A database table from the ABAP Dictionary",
+        "A CDS DDIC-based view",
+        "An external view from the ABAP Dictionary",
+        "A database view from the ABAP Dictionary"
+    ],
+    correct: ["A", "B"],
+    multiple: true,
+    explanation: "In CDS view definitions, the source can be database tables from ABAP Dictionary or CDS DDIC-based views, but not external views or database views.",
+    explanationEs: "En definiciones de vistas CDS, el origen puede ser tablas de base de datos del Diccionario ABAP o vistas CDS basadas en DDIC, pero no vistas externas o vistas de base de datos."
+},
+
+{
+    id: 9,
+    question: "When processing a loop with the statement DO... ENDDO, what system variable contains the implicit loop counter?",
+    questionEs: "Al procesar un bucle con la declaración DO... ENDDO, ¿qué variable del sistema contiene el contador de bucle implícito?",
+    options: [
+        "sy-linno",
+        "sy-labix",
+        "sy-subrc",
+        "sy-index"
+    ],
+    correct: ["D"],
+    multiple: false,
+    explanation: "The system variable sy-index contains the current loop counter in DO...ENDDO loops.",
+    explanationEs: "La variable del sistema sy-index contiene el contador de bucle actual en bucles DO...ENDDO."
+},
+
+{
+    id: 10,
+    question: "Which patterns raise an exception? Note: There are 3 correct answers to this question.",
+    questionEs: "¿Qué patrones generan una excepción? Nota: Hay 3 respuestas correctas para esta pregunta.",
+    options: [
+        "DATA: gv_target TYPE p DECIMALS 2. CONSTANTS: gco_intl TYPE i VALUE 3. gv_target = EXACT #( 2 / gco_intl )",
+        "DATA: gv_target TYPE string. CONSTANTS: gco_string TYPE c LENGTH 16 VALUE '0123456789ABCDEF'. gv_target = EXACT #( gco_string+5(5) )",
+        "DATA: gv_target TYPE c LENGTH 5. CONSTANTS: gco_string TYPE string VALUE '0123456789ABCDEF'. gv_target = EXACT #( gco_string+5(6) )",
+        "DATA: gv_target TYPE p DECIMALS 3. CONSTANTS: gco_intl TYPE i VALUE 2. gv_target = EXACT #( 2 / gco_intl )",
+        "DATA: gv_target TYPE d. CONSTANTS: gco_date TYPE d VALUE '20331233'. gv_target = EXACT #( gco_date )"
+    ],
+    correct: ["A", "C", "E"],
+    multiple: true,
+    explanation: "EXACT # operator raises exceptions when there's data loss, type mismatch, or invalid values like invalid dates.",
+    explanationEs: "El operador EXACT # genera excepciones cuando hay pérdida de datos, incompatibilidad de tipos o valores inválidos como fechas no válidas."
+},
+
+{
+    id: 11,
+    question: "Which of the following are features of Core Data Services? Note: There are 3 correct answers to this question.",
+    questionEs: "¿Cuáles de las siguientes son características de Core Data Services? Nota: Hay 3 respuestas correctas para esta pregunta.",
+    options: [
+        "Inheritance",
+        "Associations",
+        "Annotations",
+        "Delegation",
+        "Structured Query Language (SQL)"
+    ],
+    correct: ["B", "C", "E"],
+    multiple: true,
+    explanation: "CDS features include Associations for defining relationships, Annotations for metadata, and SQL for data access. Inheritance and Delegation are not CDS features.",
+    explanationEs: "Las características de CDS incluyen Asociaciones para definir relaciones, Anotaciones para metadatos y SQL para acceso a datos. Herencia y Delegación no son características de CDS."
+},
+
+{
+    id: 12,
+    question: "What is the purpose of a foreign key relationship between two tables in the ABAP Dictionary?",
+    questionEs: "¿Cuál es el propósito de una relación de clave externa entre dos tablas en el Diccionario ABAP?",
+    options: [
+        "To document the relationship between the two tables",
+        "To ensure the integrity of data in the corresponding database tables",
+        "To create a corresponding foreign key relationship in the database"
+    ],
+    correct: ["B"],
+    multiple: false,
+    explanation: "Foreign key relationships in ABAP Dictionary primarily ensure data integrity by validating that referenced values exist in the parent table.",
+    explanationEs: "Las relaciones de clave externa en el Diccionario ABAP principalmente aseguran la integridad de datos validando que los valores referenciados existan en la tabla padre."
+},
+
+{
+    id: 13,
+    question: "When does SAP recommend to use a sorted or a hashed table respectively? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuándo recomienda SAP usar una tabla ordenada o una tabla hash respectivamente? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "A hashed table, when you read a single record and specify the complete key",
+        "A hashed table, when you read a subset in a loop and specify a part of the key from the left without gaps",
+        "A sorted table, when you read a subset in a loop and specify a part of the key from the left without gaps",
+        "A sorted table, when you read a single record and specify non key fields"
+    ],
+    correct: ["A", "C"],
+    multiple: true,
+    explanation: "Hashed tables are optimal for single record access with complete key, while sorted tables are better for range access with partial keys from the left.",
+    explanationEs: "Las tablas hash son óptimas para acceso de registro único con clave completa, mientras que las tablas ordenadas son mejores para acceso por rango con claves parciales desde la izquierda."
+},
+
+{
+    id: 14,
+    question: "Class super has subclass sub. Which rules are valid for the sub constructor? Note: There are 2 correct answers to this question.",
+    questionEs: "La clase super tiene una subclase sub. ¿Qué reglas son válidas para el constructor de sub? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "The method signature can be changed",
+        "Import parameters can only be evaluated after calling the constructor of super",
+        "The constructor of super must be called before using any components of your own instance",
+        "Events of your own instance cannot be raised before the registration of a handler in super"
+    ],
+    correct: ["A", "C"],
+    multiple: true,
+    explanation: "In ABAP OOP, subclass constructors can change the method signature and must call the superclass constructor before accessing own instance components.",
+    explanationEs: "En ABAP OOP, los constructores de subclase pueden cambiar la firma del método y deben llamar al constructor de la superclase antes de acceder a los componentes de su propia instancia."
+},
+
+{
+    id: 15,
+    question: "In an Access Control Object, which clauses are used? Note: There are 3 correct answers to this question.",
+    questionEs: "¿En un Objeto de Control de Acceso, qué cláusulas se usan? Nota: Hay 3 respuestas correctas para esta pregunta.",
+    options: [
+        "Where (to specify the access conditions)",
+        "Grant (to identify the data source)",
+        "Return code (to assign the return code of the authority check)",
+        "Define role (to specify the role name)",
+        "Revoke (to remove access to the data source)"
+    ],
+    correct: ["A", "D", "E"],
+    multiple: true,
+    explanation: "Access Control Objects use WHERE for conditions, DEFINE ROLE for role specification, and REVOKE for removing access.",
+    explanationEs: "Los Objetos de Control de Acceso usan WHERE para condiciones, DEFINE ROLE para especificación de roles y REVOKE para eliminar acceso."
+},
+
+{
+    id: 16,
+    question: "What are some of the reasons that Core Data Services are preferable to the classical approach to data modeling? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuáles son algunas de las razones por las que Core Data Services son preferibles al enfoque clásico de modelado de datos? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "They implement code pushdown",
+        "They avoid data transfer completely",
+        "They transfer computational results to the application server",
+        "They compute results on the application server"
+    ],
+    correct: ["A", "C"],
+    multiple: true,
+    explanation: "CDS implements code pushdown to the database level and transfers computational results rather than raw data to the application server, improving performance.",
+    explanationEs: "CDS implementa empuje de código al nivel de base de datos y transfiere resultados computacionales en lugar de datos en bruto al servidor de aplicación, mejorando el rendimiento."
+},
+
+{
+    id: 17,
+    question: "Which of the following ABAP SQL statements are valid? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuáles de las siguientes declaraciones ABAP SQL son válidas? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "SELECT FROM /dmo/connection FIELDS carrid, airpfrom, MAX(distance) AS dist_max, MIN(distance) AS dist_min GROUP BY carrid, airpfrom INTO TABLE @DATA(lt_hits)",
+        "SELECT FROM /dmo/connection FIELDS carrid, airpfrom, MAX(distance) AS dist_max, MIN(distance) AS dist_min INTO TABLE @DATA(lt_hits)",
+        "SELECT FROM /dmo/connection FIELDS MAX(distance) AS dist_max, MIN(distance) AS dist_min INTO TABLE @DATA(lt_hits)",
+        "SELECT FROM /dmo/connection FIELDS carrid, airpfrom GROUP BY carrid, connid INTO TABLE @DATA(lt_hits)"
+    ],
+    correct: ["A", "B"],
+    multiple: true,
+    explanation: "Valid ABAP SQL statements must have proper GROUP BY clauses when using aggregate functions, or no GROUP BY when aggregating all rows.",
+    explanationEs: "Las declaraciones ABAP SQL válidas deben tener cláusulas GROUP BY apropiadas al usar funciones agregadas, o ningún GROUP BY al agregar todas las filas."
+},
+
+{
+    id: 18,
+    question: "In ABAP SQL, which of the following retrieves the association field _Airline-Name of a CDS view?",
+    questionEs: "En ABAP SQL, ¿cuál de los siguientes recupera el campo de asociación _Airline-Name de una vista CDS?",
+    options: [
+        "\\_Airline-Name",
+        "/_Airline_Name",
+        "@_Airline-Name",
+        "\"_Airline_Name"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "In ABAP SQL, CDS association fields are accessed using the @ symbol followed by the association name.",
+    explanationEs: "En ABAP SQL, los campos de asociación CDS se acceden usando el símbolo @ seguido del nombre de la asociación."
+},
+
+{
+    id: 19,
+    question: "What RESTful Application Programming object contains only the fields required for a particular app?",
+    questionEs: "¿Qué objeto de Programación de Aplicación RESTful contiene solo los campos requeridos para una aplicación particular?",
+    options: [
+        "Database view",
+        "Metadata extension",
+        "Projection View",
+        "Data model view"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "Projection Views in RAP contain only the specific fields required for a particular application or use case.",
+    explanationEs: "Las Vistas de Proyección en RAP contienen solo los campos específicos requeridos para una aplicación o caso de uso particular."
+},
+
+{
+    id: 20,
+    question: "In a RESTful Application Programming application, in which objects do you bind a CDS view to create a value help? Note: There are 3 correct answers to this question.",
+    questionEs: "En una aplicación de Programación de Aplicación RESTful, ¿en qué objetos vinculas una vista CDS para crear una ayuda de valor? Nota: Hay 3 respuestas correctas para esta pregunta.",
+    options: [
+        "Data model view",
+        "Behavior definition",
+        "Metadata Extension",
+        "Service Definition",
+        "Projection View"
+    ],
+    correct: ["A", "C", "E"],
+    multiple: true,
+    explanation: "Value helps can be bound in Data model views, Metadata Extensions, and Projection Views to provide dropdown lists and search helps.",
+    explanationEs: "Las ayudas de valor se pueden vincular en vistas de modelo de datos, Extensiones de Metadatos y Vistas de Proyección para proporcionar listas desplegables y ayudas de búsqueda."
+},
+
+{
+    id: 21,
+    question: "What are advantages of using a field symbol for internal table row access? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuáles son las ventajas de usar un símbolo de campo para el acceso a filas de tabla interna? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "The field symbol can be reused for other programs",
+        "A MODIFY statement to write changed contents back to the table is not required",
+        "The row content is copied to the field symbol instead to a work area",
+        "Using a field symbol is faster than using a work area"
+    ],
+    correct: ["B", "D"],
+    multiple: true,
+    explanation: "Field symbols provide direct access to table rows without copying data, eliminating the need for MODIFY statements and improving performance.",
+    explanationEs: "Los símbolos de campo proporcionan acceso directo a las filas de la tabla sin copiar datos, eliminando la necesidad de declaraciones MODIFY y mejorando el rendimiento."
+},
+
+{
+    id: 22,
+    question: "In what order are objects created to generate a RESTful Application Programming application?",
+    questionEs: "¿En qué orden se crean los objetos para generar una aplicación de Programación de Aplicación RESTful?",
+    options: [
+        "Database table → Data model view → Projection view → Service definition → Service binding",
+        "Projection view → Data model view → Service definition → Database table → Service binding",
+        "Database table → Data model view → Service definition → Projection view → Service binding",
+        "Service definition → Projection view → Database table → Service binding"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "The correct order for RAP development is: Database table → Data model view → Service definition → Projection view → Service binding.",
+    explanationEs: "El orden correcto para el desarrollo RAP es: Tabla de base de datos → Vista de modelo de datos → Definición de servicio → Vista de proyección → Vinculación de servicio."
+},
+
+{
+    id: 23,
+    question: "In a program you find this source code. Which of the following apply? Note: There are 2 correct answers to this question.",
+    questionEs: "En un programa encuentras este código fuente. ¿Cuáles de los siguientes se aplican? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    code: `AUTHORITY-CHECK OBJECT '/DMO/TRVL' ID 'CNTRY' FIELD 'DE'
+ID 'ACTVT' FIELD '03'.`,
+    options: [
+        "If the user is authorized for 'CNTRY' = 'DE' then the return code is always 0",
+        "If the user is NOT authorized for 'CNTRY' = 'DE' OR for 'ACTVT' = '03' then the program will terminate",
+        "If the user is authorized for 'CNTRY' = 'DE' AND for 'ACTVT' = '03' then the return code is 0",
+        "AUTHORITY CHECK verifies whether a user is authorized for '/DMO/TRVL' with the listed field values"
+    ],
+    correct: ["C", "D"],
+    multiple: true,
+    explanation: "AUTHORITY-CHECK requires ALL specified field values to match user authorizations for return code 0, and it verifies authorization for the specified object.",
+    explanationEs: "AUTHORITY-CHECK requiere que TODOS los valores de campo especificados coincidan con las autorizaciones del usuario para el código de retorno 0, y verifica la autorización para el objeto especificado."
+},
+
+{
+    id: 24,
+    question: "You are given the following information: Based on this information, which of the following general settings should you set for the spfli database table? Note: There are 2 correct answers to this question.",
+    questionEs: "Se te da la siguiente información: Basándote en esta información, ¿cuáles de las siguientes configuraciones generales deberías establecer para la tabla de base de datos spfli? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    code: `SELECT SINGLE *
+FROM SPFLI
+WHERE CARRID = 'LH' AND CONNID = '1234'
+INTO @data(ls).
+
+1. The data source "spfli" on line #2 is an SAP HANA database table
+2. "spfli" will be a large table with over one million rows
+3. This program is the only one in the system that accesses the table
+4. This program will run rarely`,
+    options: [
+        "\"Storage Type\" to \"Column Store\"",
+        "\"Load Unit\" to \"Column Loadable\"",
+        "\"Storage Type\" to \"Row Store\"",
+        "\"Load Unit\" to \"Page Loadable\""
+    ],
+    correct: ["C", "D"],
+    multiple: true,
+    explanation: "For rarely accessed tables with single program access, Row Store with Page Loadable is more efficient than Column Store.",
+    explanationEs: "Para tablas raramente accedidas con acceso de un solo programa, Row Store con Page Loadable es más eficiente que Column Store."
+},
+
+{
+    id: 25,
+    question: "Which of the following actions cause an indirect change to a database table requiring a table conversion? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuáles de las siguientes acciones causan un cambio indirecto a una tabla de base de datos que requiere una conversión de tabla? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "Renaming a field in a structure that is included in the table definition",
+        "Changing the field labels of a data element that is used in the table definition",
+        "Deleting a field from a structure that is included in the table definition",
+        "Shortening the length of a domain used in a data element that is used in the table definition"
+    ],
+    correct: ["A", "C"],
+    multiple: true,
+    explanation: "Structural changes like renaming or deleting fields in included structures require table conversion, while label changes don't affect the database structure.",
+    explanationEs: "Los cambios estructurales como renombrar o eliminar campos en estructuras incluidas requieren conversión de tabla, mientras que los cambios de etiqueta no afectan la estructura de la base de datos."
+},
+
+{
+    id: 26,
+    question: "What are some properties of database tables? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuáles son algunas propiedades de las tablas de base de datos? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "They store information in two dimensions",
+        "They may have key fields",
+        "They can have any number of key fields",
+        "They can have relationships to other tables"
+    ],
+    correct: ["A", "D"],
+    multiple: true,
+    explanation: "Database tables store data in rows and columns (two dimensions) and can have relationships through foreign keys to other tables.",
+    explanationEs: "Las tablas de base de datos almacenan datos en filas y columnas (dos dimensiones) y pueden tener relaciones a través de claves externas con otras tablas."
+},
+
+{
+    id: 27,
+    question: "Which type of legacy code does SAP recommend you eliminate when you review modifications as part of an SAP S/4HANA system conversion? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Qué tipo de código heredado recomienda SAP eliminar cuando revisas modificaciones como parte de una conversión del sistema SAP S/4HANA? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "Code that supports a critical business process",
+        "Code that now is identical to a standard SAP object",
+        "Code that has less than 10% usage according to usage statistics",
+        "Code that can be redesigned as a key user extension"
+    ],
+    correct: ["B", "D"],
+    multiple: true,
+    explanation: "SAP recommends eliminating code that duplicates standard functionality and code that can be replaced with standard extensibility options.",
+    explanationEs: "SAP recomienda eliminar código que duplica funcionalidad estándar y código que puede ser reemplazado con opciones de extensibilidad estándar."
+},
+
+{
+    id: 28,
+    question: "Why would you use Access Controls with CDS Views? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Por qué usarías Controles de Acceso con Vistas CDS? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "Only the data corresponding to the user's authorization is transferred from the database to the application layer",
+        "The system field sy-subrc is set, giving you the result of the authorization check",
+        "You do not have to remember to implement AUTHORITY CHECK statements",
+        "All of the data from the data sources is loaded into your application automatically and filtered there according to the user's authorization"
+    ],
+    correct: ["A", "C"],
+    multiple: true,
+    explanation: "CDS Access Controls automatically filter data at the database level based on user authorizations and eliminate the need for manual AUTHORITY-CHECK statements.",
+    explanationEs: "Los Controles de Acceso CDS filtran automáticamente los datos a nivel de base de datos basándose en las autorizaciones del usuario y eliminan la necesidad de declaraciones AUTHORITY-CHECK manuales."
+},
+
+{
+    id: 29,
+    question: "Which ABAP SQL clause allows the use of inline declarations?",
+    questionEs: "¿Qué cláusula de ABAP SQL permite el uso de declaraciones en línea?",
+    options: [
+        "FROM",
+        "INTO CORRESPONDING FIELDS OF",
+        "INTO",
+        "FIELDS"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "The INTO clause allows inline declarations using @DATA(variable_name) syntax in ABAP SQL statements.",
+    explanationEs: "La cláusula INTO permite declaraciones en línea usando la sintaxis @DATA(nombre_variable) en declaraciones ABAP SQL."
+},
+
+{
+    id: 30,
+    question: "In class ZCL_CLASS_A, you use the statement DATA var TYPE ***. What may stand in place of ***? Note: There are 2 correct answers to this question.",
+    questionEs: "En la clase ZCL_CLASS_A, usas la declaración DATA var TYPE ***. ¿Qué puede estar en lugar de ***? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "The name of a type defined privately in class ZCL_CLASS_A",
+        "The name of a data element from the ABAP Dictionary",
+        "The name of a type defined privately in another class",
+        "The name of a domain from the ABAP Dictionary"
+    ],
+    correct: ["B", "D"],
+    multiple: true,
+    explanation: "In ABAP class type declarations, you can reference ABAP Dictionary data elements and domains, but not private types from other classes.",
+    explanationEs: "En declaraciones de tipo de clase ABAP, puedes referenciar elementos de datos y dominios del Diccionario ABAP, pero no tipos privados de otras clases."
+},
+
+{
+    id: 31,
+    question: "Which of the following integration frameworks have been released for ABAP cloud development? Note: There are 3 correct answers to this question.",
+    questionEs: "¿Cuáles de los siguientes marcos de integración han sido liberados para el desarrollo ABAP cloud? Nota: Hay 3 respuestas correctas para esta pregunta.",
+    options: [
+        "SOAP consumption",
+        "CDS Views",
+        "Business Add-ins (BAdIs)",
+        "Business Events",
+        "OData services"
+    ],
+    correct: ["A", "D", "E"],
+    multiple: true,
+    explanation: "ABAP Cloud supports SOAP consumption, Business Events, and OData services as integration frameworks, but not traditional BAdIs or CDS Views as integration frameworks.",
+    explanationEs: "ABAP Cloud soporta consumo SOAP, Eventos de Negocio y servicios OData como marcos de integración, pero no BAdIs tradicionales o Vistas CDS como marcos de integración."
+},
+
+{
+    id: 32,
+    question: "When processing an internal table with the statement LOOP AT itab... ENDLOOP, what system variable contains the current row number?",
+    questionEs: "Al procesar una tabla interna con la declaración LOOP AT itab... ENDLOOP, ¿qué variable del sistema contiene el número de fila actual?",
+    options: [
+        "sy-index",
+        "sy-subrc",
+        "sy-linno",
+        "sy-tabix"
+    ],
+    correct: ["D"],
+    multiple: false,
+    explanation: "The system variable sy-tabix contains the current row number when looping through internal tables with LOOP AT.",
+    explanationEs: "La variable del sistema sy-tabix contiene el número de fila actual al hacer bucle a través de tablas internas con LOOP AT."
+},
+
+{
+    id: 33,
+    question: "For what kind of applications would you consider using on-stack developer extensions? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Para qué tipo de aplicaciones considerarías usar extensiones de desarrollador en pila? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "Applications that provide APIs for side by side SAP BTP apps",
+        "Applications that access SAP S/4HANA data using complex SQL",
+        "Applications that integrate data from several different systems",
+        "Applications that run separate from SAP S/4HANA"
+    ],
+    correct: ["A", "B"],
+    multiple: true,
+    explanation: "On-stack developer extensions are suitable for providing APIs for BTP apps and accessing S/4HANA data with complex SQL requirements.",
+    explanationEs: "Las extensiones de desarrollador en pila son adecuadas para proporcionar APIs para aplicaciones BTP y acceder a datos S/4HANA con requisitos SQL complejos."
+},
+
+{
+    id: 34,
+    question: "Refer to the Exhibit. With which predicate condition can you ensure that the CAST will work?",
+    questionEs: "Refiriéndote a la Exhibición. ¿Con qué condición de predicado puedes asegurar que el CAST funcionará?",
+    code: `Given this code,
+DATA: go_super TYPE REF TO lcl_super,
+      go_sub1  TYPE REF TO lcl_sub1.
+...
+go_sub1 = CAST #( go_super ).
+go_sub1->sub1_meth1(...).`,
+    options: [
+        "IS SUPPLIED",
+        "IS NOT INITIAL",
+        "IS INSTANCE OF",
+        "IS BOUND"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "The IS INSTANCE OF predicate checks if an object reference is an instance of a specific class before performing a CAST operation.",
+    explanationEs: "El predicado IS INSTANCE OF verifica si una referencia de objeto es una instancia de una clase específica antes de realizar una operación CAST."
+},
+
+{
+    id: 35,
+    question: "In ABAP SQL, which of the following can be assigned an alias? Note: There are 2 correct answers to this question.",
+    questionEs: "En ABAP SQL, ¿a cuáles de los siguientes se les puede asignar un alias? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "order criterion (from order by clause)",
+        "field (from field list)",
+        "database table",
+        "group criterion (from group by clause)"
+    ],
+    correct: ["B", "C"],
+    multiple: true,
+    explanation: "In ABAP SQL, you can assign aliases to fields in the SELECT list and to database tables in the FROM clause.",
+    explanationEs: "En ABAP SQL, puedes asignar alias a campos en la lista SELECT y a tablas de base de datos en la cláusula FROM."
+},
+
+{
+    id: 36,
+    question: "/DMO/I_Connection is a CDS view. What variable type is connection_full based on the following code?",
+    questionEs: "/DMO/I_Connection es una vista CDS. ¿Qué tipo de variable es connection_full basándose en el siguiente código?",
+    code: `DATA connection_full TYPE /DMO/I_Connection.`,
+    options: [
+        "Simple variable",
+        "Structure",
+        "Internal Table"
+    ],
+    correct: ["B"],
+    multiple: false,
+    explanation: "When declaring a variable with TYPE referencing a CDS view, it creates a structure with the fields defined in the CDS view.",
+    explanationEs: "Al declarar una variable con TYPE que referencia una vista CDS, crea una estructura con los campos definidos en la vista CDS."
+},
+
+{
+    id: 37,
+    question: "Which of the following are valid sort operations for internal tables? Note: There are 3 correct answers to this question.",
+    questionEs: "¿Cuáles de las siguientes son operaciones de ordenamiento válidas para tablas internas? Nota: Hay 3 respuestas correctas para esta pregunta.",
+    options: [
+        "Sort a standard table using SORT itab ASCENDING",
+        "Sort a sorted table using SORT itab BY field1 ASCENDING field2 DESCENDING",
+        "Sort a standard table using SORT itab BY field1 field2",
+        "Sort a standard table using SORT itab",
+        "Sort a sorted table using SORT itab DESCENDING"
+    ],
+    correct: ["A", "C", "D"],
+    multiple: true,
+    explanation: "Standard tables can be sorted in various ways, but sorted tables cannot be re-sorted as they maintain their sort order automatically.",
+    explanationEs: "Las tablas estándar pueden ordenarse de varias maneras, pero las tablas ordenadas no pueden reordenarse ya que mantienen su orden automáticamente."
+},
+
+{
+    id: 38,
+    question: "Which statement can you use to change the contents of a row of data in an internal table?",
+    questionEs: "¿Qué declaración puedes usar para cambiar el contenido de una fila de datos en una tabla interna?",
+    options: [
+        "Append table",
+        "Modify table",
+        "Insert table",
+        "Update table"
+    ],
+    correct: ["B"],
+    multiple: false,
+    explanation: "The MODIFY statement is used to change existing rows in internal tables, while APPEND adds new rows and INSERT inserts at specific positions.",
+    explanationEs: "La declaración MODIFY se usa para cambiar filas existentes en tablas internas, mientras que APPEND agrega nuevas filas e INSERT inserta en posiciones específicas."
+},
+
+{
+    id: 39,
+    question: "As a consultant you are posed the following question from a client who is using SAP S/4HANA Cloud, public edition and also SAP BTP, ABAP environment. Based on this which of the following extension types would you recommend to the customer to add the new button?",
+    questionEs: "Como consultor te plantean la siguiente pregunta de un cliente que usa SAP S/4HANA Cloud, edición pública y también el entorno SAP BTP, ABAP. Basándote en esto, ¿cuál de los siguientes tipos de extensión recomendarías al cliente para agregar el nuevo botón?",
+    options: [
+        "RAP BO Behavior Extension",
+        "SAP HANA database table extension",
+        "RAP BO Node Extension",
+        "Business Service Extension"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "For adding UI elements like buttons with on-the-fly calculations, RAP BO Node Extension is the appropriate extensibility type.",
+    explanationEs: "Para agregar elementos de UI como botones con cálculos dinámicos, RAP BO Node Extension es el tipo de extensibilidad apropiado."
+},
+
+{
+    id: 40,
+    question: "Refer to the Exhibit. The \"demo_ods_assoc_spfli\" data source referenced in line #4 contains a field \"connid\" which you would like to expose in the element list. Which of the following statements would do this if inserted on line #8?",
+    questionEs: "Refiriéndote a la Exhibición. El origen de datos \"demo_ods_assoc_spfli\" referenciado en la línea #4 contiene un campo \"connid\" que te gustaría exponer en la lista de elementos. ¿Cuál de las siguientes declaraciones haría esto si se inserta en la línea #8?",
+    code: `Given the following Core Data Services View Entity Data Definition:
+1 @AccessControl.authorizationCheck: #NOT_REQUIRED
+2 DEFINE VIEW ENTITY demo_cds_assoc_element
+3 AS SELECT FROM scarr
+4 ASSOCIATION OF ONE TO MANY demo_cds_assoc_spfli AS _spfli
+5 ON scarr.carrid = _spfli.carrid
+6 {
+7   KEY carrid,
+8   ?
+9   carrname
+10 }`,
+    options: [
+        "demo_ods_assoc_spfli.connid,",
+        "demo_ods_assoc_spfli-connid/",
+        "spfli-connid,",
+        "_spfli.connid/"
+    ],
+    correct: ["A"],
+    multiple: false,
+    explanation: "To expose fields from associated data sources in CDS views, use the data source name followed by dot notation.",
+    explanationEs: "Para exponer campos de orígenes de datos asociados en vistas CDS, usa el nombre del origen de datos seguido de notación de punto."
+},
+
+{
+    id: 41,
+    question: "Which of the following is a generic internal table type?",
+    questionEs: "¿Cuál de los siguientes es un tipo de tabla interna genérico?",
+    options: [
+        "SORTED TABLE",
+        "INDEX TABLE",
+        "STANDARD TABLE",
+        "HASHED TABLE"
+    ],
+    correct: ["B"],
+    multiple: false,
+    explanation: "INDEX TABLE is a generic type that includes both STANDARD and SORTED tables, while HASHED TABLE is a specific type.",
+    explanationEs: "INDEX TABLE es un tipo genérico que incluye tanto tablas STANDARD como SORTED, mientras que HASHED TABLE es un tipo específico."
+},
+
+{
+    id: 42,
+    question: "In RESTful Application Programming, which EML statement retrieves an object?",
+    questionEs: "En Programación de Aplicación RESTful, ¿qué declaración EML recupera un objeto?",
+    options: [
+        "Find entity",
+        "Select entity",
+        "Get entity",
+        "Read entity"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "In RAP EML (Entity Manipulation Language), the GET ENTITY statement is used to retrieve objects from the business object.",
+    explanationEs: "En RAP EML (Lenguaje de Manipulación de Entidades), la declaración GET ENTITY se usa para recuperar objetos del objeto de negocio."
+},
+
+{
+    id: 43,
+    question: "For the assignment, gv_target = gv_source. Which of the following data declarations will always work without truncation or rounding? Note: There are 2 correct answers to this question.",
+    questionEs: "Para la asignación, gv_target = gv_source. ¿Cuáles de las siguientes declaraciones de datos siempre funcionarán sin truncamiento o redondeo? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "DATA gv_source TYPE string, to DATA gv_target TYPE c",
+        "DATA gv_source TYPE c. to DATA gv_target TYPE string",
+        "DATA gv_source TYPE d. to DATA gv_target TYPE string",
+        "DATA gv_source TYPE p LENGTH 8 DECIMALS 3. to DATA gv_target TYPE p LENGTH 16 DECIMALS 2"
+    ],
+    correct: ["B", "C"],
+    multiple: true,
+    explanation: "Converting from fixed-length types (c, d) to variable-length types (string) always works without data loss, but not the reverse.",
+    explanationEs: "Convertir de tipos de longitud fija (c, d) a tipos de longitud variable (string) siempre funciona sin pérdida de datos, pero no al revés."
+},
+
+{
+    id: 44,
+    question: "Refer to the Exhibit. Which of the following ON conditions must you insert in place of \"???\"?",
+    questionEs: "Refiriéndote a la Exhibición. ¿Cuál de las siguientes condiciones ON debes insertar en lugar de \"???\"?",
+    code: `You have the following CDS definition:
+define view entity Z_ENTITY as select from Z_SOURCE1 as _Source1
+association to Z_SOURCE2 as _Source2
+
+???
+{
+key carrier_id as Carrier,
+key connection_id as Connection,
+cityfrom as DepartureCity,
+cityto as ArrivalCity ,
+
+_Source2
+}
+(The data sources are joined by the field carrier_id. The name of the corresponding field in Z_SOURCE2 is carrier_id.)`,
+    options: [
+        "ON Z_Source1.carrier_id = Z_Source2.carrier_id",
+        "ON Sprojection.Carrier=Source2.carrier_id",
+        "ON Sprojection.Carrier Source2.carrier",
+        "ON Sprojection.carrier_id=Z_Source2.carrier_id"
+    ],
+    correct: ["D"],
+    multiple: false,
+    explanation: "In CDS associations, use $projection to reference the current view's fields and the data source alias to reference associated fields.",
+    explanationEs: "En asociaciones CDS, usa $projection para referenciar los campos de la vista actual y el alias del origen de datos para referenciar campos asociados."
+},
+
+{
+    id: 45,
+    question: "You want to define the following CDS view entity with an input parameter: Which of the following can you use to replace \"???\"? Note: There are 2 correct answers to this question.",
+    questionEs: "Quieres definir la siguiente entidad de vista CDS con un parámetro de entrada: ¿Cuáles de los siguientes puedes usar para reemplazar \"???\"? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    code: `Define view entity Z_CONVERT With parameters currency : ???`,
+    options: [
+        "built-in ABAP type",
+        "A built-in ABAP Dictionary type",
+        "A data element",
+        "A component of an ABAP Dictionary structure"
+    ],
+    correct: ["A", "C"],
+    multiple: true,
+    explanation: "CDS view parameters can be defined using built-in ABAP types or ABAP Dictionary data elements, but not dictionary types or structure components directly.",
+    explanationEs: "Los parámetros de vista CDS pueden definirse usando tipos ABAP incorporados o elementos de datos del Diccionario ABAP, pero no tipos de diccionario o componentes de estructura directamente."
+},
+
+{
+    id: 46,
+    question: "In the assignment, data(gv_result) = 1/8. what will be the data type of gv_result?",
+    questionEs: "En la asignación, data(gv_result) = 1/8. ¿cuál será el tipo de datos de gv_result?",
+    options: [
+        "TYPE I",
+        "TYPE DECFLOAT16",
+        "TYPE P DECIMALS 3",
+        "TYPE P DECIMALS 2"
+    ],
+    correct: ["B"],
+    multiple: false,
+    explanation: "When using inline declaration with arithmetic operations involving division, ABAP automatically chooses DECFLOAT16 to preserve precision.",
+    explanationEs: "Al usar declaración en línea con operaciones aritméticas que involucran división, ABAP automáticamente elige DECFLOAT16 para preservar la precisión."
+},
+
+{
+    id: 47,
+    question: "What RESTful Application Programming feature is used to ensure the uniqueness of a semantic key?",
+    questionEs: "¿Qué característica de Programación de Aplicación RESTful se usa para asegurar la unicidad de una clave semántica?",
+    options: [
+        "Validation",
+        "Action",
+        "Determination"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "Determinations in RAP are used to automatically derive and ensure the uniqueness of semantic keys during entity processing.",
+    explanationEs: "Las Determinaciones en RAP se usan para derivar automáticamente y asegurar la unicidad de claves semánticas durante el procesamiento de entidades."
+},
+
+{
+    id: 48,
+    question: "Which of the following are incomplete ABAP types? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuáles de los siguientes son tipos ABAP incompletos? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "String",
+        "T",
+        "C",
+        "P"
+    ],
+    correct: ["C", "D"],
+    multiple: true,
+    explanation: "C and P are incomplete types in ABAP because they require length specification. String is complete, and T is not a valid ABAP type.",
+    explanationEs: "C y P son tipos incompletos en ABAP porque requieren especificación de longitud. String es completo, y T no es un tipo ABAP válido."
+},
+
+{
+    id: 49,
+    question: "Setting a field to read-only in which object would make the field read-only in all applications of the RESTful Application Programming model?",
+    questionEs: "¿Establecer un campo como solo lectura en qué objeto haría que el campo sea solo lectura en todas las aplicaciones del modelo de Programación de Aplicación RESTful?",
+    options: [
+        "Service definition",
+        "Behaviour definition",
+        "Projection view",
+        "Metadata extension"
+    ],
+    correct: ["B"],
+    multiple: false,
+    explanation: "Setting field properties in the Behavior definition affects all applications using that business object, making it the most comprehensive level.",
+    explanationEs: "Establecer propiedades de campo en la definición de Comportamiento afecta todas las aplicaciones que usan ese objeto de negocio, haciéndolo el nivel más comprensivo."
+},
+
+{
+    id: 50,
+    question: "What is the sequence priority when evaluating a logical expression?",
+    questionEs: "¿Cuál es la prioridad de secuencia al evaluar una expresión lógica?",
+    options: [
+        "NOT (1), OR (3), AND (2)",
+        "AND (2), NOT (1), OR (3)",
+        "NOT (1), AND (2), OR (3)",
+        "OR (3), NOT (1), AND (2)"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "In ABAP logical expressions, the operator precedence is: NOT (highest priority), then AND, then OR (lowest priority).",
+    explanationEs: "En expresiones lógicas ABAP, la precedencia de operadores es: NOT (prioridad más alta), luego AND, luego OR (prioridad más baja)."
+},
+
+{
+    id: 51,
+    question: "Which of the following results in faster access to internal tables? Note: There are 3 correct answers to this question.",
+    questionEs: "¿Cuáles de los siguientes resultan en acceso más rápido a tablas internas? Nota: Hay 3 respuestas correctas para esta pregunta.",
+    options: [
+        "In a sorted internal table, specifying the primary key partially from the left without gaps",
+        "In a sorted internal table, specifying the primary key completely",
+        "In a standard internal table, specifying the primary key partially from the left without gaps",
+        "In a hashed internal table, specifying the primary key partially from the left without gaps",
+        "In a hashed internal table, specifying the primary key completely"
+    ],
+    correct: ["B", "D", "E"],
+    multiple: true,
+    explanation: "Fast access is achieved with: complete primary key in sorted tables, partial key from left in hashed tables, and complete primary key in hashed tables.",
+    explanationEs: "El acceso rápido se logra con: clave primaria completa en tablas ordenadas, clave parcial desde la izquierda en tablas hash, y clave primaria completa en tablas hash."
+},
+
+{
+    id: 52,
+    question: "Exhibit: What are valid statements? Note: There are 3 correct answers to this question.",
+    questionEs: "Exhibición: ¿Cuáles son declaraciones válidas? Nota: Hay 3 respuestas correctas para esta pregunta.",
+    code: `INTERFACE if1.
+  METHODS m1.
+ENDINTERFACE.
+
+CLASS cl1 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES if1.
+    METHODS m2.
+ENDCLASS.
+...
+*In a method of another class
+DATA go_if1 TYPE REF TO if1.
+DATA go_cl1 TYPE REF TO cl1.
+go_cl1 = NEW #(...).
+go_if1 = go_cl1.`,
+    options: [
+        "go_if1 may call method m1 with go_if1->m1()",
+        "Instead of go_cl1 = NEW #(...) you could use go_if1 = NEW cl1( ..... )",
+        "go_cl1 may call method m1 with go_cl1->if1-m1()",
+        "Instead of go_cl1 = NEW #() you could use go_if1 = NEW #( .. )",
+        "go_if1 may call method m2 with go_if1->m2( .. )"
+    ],
+    correct: ["A", "B", "E"],
+    multiple: true,
+    explanation: "Interface references can call interface methods directly, class instances can be assigned to interface references, and interface methods are accessible through the interface reference.",
+    explanationEs: "Las referencias de interfaz pueden llamar métodos de interfaz directamente, las instancias de clase pueden asignarse a referencias de interfaz, y los métodos de interfaz son accesibles a través de la referencia de interfaz."
+},
+
+{
+    id: 53,
+    question: "Refer to the Exhibit. What are valid statements? Note: There are 3 correct answers to this question.",
+    questionEs: "Refiriéndote a la Exhibición. ¿Cuáles son declaraciones válidas? Nota: Hay 3 respuestas correctas para esta pregunta.",
+    code: `Given this code,
+INTERFACE if1.
+  METHODS m1.
+ENDINTERFACE.
+
+CLASS cl1 DEFINITION.
+...
+  INTERFACES if1.
+ENDCLASS.
+...
+CLASS cl2 DEFINITION.
+...
+  DATA mo_if1 TYPE REF TO if1.
+...
+ENDCLASS.
+...`,
+    options: [
+        "In class CL1, the interface method is named if-m1",
+        "Class CL2 uses the interface",
+        "Class CL1 uses the interface",
+        "In class CL2, the interface method is named if1-m1",
+        "Class CL1 implements the interface"
+    ],
+    correct: ["C", "D", "E"],
+    multiple: true,
+    explanation: "CL1 uses and implements the interface, CL2 uses the interface through a reference, and interface methods are accessed with interface_name-method_name syntax.",
+    explanationEs: "CL1 usa e implementa la interfaz, CL2 usa la interfaz a través de una referencia, y los métodos de interfaz se acceden con sintaxis nombre_interfaz-nombre_método."
+},
+
+{
+    id: 54,
+    question: "What would be the correct expression to change a given string value 'mr joe doe' into 'JOE' in an ABAP SQL field list?",
+    questionEs: "¿Cuál sería la expresión correcta para cambiar un valor de cadena dado 'mr joe doe' a 'JOE' en una lista de campos ABAP SQL?",
+    options: [
+        "SELECT FROM TABLE dbtab1 FIELDS f1, upper(left( 'mr joe doe', 6)) AS f2_up_left, f3,",
+        "SELECT FROM TABLE dbtab1 FIELDS f1, left(lower(substring( 'mr joe doe', 4, 3)), 3) AS f2_left_lo_sub, f3,",
+        "SELECT FROM TABLE dbtab1 FIELDS f1, substring(upper('mr joe doe'), 4, 3) AS f2_sub_up, f3,...",
+        "SELECT FROM TABLE dbtab1 FIELDS f1, substring(lower(upper( 'mr joe doe' ) ), 4, 3) AS f2_sub_lo_up, f3,"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "To extract 'JOE' from 'mr joe doe', use substring(upper('mr joe doe'), 4, 3) - starting at position 4 with length 3 after converting to uppercase.",
+    explanationEs: "Para extraer 'JOE' de 'mr joe doe', usa substring(upper('mr joe doe'), 4, 3) - comenzando en la posición 4 con longitud 3 después de convertir a mayúsculas."
+},
+
+{
+    id: 55,
+    question: "What are some characteristics of secondary keys for internal tables? Note: There are 3 correct answers to this question.",
+    questionEs: "¿Cuáles son algunas características de las claves secundarias para tablas internas? Nota: Hay 3 respuestas correctas para esta pregunta.",
+    options: [
+        "Secondary keys must be chosen explicitly when you actually read from an internal table",
+        "Multiple secondary keys are allowed for any kind of internal table",
+        "Hashed secondary keys do NOT have to be unique",
+        "Sorted secondary keys do NOT have to be unique",
+        "Secondary keys can only be created for standard tables"
+    ],
+    correct: ["A", "B", "D"],
+    multiple: true,
+    explanation: "Secondary keys must be explicitly specified in READ operations, multiple secondary keys are allowed on any table type, and sorted secondary keys can be non-unique.",
+    explanationEs: "Las claves secundarias deben especificarse explícitamente en operaciones READ, se permiten múltiples claves secundarias en cualquier tipo de tabla, y las claves secundarias ordenadas pueden ser no únicas."
+},
+
+{
+    id: 56,
+    question: "In RESTful Application Programming, a business object contains which parts? Note: There are 2 correct answers to this question.",
+    questionEs: "En Programación de Aplicación RESTful, ¿qué partes contiene un objeto de negocio? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "CDS view",
+        "Behavior definition",
+        "Authentication rules",
+        "Process definition"
+    ],
+    correct: ["A", "B"],
+    multiple: true,
+    explanation: "A RAP business object consists of a CDS view (data model) and a behavior definition (business logic and operations).",
+    explanationEs: "Un objeto de negocio RAP consiste en una vista CDS (modelo de datos) y una definición de comportamiento (lógica de negocio y operaciones)."
+},
+
+{
+    id: 57,
+    question: "In a subclass sub1 you want to redefine a component of a superclass super1. How do you achieve this? Note: There are 2 correct answers to this question.",
+    questionEs: "En una subclase sub1 quieres redefinir un componente de una superclase super1. ¿Cómo logras esto? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "You add the clause REDEFINITION to the component in sub1",
+        "You implement the redefined component for a second time in super1",
+        "You implement the redefined component in sub1",
+        "You add the clause REDEFINITION to the component in super1"
+    ],
+    correct: ["A", "C"],
+    multiple: true,
+    explanation: "To redefine a component in ABAP OOP, you must declare it with REDEFINITION in the subclass and then implement it in the subclass.",
+    explanationEs: "Para redefinir un componente en ABAP OOP, debes declararlo con REDEFINITION en la subclase y luego implementarlo en la subclase."
+},
+
+{
+    id: 58,
+    question: "Which of the following string functions are predicate functions? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuáles de las siguientes funciones de cadena son funciones de predicado? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "find_any_not_of()",
+        "contains_any_of()",
+        "count_any_of()",
+        "matches()"
+    ],
+    correct: ["B", "D"],
+    multiple: true,
+    explanation: "Predicate functions return boolean values. contains_any_of() and matches() return true/false, while find_any_not_of() and count_any_of() return numeric values.",
+    explanationEs: "Las funciones de predicado retornan valores booleanos. contains_any_of() y matches() retornan verdadero/falso, mientras que find_any_not_of() y count_any_of() retornan valores numéricos."
+},
+
+{
+    id: 59,
+    question: "After you created a database table in the RESTful Application Programming model, what do you create next?",
+    questionEs: "Después de crear una tabla de base de datos en el modelo de Programación de Aplicación RESTful, ¿qué creas después?",
+    options: [
+        "A metadata extension",
+        "A projection view",
+        "A data model view",
+        "A service definition"
+    ],
+    correct: ["C"],
+    multiple: false,
+    explanation: "In RAP development sequence, after creating the database table, the next step is to create a data model view (CDS view) that exposes the table data.",
+    explanationEs: "En la secuencia de desarrollo RAP, después de crear la tabla de base de datos, el siguiente paso es crear una vista de modelo de datos (vista CDS) que expone los datos de la tabla."
+},
+
+{
+    id: 60,
+    question: "Refer to the Exhibit. When you attempt to activate the definition, what will be the response?",
+    questionEs: "Refiriéndote a la Exhibición. Cuando intentas activar la definición, ¿cuál será la respuesta?",
+    code: `1 @AccessControl.authorizationCheck: #NOT_REQUIRED
+2 DEFINE VIEW ENTITY demo_flight_info_union AS
+3   SELECT FROM Scustom
+4   {
+5     KEY id,
+6     KEY 'Customer' AS partner,
+7     name,
+8     city,
+9     country
+10   }
+11   UNION
+12     SELECT FROM stravelag
+13     {
+14       KEY agencynum AS id,
+15       'Agency' AS partner,
+16       name,
+17       city,
+18       country
+19     }
+20`,
+    options: [
+        "Activation error because the field names of the union do not match",
+        "Activation error because the field types of the union do not match",
+        "Activation error because the key fields of the union do not match",
+        "Activation successful"
+    ],
+    correct: ["A"],
+    multiple: false,
+    explanation: "In UNION operations, the field names must match exactly between the different SELECT statements. Here 'id' vs 'agencynum' causes a mismatch.",
+    explanationEs: "En operaciones UNION, los nombres de campo deben coincidir exactamente entre las diferentes declaraciones SELECT. Aquí 'id' vs 'agencynum' causa una discrepancia."
+},
+
+{
+    id: 61,
+    question: "You have two internal tables itab1 and itab2. What is true for using the expression itab1 = corresponding #( itab2 )? Note: There are 2 correct answers to this question.",
+    questionEs: "Tienes dos tablas internas itab1 e itab2. ¿Qué es verdad para usar la expresión itab1 = corresponding #( itab2 )? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "Fields with the same name but with different types may be copied from itab2 to itab1",
+        "itab1 and itab2 must have at least one field name in common",
+        "Fields with the same name and the same type will be copied from itab2 to itab1",
+        "itab1 and itab2 must have the same data type"
+    ],
+    correct: ["B", "C"],
+    multiple: true,
+    explanation: "The CORRESPONDING operator requires at least one common field name and only copies fields with matching names and compatible types.",
+    explanationEs: "El operador CORRESPONDING requiere al menos un nombre de campo común y solo copia campos con nombres coincidentes y tipos compatibles."
+},
+
+{
+    id: 62,
+    question: "Given the following Core Data Service View Entity Data Definition: In what order will the join statements be executed?",
+    questionEs: "Dada la siguiente Definición de Entidad de Vista de Core Data Service: ¿En qué orden se ejecutarán las declaraciones de unión?",
+    code: `1 @AccessControl.authorizationCheck: #NOT_REQUIRED
+2 DEFINE VIEW ENTITY demo_flight_info_join
+3 AS SELECT
+4 FROM scarr AS a
+5 LEFT OUTER JOIN scounter AS c
+6 LEFT OUTER JOIN sairport AS p
+7 ON p.id = c.airport
+8 ON a.carrid = c.carrid
+9 {
+10 a.carrid AS carrier_id,
+11 p.id AS airport_id,
+12 c.countnum AS counter_number
+13 }`,
+    options: [
+        "scarr will be joined with scounter first and the result will be joined with sairport",
+        "sairport will be joined to scounter first and the result will be joined with scarr",
+        "scarr will be joined with sairport first and the result will be joined with scounter",
+        "scounter will be joined to sairport first and the result will be joined with scarr"
+    ],
+    correct: ["A"],
+    multiple: false,
+    explanation: "In nested LEFT OUTER JOINs, the execution follows the table order: first scarr joins with scounter, then the result joins with sairport.",
+    explanationEs: "En LEFT OUTER JOINs anidados, la ejecución sigue el orden de las tablas: primero scarr se une con scounter, luego el resultado se une con sairport."
+},
+
+{
+    id: 63,
+    question: "Which of the following are ABAP Cloud Development Model rules? Note: There are 2 correct answers to this question.",
+    questionEs: "¿Cuáles de las siguientes son reglas del Modelo de Desarrollo ABAP Cloud? Nota: Hay 2 respuestas correctas para esta pregunta.",
+    options: [
+        "Use public SAP APIs and SAP extension points",
+        "Build ABAP RESTful application programming model-based services",
+        "Reverse modifications when a suitable public SAP API becomes available",
+        "Build ABAP reports with either ABAP List Viewer (ALV) or SAP Fiori"
+    ],
+    correct: ["A", "B"],
+    multiple: true,
+    explanation: "ABAP Cloud Development Model emphasizes using public SAP APIs/extension points and building RAP-based services for cloud-ready development.",
+    explanationEs: "El Modelo de Desarrollo ABAP Cloud enfatiza el uso de APIs públicas de SAP/puntos de extensión y la construcción de servicios basados en RAP para desarrollo preparado para la nube."
+},
+
+{
+    id: 64,
+    question: "In a test method you call method cl_abap_unit_assert=>assert_equals( .. ) in the following way: What will happen if method parameters act and exp are not equal?",
+    questionEs: "En un método de prueba llamas al método cl_abap_unit_assert=>assert_equals( .. ) de la siguiente manera: ¿Qué pasará si los parámetros del método act y exp no son iguales?",
+    code: `CLASS ltcl1 DEFINITION FOR TESTING RISK LEVEL HARMLESS DURATION SHORT.
+  PRIVATE SECTION.
+    METHODS m1 FOR TESTING.
+ENDCLASS.
+
+CLASS ltcl1 IMPLEMENTATION.
+  METHOD m1.
+    DATA: go_test_object TYPE REF TO zcl_to_be_tested.
+    CONSTANTS: lco_exp TYPE string VALUE 'test2'.
+    CREATE OBJECT go_test_object.
+    cl_abap_unit_assert=>assert_equals(
+      EXPORTING
+        act = go_class->mv_attribute
+        exp = lco_exp
+        msg = 'assert equals failed ' && go_test_object->mv_attribute && ' ' && lco_exp
+    ).
+  ENDMETHOD.
+ENDCLASS.`,
+    options: [
+        "The tested unit will automatically be appended to a default ABAP Test Cockpit Variant",
+        "The tested unit cannot be transported",
+        "The test will be aborted",
+        "There will be a message in the test log"
+    ],
+    correct: ["D"],
+    multiple: true,
+    explanation: "When assert_equals fails (act ≠ exp), it writes a message to the test log but doesn't abort the test or affect transport capabilities.",
+    explanationEs: "Cuando assert_equals falla (act ≠ exp), escribe un mensaje en el log de prueba pero no aborta la prueba ni afecta las capacidades de transporte."
+}
+
         ];
         
         // Variables globales del quiz
@@ -3718,10 +3601,10 @@ D. SELECT FROM dbtab1
                 questions = certificationQuestions;
                 document.getElementById('current-battery-name').textContent = currentLanguage === 'es' ? 
                     '🎓 Batería Certificación' : '🎓 Certification Battery';
-            } else if (battery === 'latex') {
-                questions = latexQuestions;
+            } else if (battery === 'cloud') {
+                questions = cloudQuestions;
                 document.getElementById('current-battery-name').textContent = currentLanguage === 'es' ? 
-                    '📄 Batería LaTeX' : '📄 LaTeX Battery';
+                    '📄 Batería Cloud' : '📄 Cloud Battery';
             }
             
             totalQuestions = questions.length;
@@ -3803,9 +3686,9 @@ D. SELECT FROM dbtab1
                 batteryOptions[0].querySelector('.battery-stats').textContent = t('certificationStats');
             }
             if (batteryOptions[1]) {
-                batteryOptions[1].querySelector('.battery-title').textContent = t('latexBattery');
-                batteryOptions[1].querySelector('.battery-description').textContent = t('latexDesc');
-                batteryOptions[1].querySelector('.battery-stats').textContent = t('latexStats');
+                batteryOptions[1].querySelector('.battery-title').textContent = t('cloudBattery');
+                batteryOptions[1].querySelector('.battery-description').textContent = t('cloudDesc');
+                batteryOptions[1].querySelector('.battery-stats').textContent = t('cloudStats');
             }
         }
 
@@ -3967,7 +3850,7 @@ D. SELECT FROM dbtab1
                 
             if (confirm(confirmText)) {
                 localStorage.removeItem('abapQuizProgress_certification');
-                localStorage.removeItem('abapQuizProgress_latex');
+                localStorage.removeItem('abapQuizProgress_cloud');
                 console.log('🗑️ Todo el progreso guardado eliminado');
                 alert(alertText);
                 location.reload();
@@ -4595,11 +4478,11 @@ function shuffleQuestionOptions(question) {
         
         // Verificar si hay una batería guardada
         const certProgress = localStorage.getItem('abapQuizProgress_certification');
-        const latexProgress = localStorage.getItem('abapQuizProgress_latex');
+        const cloudProgress = localStorage.getItem('abapQuizProgress_cloud');
         
-        if (certProgress || latexProgress) {
+        if (certProgress || cloudProgress) {
             // Si hay progreso guardado, preguntar si quiere continuar
-            const hasBothProgress = certProgress && latexProgress;
+            const hasBothProgress = certProgress && cloudProgress;
             let message;
             
             if (currentLanguage === 'es') {
@@ -4614,15 +4497,15 @@ function shuffleQuestionOptions(question) {
             
             if (confirm(message)) {
                 // Si solo hay una batería con progreso, cargarla automáticamente
-                if (certProgress && !latexProgress) {
+                if (certProgress && !cloudProgress) {
                     selectBattery('certification');
                     if (quizCompleted) {
                         showFinalScore(false);
                     } else {
                         updateUI(true);
                     }
-                } else if (!certProgress && latexProgress) {
-                    selectBattery('latex');
+                } else if (!certProgress && cloudProgress) {
+                    selectBattery('cloud');
                     if (quizCompleted) {
                         showFinalScore(false);
                     } else {
