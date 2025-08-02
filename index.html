@@ -371,6 +371,37 @@
             transform: scale(1) translateY(0);
         }
         
+        /* Estilos para código */
+        .code-container {
+            margin: 15px 0;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        .code-container pre {
+            margin: 0;
+            font-family: inherit;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-container code {
+            color: #333;
+            background: transparent;
+        }
+
+        @media (max-width: 640px) {
+            .code-container {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+        }
         .modal-header {
             display: flex;
             align-items: center;
@@ -961,10 +992,17 @@
                 explanation: "Metadata extension is used to define UI annotations like @UI.lineItem, @UI.fieldGroup, etc.",
                 explanationEs: "Metadata extension se usa para definir anotaciones UI como @UI.lineItem, @UI.fieldGroup, etc."
             },
-            {
+
+{
                 id: 4,
                 question: "When accessing the subclass instance through go_super, what can you do? Note: There are 2 correct answers to this question.",
                 questionEs: "Al acceder a la instancia de la subclase a través de go_super, ¿qué puedes hacer? Nota: Hay 2 respuestas correctas a esta pregunta.",
+                code: `DATA: go_super TYPE REF TO lcl_super,
+      go_sub   TYPE REF TO lcl_sub.
+go_sub = NEW #( ... ).
+go_super = go_sub.
+
+with lcl_super being superclass of lcl_sub`,
                 options: [
                     "Access the inherited private components.",
                     "Access the inherited public components.",
@@ -982,10 +1020,19 @@
                 explanation: "go_super allows accessing inherited public components and calling redefined public methods from the superclass.",
                 explanationEs: "go_super permite acceder a componentes públicos heredados y llamar métodos públicos redefinidos desde la superclase."
             },
-            {
+
+{
                 id: 5,
-                question: "Given code in SAP S/4HANA Cloud private edition tenant with class zcl_demo_class in 'ABAP Cloud' language version and function module 'ZF1' in 'Standard ABAP' language version. Regarding the function call, which are valid statements? Note: There are 2 correct answers.",
-                questionEs: "Dado el código en un tenant de SAP S/4HANA Cloud edición privada con clase zcl_demo_class en versión de lenguaje 'ABAP Cloud' y módulo de función 'ZF1' en versión de lenguaje 'Standard ABAP'. Con respecto a la llamada de función, ¿cuáles son declaraciones válidas? Nota: Hay 2 respuestas correctas.",
+                question: "Given the following code in an SAP S/4HANA Cloud private edition tenant. The class zcl_demo_class is in a software component with the language version set to 'ABAP Cloud'. The function module 'ZF1' is in a different software component with the language version set to 'Standard ABAP'. Both the class and function module are customer created. Regarding line #6, which of the following are valid statements? Note: There are 2 correct answers to this question.",
+                questionEs: "Dado el siguiente código en un tenant de SAP S/4HANA Cloud edición privada. La clase zcl_demo_class está en un componente de software con la versión de lenguaje establecida en 'ABAP Cloud'. El módulo de función 'ZF1' está en un componente de software diferente con la versión de lenguaje establecida en 'Standard ABAP'. Tanto la clase como el módulo de función son creados por el cliente. Con respecto a la línea #6, ¿cuáles de las siguientes son declaraciones válidas? Nota: Hay 2 respuestas correctas a esta pregunta.",
+                code: `1 CLASS zcl_demo_class DEFINITION.
+2 METHODS: m1.
+3 ENDCLASS.
+4 CLASS zcl_demo_class Implementation.
+5 METHOD m1.
+6 CALL FUNCTION 'ZF1'.
+7 ENDMETHOD
+8 ENDCLASS.`,
                 options: [
                     "'ZF1' can be called only if it is released for cloud development.",
                     "'ZF1' can be called if a wrapper is created for it and the wrapper itself is released for cloud development.",
@@ -1003,10 +1050,13 @@
                 explanation: "In ABAP Cloud, you can only call objects that are released for cloud development.",
                 explanationEs: "En ABAP Cloud, solo puedes llamar objetos que estén released for cloud development."
             },
-            {
+{
                 id: 6,
-                question: "What are the effects of attaching a system field to an input parameter of a CDS view entity? Note: There are 2 correct answers.",
-                questionEs: "¿Cuáles son los efectos de adjuntar un campo del sistema a un parámetro de entrada de una entidad de vista CDS? Nota: Hay 2 respuestas correctas.",
+                question: "You have attached a system field to an input parameter of a CDS view entity as follows. What are the effects of this annotation? Note: There are 2 correct answers to this question.",
+                questionEs: "Has adjuntado un campo del sistema a un parámetro de entrada de una entidad de vista CDS de la siguiente manera. ¿Cuáles son los efectos de esta anotación? Nota: Hay 2 respuestas correctas a esta pregunta.",
+                code: `define view entity Z_ENTITY with parameters
+@Environment.SystemField: #SYSTEM_LANGUAGE
+language : spras ...`,
                 options: [
                     "It is no longer possible to pass your own value to the parameter.",
                     "You can still override the default value with a value of your own.",
@@ -1033,10 +1083,23 @@
                 explanation: "In ABAP, when you divide two integers (1 / 8), the result is TYPE I (integer).",
                 explanationEs: "En ABAP, cuando divides dos integers (1 / 8), el resultado es TYPE I (integer)."
             },
-            {
+{
                 id: 8,
-                question: "Given interface and class code, what are valid statements? Note: There are 3 correct answers.",
-                questionEs: "Dado el código de interfaz y clase, ¿cuáles son declaraciones válidas? Nota: Hay 3 respuestas correctas.",
+                question: "Given this code, what are valid statements? Note: There are 3 correct answers to this question",
+                questionEs: "Dado este código, ¿cuáles son declaraciones válidas? Nota: Hay 3 respuestas correctas a esta pregunta",
+                code: `INTERFACE if1.
+  METHODS m1.
+ENDINTERFACE.
+
+CLASS cl1 DEFINITION.
+  INTERFACES if1.
+  METHODS m2.
+ENDCLASS.
+
+DATA go_cl1 TYPE REF TO cl1.
+go_cl1 = NEW #( ... ).
+DATA go_if1 TYPE REF TO if1.
+go_if1 = go_cl1.`,
                 options: [
                     "In class CL2, the interface method is named if1-m1.",
                     "Class CL2 uses the interface.",
@@ -1049,10 +1112,21 @@
                 explanation: "CL1 implements the interface (INTERFACES if1), so it uses the interface and its methods are called if1-m1.",
                 explanationEs: "CL1 implementa la interface (INTERFACES if1), por lo que usa la interface y sus métodos se llaman if1-m1."
             },
-            {
+{
                 id: 9,
-                question: "Given casting code with Icl_super being superclass for Icl_sub1 and Icl_sub2, what will happen when executing these casts? Note: There are 2 correct answers.",
-                questionEs: "Dado el código de casting con Icl_super siendo superclase para Icl_sub1 e Icl_sub2, ¿qué sucederá al ejecutar estos casts? Nota: Hay 2 respuestas correctas.",
+                question: "Given this code, with lcl_super being superclass for lcl_sub1 and lcl_sub2 and with methods sub1_meth1 and sub2_meth1 being subclass-specific methods of lcl_sub1 or lcl_sub2, respectively. What will happen when executing these casts? Note: There are 2 correct answers to this question",
+                questionEs: "Dado este código, con lcl_super siendo superclase para lcl_sub1 y lcl_sub2 y con métodos sub1_meth1 y sub2_meth1 siendo métodos específicos de subclase de lcl_sub1 o lcl_sub2, respectivamente. ¿Qué sucederá al ejecutar estos casts? Nota: Hay 2 respuestas correctas a esta pregunta",
+                code: `DATA: go_super TYPE REF TO lcl_super,
+      go_sub1  TYPE REF TO lcl_sub1,
+      go_sub2  TYPE REF TO lcl_sub2.
+
+go_super = NEW go_sub1( ... ).
+go_super = NEW go_sub1( ... ).
+go_sub1 = CAST #( go_super ).
+go_sub1->sub1_meth1( ... ).
+
+go_sub2 = CAST #( go_super ).
+go_sub2->sub2_meth1( ... ).`,
                 options: [
                     "go_sub1->sub1_meth1(...). will work.",
                     "go_sub2->sub2_meth1(...). will work",
@@ -1061,8 +1135,8 @@
                 ],
                 correct: ["A", "D"],
                 multiple: true,
-                explanation: "The first cast (go_sub1) works because go_super actually points to an instance of Icl_sub1.",
-                explanationEs: "El primer cast (go_sub1) funciona porque go_super realmente apunta a una instancia de Icl_sub1."
+                explanation: "The first cast (go_sub1) works because go_super actually points to an instance of lcl_sub1.",
+                explanationEs: "El primer cast (go_sub1) funciona porque go_super realmente apunta a una instancia de lcl_sub1."
             },
             {
                 id: 10,
@@ -1154,10 +1228,13 @@
                 explanation: "To redefine a component: 1) Declare the method with REDEFINITION in the subclass, 2) Implement the redefined method in the subclass.",
                 explanationEs: "Para redefinir un componente: 1) Declaras el método con REDEFINITION en la subclase, 2) Implementas el método redefinido en la subclase."
             },
-            {
+{
                 id: 16,
-                question: "In a program you find this source code: AUTHORITY-CHECK OBJECT '/DMO/TRVL' ID 'CNTRY' FIELD 'DE' ID 'ACTVT' FIELD '03'. Which of the following apply? Note: There are 2 correct answers.",
-                questionEs: "En un programa encuentras este código fuente: AUTHORITY-CHECK OBJECT '/DMO/TRVL' ID 'CNTRY' FIELD 'DE' ID 'ACTVT' FIELD '03'. ¿Cuál de las siguientes aplica? Nota: Hay 2 respuestas correctas.",
+                question: "In a program you find this source code. Which of the following apply? Note: There are 2 correct answers to this question.",
+                questionEs: "En un programa encuentras este código fuente. ¿Cuál de las siguientes aplica? Nota: Hay 2 respuestas correctas a esta pregunta.",
+                code: `AUTHORITY-CHECK OBJECT '/DMO/TRVL'
+  ID 'CNTRY' FIELD 'DE'
+  ID 'ACTVT' FIELD '03'.`,
                 options: [
                     "AUTHORITY CHECK verifies whether a user is authorized for '/DMO/TRVL' with the listed field values.",
                     "If the user is authorized for 'CNTRY' = 'DE' AND for 'ACTVT' = '03' then the return code is 0.",
@@ -1216,10 +1293,25 @@
                 explanation: "Access Control Objects use: WHERE (access conditions), DEFINE ROLE (role name), and GRANT (identify data source).",
                 explanationEs: "Los Access Control Objects usan: WHERE (condiciones de acceso), DEFINE ROLE (nombre del rol), y GRANT (identificar fuente de datos)."
             },
-            {
+{
                 id: 20,
-                question: "You are designing a select statement in ABAP Open SQL. To adhere to the most recent ABAP SQL syntax conventions from SAP, on which line must you insert the 'INTO TABLE @gt_flights' clause?",
-                questionEs: "Estás diseñando una sentencia select en ABAP Open SQL. Para adherirse a las convenciones de sintaxis ABAP SQL más recientes de SAP, ¿en qué línea debes insertar la cláusula 'INTO TABLE @gt_flights'?",
+                question: "You are designing the following select statement in ABAP Open SQL. To adhere to the most recent ABAP SQL syntax conventions from SAP, on which line must you insert the 'INTO TABLE @gt_flights' clause to complete the SQL statement?",
+                questionEs: "Estás diseñando la siguiente sentencia select en ABAP Open SQL. Para adherirse a las convenciones de sintaxis ABAP SQL más recientes de SAP, ¿en qué línea debes insertar la cláusula 'INTO TABLE @gt_flights' para completar la sentencia SQL?",
+                code: `1  DATA gt_flights TYPE standard table of demo_cds_flights
+2  
+3  SELECT
+4  
+5  FROM demo_cds_flights
+6  
+7  FIELDS carrid, connid, fldate, SUM(payment_sum), currency
+8  
+9  WHERE fldate > @sy-datum
+10 
+11 GROUP BY carrid, connid, fldate
+12 
+13 ORDER BY carrid, connid
+14 
+15`,
                 options: [
                     "#15 (at the end)",
                     "#6 (after FROM)",
@@ -1231,10 +1323,15 @@
                 explanation: "In modern ABAP SQL syntax, the INTO clause must go at the end of the SELECT statement.",
                 explanationEs: "En la sintaxis moderna de ABAP SQL, la cláusula INTO debe ir al final de la sentencia SELECT."
             },
-            {
+{
                 id: 21,
-                question: "Given casting code, with which predicate condition can you ensure that the CAST will work?",
-                questionEs: "Dado el código de casting, ¿con qué condición predicado puedes asegurar que el CAST funcionará?",
+                question: "Given this code, with which predicate condition can you ensure that the CAST will work?",
+                questionEs: "Dado este código, ¿con qué condición predicado puedes asegurar que el CAST funcionará?",
+                code: `DATA: go_super TYPE REF TO lcl_super,
+      go_sub1  TYPE REF TO lcl_sub1.
+...
+go_sub1 = CAST #( go_super ).
+go_sub1->sub1_meth1( ... ).`,
                 options: [
                     "IS BOUND",
                     "IS INSTANCE OF",
@@ -1322,10 +1419,25 @@
                 explanation: "For ABAP Cloud, these are released: OData services (for REST APIs), Business events (for business events), and SOAP consumption (to consume SOAP services).",
                 explanationEs: "Para ABAP Cloud están liberados: OData services (para APIs REST), Business events (para eventos de negocio), y SOAP consumption (para consumir servicios SOAP)."
             },
-            {
+{
                 id: 27,
-                question: "Given interface and class code, what are valid statements? Note: There are 3 correct answers.",
-                questionEs: "Dado el código de interfaz y clase, ¿cuáles son declaraciones válidas? Nota: Hay 3 respuestas correctas.",
+                question: "Given this code, what are valid statements? Note: There are 3 correct answers to this question.",
+                questionEs: "Dado este código, ¿cuáles son declaraciones válidas? Nota: Hay 3 respuestas correctas a esta pregunta.",
+                code: `INTERFACE if1.
+  METHODS m1.
+ENDINTERFACE.
+
+CLASS cl1 DEFINITION.
+PUBLIC SECTION.
+  INTERFACES if1.
+  METHODS m2.
+ENDCLASS.
+...
+* In a method of another class
+DATA go_if1 TYPE REF TO if1.
+DATA go_cl1 TYPE REF to cl1.
+go_cl1 = NEW #( ... ).
+go_if1 = go_cl1.`,
                 options: [
                     "Instead of go_cl1 = NEW #() you could use go_if1 = NEW #(...).",
                     "go_if1 may call method m2 with go_if1->m2(...).",
@@ -1338,10 +1450,41 @@
                 explanation: "Interface references can: be instantiated with NEW cl1(), call interface methods (m1), and access methods from class via if1-m1().",
                 explanationEs: "Las referencias de interface pueden: instanciarse con NEW cl1(), llamar métodos de la interface (m1), y acceder métodos desde clase via if1-m1()."
             },
-            {
+{
                 id: 28,
-                question: "Which of the following ABAP SQL statements are valid? Note: There are 2 correct answers.",
-                questionEs: "¿Cuáles de las siguientes sentencias ABAP SQL son válidas? Nota: Hay 2 respuestas correctas.",
+                question: "Which of the following ABAP SQL statements are valid? Note: There are 2 correct answers to this question.",
+                questionEs: "¿Cuáles de las siguientes sentencias ABAP SQL son válidas? Nota: Hay 2 respuestas correctas a esta pregunta.",
+                code: `Consider these ABAP SQL statements:
+
+A. SELECT FROM /dmo/connection
+   FIELDS 
+     MAX(distance) AS dist_max,
+     MIN(distance) AS dist_min
+   INTO TABLE @DATA(lt_hits).
+
+B. SELECT FROM /dmo/connection
+   FIELDS
+     carrid,
+     airpfrom
+   GROUP BY carrid, connid
+   INTO TABLE @DATA(lt_hits).
+
+C. SELECT FROM /dmo/connection
+   FIELDS
+     carrid,
+     airpfrom,
+     MAX(distance) AS dist_max,
+     MIN(distance) AS dist_min
+   GROUP BY carrid, airpfrom
+   INTO TABLE @DATA(lt_hits)
+
+D. SELECT FROM /dmo/connection
+   FIELDS
+     carrid,
+     airpfrom,
+     MAX(distance) AS dist_max,
+     MIN(distance) AS dist_min
+   INTO TABLE @DATA(lt_hits)`,
                 options: [
                     "SELECT FROM /dmo/connection FIELDS MAX(distance) AS dist_max, MIN(distance) AS dist_min INTO TABLE @DATA(lt_hits).",
                     "SELECT FROM /dmo/connection FIELDS carrid, airpfrom GROUP BY carrid, connid INTO TABLE @DATA(lt_hits).",
@@ -1353,10 +1496,18 @@
                 explanation: "Option A is valid (only aggregate functions). Option C is valid (fields in GROUP BY included in SELECT).",
                 explanationEs: "La opción A es válida (solo funciones agregadas). La opción C es válida (campos en GROUP BY incluidos en SELECT)."
             },
-            {
+{
                 id: 29,
-                question: "Given code in SAP S/4HANA Cloud private edition tenant with class zcl_demo_class in 'Standard ABAP' and function module 'ZF1' in 'ABAP Cloud'. Which is a valid statement?",
-                questionEs: "Dado el código en un tenant de SAP S/4HANA Cloud edición privada con clase zcl_demo_class en 'Standard ABAP' y módulo de función 'ZF1' en 'ABAP Cloud'. ¿Cuál es una declaración válida?",
+                question: "Given the following code in an SAP S/4HANA Cloud private edition tenant: The class zcl_demo_class is in a software component with the language version set to 'Standard ABAP'. The function module 'ZF1' is in a software component with the language version set to 'ABAP Cloud'. Both the class and function module are customer created. Regarding line #6, which of the following is a valid statement?",
+                questionEs: "Dado el siguiente código en un tenant de SAP S/4HANA Cloud edición privada: La clase zcl_demo_class está en un componente de software con la versión de lenguaje establecida en 'Standard ABAP'. El módulo de función 'ZF1' está en un componente de software con la versión de lenguaje establecida en 'ABAP Cloud'. Tanto la clase como el módulo de función son creados por el cliente. Con respecto a la línea #6, ¿cuál de las siguientes es una declaración válida?",
+                code: `1 CLASS zcl_demo_class DEFINITION.
+2 METHODS: m1.
+3 ENDCLASS.
+4 CLASS zcl_demo_class Implementation.
+5 METHOD m1.
+6 CALL FUNCTION 'ZF1'.
+7 ENDMETHOD
+8 ENDCLASS.`,
                 options: [
                     "'ZF1' can be called via a wrapper that itself has been released for cloud development.",
                     "'ZF1' must be released for cloud development to be called.",
@@ -1637,10 +1788,19 @@
                 explanation: "Validations in RAP are used to verify business rules, including the uniqueness of semantic keys.",
                 explanationEs: "Las Validations en RAP se usan para verificar reglas de negocio, incluyendo la unicidad de semantic keys."
             },
-            {
+{
                 id: 48,
-                question: "Given exception code, what are valid statements? Note: There are 2 correct answers.",
-                questionEs: "Dado el código de excepción, ¿cuáles son declaraciones válidas? Nota: Hay 2 respuestas correctas.",
+                question: "Given this code, what are valid statements? Note: There are 2 correct answers to this question.",
+                questionEs: "Dado este código, ¿cuáles son declaraciones válidas? Nota: Hay 2 respuestas correctas a esta pregunta.",
+                code: `< some coding >
+TRY.
+<condition>.
+  RAISE EXCEPTION TYPE zcx1
+    EXPORTING
+      param1 = value1
+      param2 = value2
+      previous = value3.
+ENDIF.`,
                 options: [
                     "'zcx1' is a dictionary structure, and 'param1' and 'param2' are same-named components of this structure.",
                     "'previous' expects the reference to a previous exception",
@@ -1652,10 +1812,15 @@
                 explanation: "In RAISE EXCEPTION, 'previous' is for exception chaining (reference to previous exception) and the code creates and throws an exception object.",
                 explanationEs: "En RAISE EXCEPTION, 'previous' es para exception chaining (referencia a excepción previa) y el código crea y lanza un objeto de excepción."
             },
-            {
+{
                 id: 49,
-                question: "Given FOR loop code, which statements are correct? Note: There are 2 correct answers.",
-                questionEs: "Dado el código de bucle FOR, ¿cuáles declaraciones son correctas? Nota: Hay 2 respuestas correctas.",
+                question: "Given this code, which of the following statements are correct? Note: There are 2 correct answers to this question.",
+                questionEs: "Dado este código, ¿cuáles de las siguientes declaraciones son correctas? Nota: Hay 2 respuestas correctas a esta pregunta.",
+                code: `target_itab = VALUE #( FOR row IN source_itab(
+  field1 = row-field1
+  field2 = row-field2
+  fieldN = row-fieldN )
+).`,
                 options: [
                     "FOR defines a loop that runs over the content of source_itab",
                     "row is a predefined name and cannot be chosen arbitrarily.",
@@ -1697,10 +1862,12 @@
                 explanation: "@EndUserText.label provides a short description for developers that is attached to the database view.",
                 explanationEs: "@EndUserText.label proporciona una descripción corta para desarrolladores que se adjunta a la vista de base de datos."
             },
-            {
+{
                 id: 52,
-                question: "Given pragma and pseudo-comment code, what are valid statements? Note: There are 2 correct answers.",
-                questionEs: "Dado el código de pragma y pseudo-comentario, ¿cuáles son declaraciones válidas? Nota: Hay 2 respuestas correctas.",
+                question: "Given the following code, what are valid statements? Note: There are 2 correct answers to this question.",
+                questionEs: "Dado el siguiente código, ¿cuáles son declaraciones válidas? Nota: Hay 2 respuestas correctas a esta pregunta.",
+                code: `DATA gv_text1 TYPE string. "#EC_NEEDED
+DATA gv_text2 TYPE string ##NEEDED.`,
                 options: [
                     "The pragma is not checked by the syntax checker.",
                     "##NEEDED is checked by the syntax checker.",
@@ -1712,10 +1879,18 @@
                 explanation: "Pragmas (##) are checked by the syntax checker and affect compiler behavior. Pseudo-comments (#EC_) are not checked by the syntax checker.",
                 explanationEs: "Los pragmas (##) son verificados por el syntax checker y afectan el comportamiento del compilador. Los pseudo-comments (#EC_) no son verificados por el syntax checker."
             },
-            {
+{
                 id: 53,
-                question: "Given code in SAP S/4HANA Cloud private edition with both class and function module in same software component with 'ABAP Cloud' language version. Which is valid?",
-                questionEs: "Dado el código en SAP S/4HANA Cloud edición privada con clase y módulo de función en el mismo componente de software con versión de lenguaje 'ABAP Cloud'. ¿Cuál es válido?",
+                question: "Given the following code in an SAP S/4HANA Cloud private edition tenant: The class zcl_demo_class is in a software component with the language version set to 'ABAP Cloud'. The function module 'ZF1' is in the same software component. Both the class and function module are customer created. Regarding line #6, which of the following is a valid statement?",
+                questionEs: "Dado el siguiente código en un tenant de SAP S/4HANA Cloud edición privada: La clase zcl_demo_class está en un componente de software con la versión de lenguaje establecida en 'ABAP Cloud'. El módulo de función 'ZF1' está en el mismo componente de software. Tanto la clase como el módulo de función son creados por el cliente. Con respecto a la línea #6, ¿cuál de las siguientes es una declaración válida?",
+                code: `1 CLASS zcl_demo_class DEFINITION.
+2 METHODS: m1.
+3 ENDCLASS.
+4 CLASS zcl_demo_class Implementation.
+5 METHOD m1.
+6 CALL FUNCTION 'ZF1'.
+7 ENDMETHOD
+8 ENDCLASS.`,
                 options: [
                     "'ZF1' must be released for cloud development to be called.",
                     "'ZF1' can be called via a wrapper that itself has not been released for cloud development.",
@@ -1874,10 +2049,18 @@
                 explanation: "A business object in RAP consists of: CDS view (defines data structure) and Behavior definition (defines CRUD operations and validations).",
                 explanationEs: "Un business object en RAP consiste en: CDS view (define la estructura de datos) y Behavior definition (define operaciones CRUD y validaciones)."
             },
-            {
+{
                 id: 63,
-                question: "Given SAP HANA database table definition code, which field is defined incorrectly?",
-                questionEs: "Dado el código de definición de tabla de base de datos SAP HANA, ¿qué campo está definido incorrectamente?",
+                question: "Given the following code excerpt that defines an SAP HANA database table: Which field is defined incorrectly?",
+                questionEs: "Dado el siguiente extracto de código que define una tabla de base de datos SAP HANA: ¿Qué campo está definido incorrectamente?",
+                code: `1 DEFINE TABLE demo_table
+2 {
+3 KEY field1 : REFERENCE TO abap.clnt(3);
+4 KEY field2 : abap.char(1332);
+5 @Semantics.quantity.unitOfMeasure : 'demo_table.field4'
+6 field3 : abap.quan(2);
+7 field4 : abap.unit(2);
+8 }`,
                 options: [
                     "field2",
                     "field4",
@@ -2010,10 +2193,21 @@
                 explanation: "CDS parameters are passed with = and @: p_date = @(expression) or p_date = 'literal'.",
                 explanationEs: "Los parámetros CDS se pasan con = y @: p_date = @(expression) o p_date = 'literal'."
             },
-            {
+{
                 id: 72,
-                question: "Given CDS definition with association, which ON condition must you insert?",
-                questionEs: "Dada la definición CDS con asociación, ¿qué condición ON debes insertar?",
+                question: "You have the following CDS definition: Which of the following ON conditions must you insert in place of '???'?",
+                questionEs: "Tienes la siguiente definición CDS: ¿Cuál de las siguientes condiciones ON debes insertar en lugar de '???'?",
+                code: `define view entity Z_ENTITY as select from Z_SOURCE1 as _Source1
+association to Z_SOURCE2 as _Source2
+???
+{
+  key carrier_id as Carrier,
+  key connection_id as Connection,
+       cityfrom as DepartureCity,
+       cityto as ArrivalCity,
+       
+  _Source2
+}`,
                 options: [
                     "ON Z_Source1.carrier_id=Z_Source2.carrier_id",
                     "ON $projection. Carrier = Source2.carrier",
@@ -2040,10 +2234,35 @@
                 explanation: "CORRESPONDING requires at least one common field between tables and can copy fields with same names but different types.",
                 explanationEs: "CORRESPONDING requiere al menos un campo común entre tablas y puede copiar campos con nombres iguales pero tipos diferentes."
             },
-            {
+{
                 id: 74,
-                question: "What would be the correct expression to change 'mr joe doe' into 'JOE' in an ABAP SQL field list?",
-                questionEs: "¿Cuál sería la expresión correcta para cambiar 'mr joe doe' a 'JOE' en una lista de campos ABAP SQL?",
+                question: "What would be the correct expression to change a given string value 'mr joe doe' into 'JOE' in an ABAP SQL field list?",
+                questionEs: "¿Cuál sería la expresión correcta para cambiar el valor de cadena dado 'mr joe doe' a 'JOE' en una lista de campos ABAP SQL?",
+                code: `Consider these options:
+
+A. SELECT FROM TABLE dbtab1
+   FIELDS
+     f1,
+     substring(upper('mr joe doe'), 4, 3) AS f2_sub_up,
+     f3,...
+
+B. SELECT FROM TABLE dbtab1
+   FIELDS
+     f1,
+     upper(left( 'mr joe doe', 6)) AS f2_up_left,
+     f3,
+
+C. SELECT FROM TABLE dbtab1
+   FIELDS
+     f1,
+     substring(lower(upper( 'mr joe doe' ) ), 4, 3) AS f2_sub_lo_up,
+     f3,
+
+D. SELECT FROM TABLE dbtab1
+   FIELDS
+     f1,
+     left(lower(substring( 'mr joe doe', 4, 3)), 3) AS f2_left_lo_sub,
+     f3,`,
                 options: [
                     "substring(upper('mr joe doe'), 4, 3) AS f2_sub_up",
                     "upper(left( 'mr joe doe', 6)) AS f2_up_left",
@@ -2134,10 +2353,47 @@
                 explanation: "When you declare TYPE with a CDS view, you create a structure based on the fields exposed by that view.",
                 explanationEs: "Cuando declaras TYPE con una CDS view, creas una estructura basada en los campos expuestos por esa vista."
             },
-            {
+{
                 id: 80,
-                question: "In ABAP SQL code, what are valid case distinctions? Note: There are 2 correct answers.",
-                questionEs: "En código ABAP SQL, ¿cuáles son distinciones de caso válidas? Nota: Hay 2 respuestas correctas.",
+                question: "In the following ABAP SQL code, what are valid case distinctions? Note: There are 2 correct answers to this question.",
+                questionEs: "En el siguiente código ABAP SQL, ¿cuáles son distinciones de caso válidas? Nota: Hay 2 respuestas correctas a esta pregunta.",
+                code: `Consider these CASE statements:
+
+A. SELECT FROM dbtab1
+   FIELDS f1,
+   CASE
+     WHEN F2 = '1' THEN 'Value 1'
+     WHEN f2='2' THEN 'Value 2'
+     ELSE 'Value for the rest'
+   END AS f_case
+   INTO TABLE @et_t1.
+
+B. SELECT FROM dbtab1
+   FIELDS f1,
+   CASE
+     WHEN F2 = '1' THEN 'Value 1'
+     WHEN f2 < f3 AND f2 = '2' THEN 'Value 2'
+     WHEN OTHERS 'Value for the rest'
+   END AS f_case
+   INTO TABLE @gt_t1.
+
+C. SELECT FROM dbtab1
+   FIELDS f1,
+   CASE f2
+     WHEN '1' THEN 'Value 1'
+     WHEN '2' THEN 'Value 2'
+     ELSE 'Value for the rest'
+   END AS f_case
+   INTO TABLE @gt_t1.
+
+D. SELECT FROM dbtab1
+   FIELDS f1,
+   CASE f2,
+     WHEN '1' THEN 'Value 1',
+     WHEN '2' THEN 'Value 2',
+     WHEN OTHERS 'Value for the rest',
+   END AS f_case
+   INTO TABLE @gt_t1.`,
                 options: [
                     "CASE WHEN F2 = '1' THEN 'Value 1' WHEN f2='2' THEN 'Value 2' ELSE 'Value for the rest' END AS f_case",
                     "CASE WHEN F2 = '1' THEN 'Value 1' WHEN f2 < f3 AND f2 = '2' THEN 'Value 2' WHEN OTHERS 'Value for the rest' END AS f_case",
@@ -3525,6 +3781,17 @@
             }
         }
 
+// Función para escapar HTML en código
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
         // Actualizar textos del selector de batería
         function updateBatterySelector() {
             document.getElementById('selector-title').textContent = t('selectorTitle');
@@ -3735,7 +4002,7 @@
         }
 
         // Función para mezclar las opciones de UNA pregunta
-        function shuffleQuestionOptions(question) {
+function shuffleQuestionOptions(question) {
             const indices = Array.from({length: question.options.length}, (_, i) => i);
             const shuffledIndices = shuffleArray(indices);
             
@@ -3756,6 +4023,11 @@
                 multiple: question.multiple,
                 explanation: question.explanation
             };
+            
+            // Copiar el campo code si existe
+            if (question.code) {
+                result.code = question.code;
+            }
             
             if (question.hasOwnProperty('questionEs')) {
                 result.questionEs = question.questionEs;
@@ -3820,9 +4092,22 @@
             const questionNumberText = currentLanguage === 'es' ? `Pregunta ${question.id}` : `Question ${question.id}`;
             document.getElementById('question-number').textContent = questionNumberText;
             
-            // Texto de la pregunta
+           
+// Texto de la pregunta
             const questionText = currentLanguage === 'es' && question.questionEs ? question.questionEs : question.question;
-            document.getElementById('question-text').textContent = questionText;
+            const questionTextElement = document.getElementById('question-text');
+            questionTextElement.innerHTML = ''; // Limpiar contenido previo
+            questionTextElement.textContent = questionText;
+            
+            // Mostrar código si existe
+            console.log('Pregunta actual:', question.id, 'Tiene código?', !!question.code);
+            if (question.code) {
+                console.log('Mostrando código:', question.code);
+                const codeContainer = document.createElement('div');
+                codeContainer.className = 'code-container';
+                codeContainer.innerHTML = `<pre><code>${escapeHtml(question.code)}</code></pre>`;
+                questionTextElement.appendChild(codeContainer);
+            }
             
             // Show/hide multiple choice notice
             const multipleNotice = document.getElementById('multiple-notice');
@@ -3996,7 +4281,20 @@
                 title.textContent = t('incorrectTitle');
                 title.className = 'modal-title modal-incorrect';
             }
-            
+            // Mostrar código en el modal si existe
+            if (question.code) {
+                const modalQuestionText = currentLanguage === 'es' && question.questionEs ? question.questionEs : question.question;
+                const codeHtml = `
+                    <div style="margin-bottom: 16px;">
+                        <div style="font-size: 0.9rem; color: #4a5568; margin-bottom: 8px;">${modalQuestionText}</div>
+                        <div class="code-container" style="margin: 0;">
+                            <pre><code>${escapeHtml(question.code)}</code></pre>
+                        </div>
+                    </div>
+                `;
+                content.innerHTML = codeHtml + content.innerHTML;
+            }
+
             // Set content
             let contentHTML = '';
             
